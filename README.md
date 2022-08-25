@@ -14,6 +14,9 @@ Extensible and compact color selector implemented in C# with WPF. Works as both 
 - Completely customizable, based on ControlTemplates
 - Functions well in nearly any window size, from narrow-wdith window to full-screen
 
+# Setup
+The repository consists of two Visual Studio projects - the ColorSelector project and a companion test application. Opening the ColorSelector/ColorSelector.sln file in Visual Studio should allow both projects to be built and run. To use the ColorSelector as a Control in another WPF application, add the ColorSelector project to the parent solution in Visual Studio, then add a project reference to the ColorSelector project for any projects that will use the ColorSelector.
+
 # Screenshots
 ## Condensed Window
 ![Zeno Color Selector - Condensed](/media/zeno_color_selector_condensed.png "Zeno Color Selector - Condensed")
