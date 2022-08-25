@@ -8,6 +8,7 @@ Extensible and compact color selector implemented in C# with WPF. Works as both 
 - Versatile color selector with modern user interface (UI) and emphasis on user experience (UX)
 - Ability to define a custom set of preset colors and save custom colors at runtime
 - Supports RGB, HSL, and HSV color modes, with hexadecimal RGBA string support
+- Error-checking for input fields with validation feedback
 - Minimal code footprint (two main files - ColorSelector.cs and Themes/Generic.xaml)
 - Easy to import as a control library into other WPF projects
 - Completely customizable, based on ControlTemplates
