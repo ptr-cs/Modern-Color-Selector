@@ -68,8 +68,8 @@ namespace ColorSelector
         public override ValidationResult Validate(object value, System.Globalization.CultureInfo cultureInfo)
         {
             return new ValidationResult(
-                Regex.Match((string)value, "^#(?:[0-9a-fA-F]{8})$").Success,
-                "String must match a valid ARGB Hexadecimal Color (ex. #FF001122)");
+                Regex.Match((string)value, "^#?(?:[0-9a-fA-F]{8})$").Success || Regex.Match((string)value, "^#?(?:[0-9a-fA-F]{6})$").Success,
+                "String must match a valid RGB or ARGB Hexadecimal Color (ex. #FF001122)");
         }
     }
 
@@ -154,7 +154,7 @@ namespace ColorSelector
     /// (resulting linear range post-conversion is a pyramid shape).
     /// </summary>
     [ValueConversion(typeof(double), typeof(double))]
-    public class doubleToReflectedAbsoluteValueDouble : IValueConverter
+    public class DoubleToReflectedAbsoluteValueDouble : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
@@ -348,13 +348,13 @@ namespace ColorSelector
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             HslComponent valueToConvert = (HslComponent)value;
-            return valueToConvert.ToString().Substring(0, 1);
+            return valueToConvert.ToString()[..1];
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             string valueToConvert = (string)value;
-            var match = ((HslComponent[])Enum.GetValues(typeof(HslComponent))).Where(s => s.ToString().Substring(0, 1) == valueToConvert).FirstOrDefault();
+            var match = ((HslComponent[])Enum.GetValues(typeof(HslComponent))).Where(s => s.ToString()[..1] == valueToConvert).FirstOrDefault();
             return match;
         }
     }
@@ -377,6 +377,52 @@ namespace ColorSelector
         {
             double valueToConvert = System.Convert.ToDouble(value);
             return valueToConvert;
+        }
+    }
+
+    [ValueConversion(typeof(double), typeof(double))]
+    public class RotationAngleConverterY : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            int polarity = -1;
+            return polarity * 90;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return System.Convert.ToDouble(value);
+        }
+    }
+
+    [ValueConversion(typeof(double), typeof(double))]
+    public class RotationAngleConverterX : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            double angle = System.Convert.ToDouble(value);
+            int polarity = -1;
+            return polarity * angle;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return System.Convert.ToDouble(value);
+        }
+    }
+
+    [ValueConversion(typeof(double), typeof(double))]
+    public class RotationAngleConverterZ : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            double angle = System.Convert.ToDouble(value);
+            return (angle * 180) - 90.0;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return System.Convert.ToDouble(value);
         }
     }
 
@@ -419,7 +465,21 @@ namespace ColorSelector
         PART_colorModelSelector,
         PART_presetColorsSelector,
         PART_customColorsSelector,
-        PART_hslComponentViewport3D
+        PART_hsl3dDisplayDecorator,
+        PART_menuOpenButton,
+        PART_menuCloseButton,
+        PART_closeMenuDecorator,
+        PART_colorModelsVisibilityToggleButton,
+        PART_presetColorsVisibilityToggleButton,
+        PART_display2dVisibilityToggleButton,
+        PART_display3dVisibilityToggleButton,
+        PART_componentsVisibilityToggleButton,
+        PART_colorPreviewVisibilityToggleButton,
+        PART_customColorsVisibilityToggleButton,
+        PART_hexadecimalComponentVisibilityToggleButton,
+        PART_alphaComponentVisibilityToggleButton,
+        PART_rgbComponentVisibilityToggleButton,
+        PART_hslvComponentVisibilityToggleButton,
     }
 
     [TemplatePart(Name = nameof(TemplatePart.PART_hexTextBox), Type = typeof(TextBox))]
@@ -430,7 +490,6 @@ namespace ColorSelector
     [TemplatePart(Name = nameof(TemplatePart.PART_hTextBox), Type = typeof(TextBox))]
     [TemplatePart(Name = nameof(TemplatePart.PART_sTextBox), Type = typeof(TextBox))]
     [TemplatePart(Name = nameof(TemplatePart.PART_vTextBox), Type = typeof(TextBox))]
-
     [TemplatePart(Name = nameof(TemplatePart.PART_aRangeBase), Type = typeof(RangeBase))]
     [TemplatePart(Name = nameof(TemplatePart.PART_rRangeBase), Type = typeof(RangeBase))]
     [TemplatePart(Name = nameof(TemplatePart.PART_gRangeBase), Type = typeof(RangeBase))]
@@ -439,10 +498,8 @@ namespace ColorSelector
     [TemplatePart(Name = nameof(TemplatePart.PART_sRangeBase), Type = typeof(RangeBase))]
     [TemplatePart(Name = nameof(TemplatePart.PART_vRangeBase), Type = typeof(RangeBase))]
     [TemplatePart(Name = nameof(TemplatePart.PART_hslRangeBase), Type = typeof(RangeBase))]
-
     [TemplatePart(Name = nameof(TemplatePart.PART_selectCustomColorButtonBase), Type = typeof(ButtonBase))]
     [TemplatePart(Name = nameof(TemplatePart.PART_saveCustomColorButtonBase), Type = typeof(ButtonBase))]
-
     [TemplatePart(Name = nameof(TemplatePart.PART_aIncrementButtonBase), Type = typeof(ButtonBase))]
     [TemplatePart(Name = nameof(TemplatePart.PART_rIncrementButtonBase), Type = typeof(ButtonBase))]
     [TemplatePart(Name = nameof(TemplatePart.PART_gIncrementButtonBase), Type = typeof(ButtonBase))]
@@ -450,7 +507,6 @@ namespace ColorSelector
     [TemplatePart(Name = nameof(TemplatePart.PART_hIncrementButtonBase), Type = typeof(ButtonBase))]
     [TemplatePart(Name = nameof(TemplatePart.PART_sIncrementButtonBase), Type = typeof(ButtonBase))]
     [TemplatePart(Name = nameof(TemplatePart.PART_vIncrementButtonBase), Type = typeof(ButtonBase))]
-
     [TemplatePart(Name = nameof(TemplatePart.PART_aDecrementButtonBase), Type = typeof(ButtonBase))]
     [TemplatePart(Name = nameof(TemplatePart.PART_rDecrementButtonBase), Type = typeof(ButtonBase))]
     [TemplatePart(Name = nameof(TemplatePart.PART_gDecrementButtonBase), Type = typeof(ButtonBase))]
@@ -458,15 +514,27 @@ namespace ColorSelector
     [TemplatePart(Name = nameof(TemplatePart.PART_hDecrementButtonBase), Type = typeof(ButtonBase))]
     [TemplatePart(Name = nameof(TemplatePart.PART_sDecrementButtonBase), Type = typeof(ButtonBase))]
     [TemplatePart(Name = nameof(TemplatePart.PART_vDecrementButtonBase), Type = typeof(ButtonBase))]
-
     [TemplatePart(Name = nameof(TemplatePart.PART_hslComponentAreaPanel), Type = typeof(Panel))]
-
     [TemplatePart(Name = nameof(TemplatePart.PART_hslComponentSelector), Type = typeof(Selector))]
     [TemplatePart(Name = nameof(TemplatePart.PART_colorModelSelector), Type = typeof(Selector))]
     [TemplatePart(Name = nameof(TemplatePart.PART_presetColorsSelector), Type = typeof(Selector))]
     [TemplatePart(Name = nameof(TemplatePart.PART_customColorsSelector), Type = typeof(Selector))]
+    [TemplatePart(Name = nameof(TemplatePart.PART_hsl3dDisplayDecorator), Type = typeof(Decorator))]
+    [TemplatePart(Name = nameof(TemplatePart.PART_menuOpenButton), Type = typeof(ButtonBase))]
+    [TemplatePart(Name = nameof(TemplatePart.PART_menuCloseButton), Type = typeof(ButtonBase))]
+    [TemplatePart(Name = nameof(TemplatePart.PART_closeMenuDecorator), Type = typeof(Decorator))]
+    [TemplatePart(Name = nameof(TemplatePart.PART_colorModelsVisibilityToggleButton), Type = typeof(ToggleButton))]
+    [TemplatePart(Name = nameof(TemplatePart.PART_presetColorsVisibilityToggleButton), Type = typeof(ToggleButton))]
+    [TemplatePart(Name = nameof(TemplatePart.PART_display2dVisibilityToggleButton), Type = typeof(ToggleButton))]
+    [TemplatePart(Name = nameof(TemplatePart.PART_display3dVisibilityToggleButton), Type = typeof(ToggleButton))]
+    [TemplatePart(Name = nameof(TemplatePart.PART_componentsVisibilityToggleButton), Type = typeof(ToggleButton))]
+    [TemplatePart(Name = nameof(TemplatePart.PART_colorPreviewVisibilityToggleButton), Type = typeof(ToggleButton))]
+    [TemplatePart(Name = nameof(TemplatePart.PART_customColorsVisibilityToggleButton), Type = typeof(ToggleButton))]
+    [TemplatePart(Name = nameof(TemplatePart.PART_hexadecimalComponentVisibilityToggleButton), Type = typeof(ToggleButton))]
+    [TemplatePart(Name = nameof(TemplatePart.PART_alphaComponentVisibilityToggleButton), Type = typeof(ToggleButton))]
+    [TemplatePart(Name = nameof(TemplatePart.PART_rgbComponentVisibilityToggleButton), Type = typeof(ToggleButton))]
+    [TemplatePart(Name = nameof(TemplatePart.PART_hslvComponentVisibilityToggleButton), Type = typeof(ToggleButton))]
 
-    [TemplatePart(Name = nameof(TemplatePart.PART_hslComponentViewport3D), Type = typeof(Viewport3D))]
     public class ColorSelector : Control
     {
         // Rates of change and limits for different color components:
@@ -536,13 +604,13 @@ namespace ColorSelector
         /// <param name="hObject"></param>
         /// <returns></returns>
         [System.Runtime.InteropServices.DllImport("gdi32.dll")]
-        public static extern bool DeleteObject(IntPtr hObject);
+        private static extern bool DeleteObject(IntPtr hObject);
 
         public static ImageBrush CreateBilinearGradient(int w, int h, Color upperLeft, Color upperRight, Color lowerLeft, Color lowerRight)
         {
             BitmapSource? source;
 
-            using (System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(w, h))
+            using (System.Drawing.Bitmap bmp = new(w, h))
             {
                 System.Drawing.Graphics flagGraphics = System.Drawing.Graphics.FromImage(bmp);
 
@@ -831,8 +899,8 @@ namespace ColorSelector
             }
         }
 
-        GradientStop rLowBoundGraientStop = new() { Offset = 0 };
-        GradientStop rHighBoundGradientStop = new() { Offset = 1 };
+        readonly GradientStop rLowBoundGraientStop = new() { Offset = 0 };
+        readonly GradientStop rHighBoundGradientStop = new() { Offset = 1 };
         private RangeBase? rRangeBase;
         private RangeBase? RRangeBase
         {
@@ -868,8 +936,8 @@ namespace ColorSelector
             }
         }
 
-        GradientStop gLowBoundGraientStop = new() { Offset = 0 };
-        GradientStop gHighBoundGradientStop = new() { Offset = 1 };
+        readonly GradientStop gLowBoundGraientStop = new() { Offset = 0 };
+        readonly GradientStop gHighBoundGradientStop = new() { Offset = 1 };
         private RangeBase? gRangeBase;
         private RangeBase? GRangeBase
         {
@@ -905,8 +973,8 @@ namespace ColorSelector
             }
         }
 
-        GradientStop bLowBoundGraientStop = new() { Offset = 0 };
-        GradientStop bHighBoundGradientStop = new() { Offset = 1 };
+        readonly GradientStop bLowBoundGraientStop = new() { Offset = 0 };
+        readonly GradientStop bHighBoundGradientStop = new() { Offset = 1 };
         private RangeBase? bRangeBase;
         private RangeBase? BRangeBase
         {
@@ -942,13 +1010,13 @@ namespace ColorSelector
             }
         }
 
-        GradientStop hSector0GradientStop = new() { Offset = 0 };
-        GradientStop hSector1GradientStop = new() { Offset = 1.0 / 6 };
-        GradientStop hSector2GradientStop = new() { Offset = 1.0 / 6 * 2 };
-        GradientStop hSector3GradientStop = new() { Offset = 1.0 / 6 * 3 };
-        GradientStop hSector4GradientStop = new() { Offset = 1.0 / 6 * 4 };
-        GradientStop hSector5GradientStop = new() { Offset = 1.0 / 6 * 5 };
-        GradientStop hSector6GradientStop = new() { Offset = 1 };
+        readonly GradientStop hSector0GradientStop = new() { Offset = 0 };
+        readonly GradientStop hSector1GradientStop = new() { Offset = 1.0 / 6 };
+        readonly GradientStop hSector2GradientStop = new() { Offset = 1.0 / 6 * 2 };
+        readonly GradientStop hSector3GradientStop = new() { Offset = 1.0 / 6 * 3 };
+        readonly GradientStop hSector4GradientStop = new() { Offset = 1.0 / 6 * 4 };
+        readonly GradientStop hSector5GradientStop = new() { Offset = 1.0 / 6 * 5 };
+        readonly GradientStop hSector6GradientStop = new() { Offset = 1 };
         private RangeBase? hRangeBase;
         private RangeBase? HRangeBase
         {
@@ -1000,8 +1068,8 @@ namespace ColorSelector
             }
         }
 
-        GradientStop sLowBoundGraientStop = new() { Offset = 0 };
-        GradientStop sHighBoundGradientStop = new() { Offset = 1 };
+        readonly GradientStop sLowBoundGraientStop = new() { Offset = 0 };
+        readonly GradientStop sHighBoundGradientStop = new() { Offset = 1 };
         private RangeBase? sRangeBase;
         private RangeBase? SRangeBase
         {
@@ -1037,8 +1105,8 @@ namespace ColorSelector
             }
         }
 
-        GradientStop vLowBoundGraientStop = new() { Offset = 0 };
-        GradientStop vHighBoundGradientStop = new() { Offset = 1 };
+        readonly GradientStop vLowBoundGraientStop = new() { Offset = 0 };
+        readonly GradientStop vHighBoundGradientStop = new() { Offset = 1 };
         private RangeBase? vRangeBase;
         private RangeBase? VRangeBase
         {
@@ -1096,6 +1164,351 @@ namespace ColorSelector
                     hslRangeBase.SetBinding(RangeBase.ValueProperty, binding);
                 }
             }
+        }
+
+        private ButtonBase? menuOpenButtonBase;
+        private ButtonBase? MenuOpenButtonBase
+        {
+            get { return menuOpenButtonBase; }
+
+            set
+            {
+                if (menuOpenButtonBase != null)
+                {
+                    menuOpenButtonBase.Click -= new RoutedEventHandler(MenuButtonBase_Click);
+                }
+                menuOpenButtonBase = value;
+
+                if (menuOpenButtonBase != null)
+                {
+                    menuOpenButtonBase.Click += new RoutedEventHandler(MenuButtonBase_Click);
+                }
+            }
+        }
+
+        private ButtonBase? menuCloseButtonBase;
+        private ButtonBase? MenuCloseButtonBase
+        {
+            get { return menuCloseButtonBase; }
+
+            set
+            {
+                if (menuCloseButtonBase != null)
+                {
+                    menuCloseButtonBase.Click -= new RoutedEventHandler(MenuButtonBase_Click);
+                }
+                menuCloseButtonBase = value;
+
+                if (menuCloseButtonBase != null)
+                {
+                    menuCloseButtonBase.Click += new RoutedEventHandler(MenuButtonBase_Click);
+                }
+            }
+        }
+
+        private Decorator? closeMenuDecorator;
+        private Decorator? CloseMenuDecorator
+        {
+            get { return closeMenuDecorator; }
+
+            set
+            {
+                if (closeMenuDecorator != null)
+                {
+                    closeMenuDecorator.PreviewMouseUp -= new MouseButtonEventHandler(CloseMenuDecorator_PreviewMouseUp);
+                }
+                closeMenuDecorator = value;
+
+                if (closeMenuDecorator != null)
+                {
+                    closeMenuDecorator.PreviewMouseUp += new MouseButtonEventHandler(CloseMenuDecorator_PreviewMouseUp);
+                }
+            }
+        }
+
+        private ToggleButton? colorModelsVisibilityToggleButton;
+        private ToggleButton? ColorModelsVisibilityToggleButton
+        {
+            get { return colorModelsVisibilityToggleButton; }
+
+            set
+            {
+                if (colorModelsVisibilityToggleButton != null)
+                {
+                    colorModelsVisibilityToggleButton.Click -= new RoutedEventHandler(ColorModelsVisibilityToggleButton_Click);
+                }
+                colorModelsVisibilityToggleButton = value;
+
+                if (colorModelsVisibilityToggleButton != null)
+                {
+                    colorModelsVisibilityToggleButton.Click += new RoutedEventHandler(ColorModelsVisibilityToggleButton_Click);
+                }
+            }
+        }
+
+        private void ColorModelsVisibilityToggleButton_Click(object sender, RoutedEventArgs e)
+        {
+            ColorModelsVisible = !ColorModelsVisible;
+        }
+
+        private ToggleButton? presetColorsVisibilityToggleButton;
+        private ToggleButton? PresetColorsVisibilityToggleButton
+        {
+            get { return presetColorsVisibilityToggleButton; }
+
+            set
+            {
+                if (presetColorsVisibilityToggleButton != null)
+                {
+                    presetColorsVisibilityToggleButton.Click -= new RoutedEventHandler(PresetColorsVisibilityToggleButton_Click);
+                }
+                presetColorsVisibilityToggleButton = value;
+
+                if (presetColorsVisibilityToggleButton != null)
+                {
+                    presetColorsVisibilityToggleButton.Click += new RoutedEventHandler(PresetColorsVisibilityToggleButton_Click);
+                }
+            }
+        }
+
+        private void PresetColorsVisibilityToggleButton_Click(object sender, RoutedEventArgs e)
+        {
+            PresetColorsVisible = !PresetColorsVisible;
+        }
+
+        private ToggleButton? display2dVisibilityToggleButton;
+        private ToggleButton? Display2dVisibilityToggleButton
+        {
+            get { return display2dVisibilityToggleButton; }
+
+            set
+            {
+                if (display2dVisibilityToggleButton != null)
+                {
+                    display2dVisibilityToggleButton.Click -= new RoutedEventHandler(Display2dVisibilityToggleButton_Click);
+                }
+                display2dVisibilityToggleButton = value;
+
+                if (display2dVisibilityToggleButton != null)
+                {
+                    display2dVisibilityToggleButton.Click += new RoutedEventHandler(Display2dVisibilityToggleButton_Click);
+                }
+            }
+        }
+
+        private void Display2dVisibilityToggleButton_Click(object sender, RoutedEventArgs e)
+        {
+            Display2dVisible = !Display2dVisible;
+        }
+
+        private ToggleButton? display3dVisibilityToggleButton;
+        private ToggleButton? Display3dVisibilityToggleButton
+        {
+            get { return display3dVisibilityToggleButton; }
+
+            set
+            {
+                if (display3dVisibilityToggleButton != null)
+                {
+                    display3dVisibilityToggleButton.Click -= new RoutedEventHandler(Display3dVisibilityToggleButton_Click);
+                }
+                display3dVisibilityToggleButton = value;
+
+                if (display3dVisibilityToggleButton != null)
+                {
+                    display3dVisibilityToggleButton.Click += new RoutedEventHandler(Display3dVisibilityToggleButton_Click);
+                }
+            }
+        }
+
+        private void Display3dVisibilityToggleButton_Click(object sender, RoutedEventArgs e)
+        {
+            Display3dVisible = !Display3dVisible;
+        }
+
+        private ToggleButton? componentsVisibilityToggleButton;
+        private ToggleButton? ComponentsVisibilityToggleButton
+        {
+            get { return componentsVisibilityToggleButton; }
+
+            set
+            {
+                if (componentsVisibilityToggleButton != null)
+                {
+                    componentsVisibilityToggleButton.Click -= new RoutedEventHandler(ComponentsVisibilityToggleButton_Click);
+                }
+                componentsVisibilityToggleButton = value;
+
+                if (componentsVisibilityToggleButton != null)
+                {
+                    componentsVisibilityToggleButton.Click += new RoutedEventHandler(ComponentsVisibilityToggleButton_Click);
+                }
+            }
+        }
+
+        private void ComponentsVisibilityToggleButton_Click(object sender, RoutedEventArgs e)
+        {
+            ComponentsVisible = !ComponentsVisible;
+        }
+
+        private ToggleButton? colorPreviewVisibilityToggleButton;
+        private ToggleButton? ColorPreviewVisibilityToggleButton
+        {
+            get { return colorPreviewVisibilityToggleButton; }
+
+            set
+            {
+                if (colorPreviewVisibilityToggleButton != null)
+                {
+                    colorPreviewVisibilityToggleButton.Click -= new RoutedEventHandler(ColorPreviewVisibilityToggleButton_Click);
+                }
+                colorPreviewVisibilityToggleButton = value;
+
+                if (colorPreviewVisibilityToggleButton != null)
+                {
+                    colorPreviewVisibilityToggleButton.Click += new RoutedEventHandler(ColorPreviewVisibilityToggleButton_Click);
+                }
+            }
+        }
+
+        private void ColorPreviewVisibilityToggleButton_Click(object sender, RoutedEventArgs e)
+        {
+            ColorPreviewVisible = !ColorPreviewVisible;
+        }
+
+        private ToggleButton? customColorsVisibilityToggleButton;
+        private ToggleButton? CustomColorsVisibilityToggleButton
+        {
+            get { return customColorsVisibilityToggleButton; }
+
+            set
+            {
+                if (customColorsVisibilityToggleButton != null)
+                {
+                    customColorsVisibilityToggleButton.Click -= new RoutedEventHandler(CustomColorsVisibilityToggleButton_Click);
+                }
+                customColorsVisibilityToggleButton = value;
+
+                if (customColorsVisibilityToggleButton != null)
+                {
+                    customColorsVisibilityToggleButton.Click += new RoutedEventHandler(CustomColorsVisibilityToggleButton_Click);
+                }
+            }
+        }
+
+        private void CustomColorsVisibilityToggleButton_Click(object sender, RoutedEventArgs e)
+        {
+            CustomColorsVisible = !CustomColorsVisible;
+        }
+
+        private ToggleButton? hexadecimalComponentVisibilityToggleButton;
+        private ToggleButton? HexadecimalComponentVisibilityToggleButton
+        {
+            get { return hexadecimalComponentVisibilityToggleButton; }
+
+            set
+            {
+                if (hexadecimalComponentVisibilityToggleButton != null)
+                {
+                    hexadecimalComponentVisibilityToggleButton.Click -= new RoutedEventHandler(HexadecimalComponentVisibilityToggleButton_Click);
+                }
+                hexadecimalComponentVisibilityToggleButton = value;
+
+                if (hexadecimalComponentVisibilityToggleButton != null)
+                {
+                    hexadecimalComponentVisibilityToggleButton.Click += new RoutedEventHandler(HexadecimalComponentVisibilityToggleButton_Click);
+                }
+            }
+        }
+
+        private void HexadecimalComponentVisibilityToggleButton_Click(object sender, RoutedEventArgs e)
+        {
+            HexadecimalComponentVisible = !HexadecimalComponentVisible;
+        }
+
+        private ToggleButton? alphaComponentVisibilityToggleButton;
+        private ToggleButton? AlphaComponentVisibilityToggleButton
+        {
+            get { return alphaComponentVisibilityToggleButton; }
+
+            set
+            {
+                if (alphaComponentVisibilityToggleButton != null)
+                {
+                    alphaComponentVisibilityToggleButton.Click -= new RoutedEventHandler(AlphaComponentVisibilityToggleButton_Click);
+                }
+                alphaComponentVisibilityToggleButton = value;
+
+                if (alphaComponentVisibilityToggleButton != null)
+                {
+                    alphaComponentVisibilityToggleButton.Click += new RoutedEventHandler(AlphaComponentVisibilityToggleButton_Click);
+                }
+            }
+        }
+
+        private void AlphaComponentVisibilityToggleButton_Click(object sender, RoutedEventArgs e)
+        {
+            AlphaComponentVisible = !AlphaComponentVisible;
+        }
+
+        private ToggleButton? rgbComponentVisibilityToggleButton;
+        private ToggleButton? RgbComponentVisibilityToggleButton
+        {
+            get { return rgbComponentVisibilityToggleButton; }
+
+            set
+            {
+                if (rgbComponentVisibilityToggleButton != null)
+                {
+                    rgbComponentVisibilityToggleButton.Click -= new RoutedEventHandler(RgbComponentVisibilityToggleButton_Click);
+                }
+                rgbComponentVisibilityToggleButton = value;
+
+                if (rgbComponentVisibilityToggleButton != null)
+                {
+                    rgbComponentVisibilityToggleButton.Click += new RoutedEventHandler(RgbComponentVisibilityToggleButton_Click);
+                }
+            }
+        }
+
+        private void RgbComponentVisibilityToggleButton_Click(object sender, RoutedEventArgs e)
+        {
+            RgbComponentVisible = !RgbComponentVisible;
+        }
+
+        private ToggleButton? hslvComponentVisibilityToggleButton;
+        private ToggleButton? HslvComponentVisibilityToggleButton
+        {
+            get { return hslvComponentVisibilityToggleButton; }
+
+            set
+            {
+                if (hslvComponentVisibilityToggleButton != null)
+                {
+                    hslvComponentVisibilityToggleButton.Click -= new RoutedEventHandler(HslvComponentVisibilityToggleButton_Click);
+                }
+                hslvComponentVisibilityToggleButton = value;
+
+                if (hslvComponentVisibilityToggleButton != null)
+                {
+                    hslvComponentVisibilityToggleButton.Click += new RoutedEventHandler(HslvComponentVisibilityToggleButton_Click);
+                }
+            }
+        }
+
+        private void HslvComponentVisibilityToggleButton_Click(object sender, RoutedEventArgs e)
+        {
+            HslvComponentVisible = !HslvComponentVisible;
+        }
+
+        private void CloseMenuDecorator_PreviewMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            IsMenuOpen = false;
+        }
+
+        private void MenuButtonBase_Click(object sender, RoutedEventArgs e)
+        {
+            IsMenuOpen = !IsMenuOpen;
         }
 
         private ButtonBase? selectCustomColorButtonBase;
@@ -1418,7 +1831,937 @@ namespace ColorSelector
             }
         }
 
-        
+        DiffuseMaterial faceBrushDiffuseMaterial2 = new DiffuseMaterial()
+        {
+            Brush = CreateBilinearGradient(100, 100, Colors.Cyan, Colors.White, Colors.Lime, Colors.Yellow)
+        };
+        DiffuseMaterial faceBrushDiffuseMaterial6 = new DiffuseMaterial()
+        {
+            Brush = CreateBilinearGradient(100, 100, Colors.White, Colors.Magenta, Colors.Yellow, Colors.Red)
+        };
+        DiffuseMaterial faceBrushDiffuseMaterial1 = new DiffuseMaterial()
+        {
+            Brush = CreateBilinearGradient(100, 100, Colors.Blue, Colors.Magenta, Colors.Cyan, Colors.White)
+        };
+        DiffuseMaterial faceBrushDiffuseMaterial5 = new DiffuseMaterial()
+        {
+            Brush = CreateBilinearGradient(100, 100, Colors.Lime, Colors.Yellow, Colors.Black, Colors.Red)
+        };
+        DiffuseMaterial faceBrushDiffuseMaterial4 = new DiffuseMaterial()
+        {
+            Brush = CreateBilinearGradient(100, 100, Colors.Blue, Colors.Cyan, Colors.Black, Colors.Lime)
+        };
+        DiffuseMaterial faceBrushDiffuseMaterial3 = new DiffuseMaterial()
+        {
+            Brush = CreateBilinearGradient(100, 100, Colors.Black, Colors.Red, Colors.Blue, Colors.Magenta)
+        };
+        DiffuseMaterial faceBrushDiffuseMaterialDesaturated2 = new DiffuseMaterial()
+        {
+            Brush = CreateBilinearGradient(100, 100, Colors.Gray, Colors.White, Colors.Gray, Colors.Gray)
+        };
+        DiffuseMaterial faceBrushDiffuseMaterialDesaturated6 = new DiffuseMaterial()
+        {
+            Brush = CreateBilinearGradient(100, 100, Colors.White, Colors.Gray, Colors.Gray, Colors.Gray)
+        };
+        DiffuseMaterial faceBrushDiffuseMaterialDesaturated1 = new DiffuseMaterial()
+        {
+            Brush = CreateBilinearGradient(100, 100, Colors.Gray, Colors.Gray, Colors.Gray, Colors.White)
+        };
+        DiffuseMaterial faceBrushDiffuseMaterialDesaturated5 = new DiffuseMaterial()
+        {
+            Brush = CreateBilinearGradient(100, 100, Colors.Gray, Colors.Gray, Colors.Black, Colors.Gray)
+        };
+        DiffuseMaterial faceBrushDiffuseMaterialDesaturated4 = new DiffuseMaterial()
+        {
+            Brush = CreateBilinearGradient(100, 100, Colors.Gray, Colors.Gray, Colors.Black, Colors.Gray)
+        };
+        DiffuseMaterial faceBrushDiffuseMaterialDesaturated3 = new DiffuseMaterial()
+        {
+            Brush = CreateBilinearGradient(100, 100, Colors.Black, Colors.Gray, Colors.Gray, Colors.Gray)
+        };
+
+        readonly AxisAngleRotation3D modelVisual3dRotationZ = new(new Vector3D(0, 1, 0), 0);
+        readonly AxisAngleRotation3D modelVisual3dRotationY = new(new Vector3D(0, 1, 0), -90);
+        readonly AxisAngleRotation3D modelVisual3dRotationX = new(new Vector3D(-1, 0, 0), 0);
+
+        public ModelVisual3D Hsl3dDisplayModelVisual3DCone = new();
+        public ModelVisual3D Hsl3dDisplayModelVisual3DCube = new();
+        public Viewport3D Hsl3dDisplayViewport3D = new Viewport3D() { Height = 100, Width = 200, ClipToBounds = false };
+        Viewbox viewbox = new Viewbox() { MaxHeight = 380 };
+        private Decorator? hsl3dDisplayDecorator;
+        private Decorator? Hsl3dDisplayDecorator
+        {
+            get { return hsl3dDisplayDecorator; }
+
+            set
+            {
+                if (hsl3dDisplayDecorator != null)
+                {
+                    hsl3dDisplayDecorator.PreviewMouseUp -= new MouseButtonEventHandler(Hsl3dDisplayDecorator_PreviewMouseUp);
+                    hsl3dDisplayDecorator.PreviewMouseDown -= new MouseButtonEventHandler(Hsl3dDisplayDecorator_PreviewMouseDown);
+                    hsl3dDisplayDecorator.PreviewMouseWheel -= new MouseWheelEventHandler(Hsl3dDisplayDecorator_PreviewMouseWheel);
+                    hsl3dDisplayDecorator.PreviewMouseMove -= new MouseEventHandler(Hsl3dDisplayDecorator_PreviewMouseMove);
+
+                    // BindingOperations.ClearBinding(modelVisual3dRotationY, AxisAngleRotation3D.AngleProperty);
+                    BindingOperations.ClearBinding(modelVisual3dRotationZ, AxisAngleRotation3D.AngleProperty);
+                    BindingOperations.ClearBinding(modelVisual3dRotationX, AxisAngleRotation3D.AngleProperty);
+                    BindingOperations.ClearBinding(faceBrushDiffuseMaterial1.Brush, Brush.OpacityProperty);
+                    BindingOperations.ClearBinding(faceBrushDiffuseMaterial2.Brush, Brush.OpacityProperty);
+                    BindingOperations.ClearBinding(faceBrushDiffuseMaterial3.Brush, Brush.OpacityProperty);
+                    BindingOperations.ClearBinding(faceBrushDiffuseMaterial4.Brush, Brush.OpacityProperty);
+                    BindingOperations.ClearBinding(faceBrushDiffuseMaterial5.Brush, Brush.OpacityProperty);
+                    BindingOperations.ClearBinding(faceBrushDiffuseMaterial6.Brush, Brush.OpacityProperty);
+                }
+                hsl3dDisplayDecorator = value;
+
+                if (hsl3dDisplayDecorator != null)
+                {
+                    //Binding angleBindingY = new(nameof(H)) { Mode = BindingMode.OneWay, Source = this, Converter = new RotationAngleConverterY() };
+                    //BindingOperations.SetBinding(modelVisual3dRotationY, AxisAngleRotation3D.AngleProperty, angleBindingY);
+                    Binding angleBindingX = new(nameof(H)) { Mode = BindingMode.OneWay, Source = this, Converter = new RotationAngleConverterX() };
+                    BindingOperations.SetBinding(modelVisual3dRotationX, AxisAngleRotation3D.AngleProperty, angleBindingX);
+                    Binding angleBindingZ = new(nameof(V)) { Mode = BindingMode.OneWay, Source = this, Converter = new RotationAngleConverterZ() };
+                    BindingOperations.SetBinding(modelVisual3dRotationZ, AxisAngleRotation3D.AngleProperty, angleBindingZ);
+
+                    Binding brushOpacityBinding1 = new(nameof(S)) { Mode = BindingMode.OneWay, Source = this };
+                    BindingOperations.SetBinding(faceBrushDiffuseMaterial1.Brush, Brush.OpacityProperty, brushOpacityBinding1);
+                    Binding brushOpacityBinding2 = new(nameof(S)) { Mode = BindingMode.OneWay, Source = this };
+                    BindingOperations.SetBinding(faceBrushDiffuseMaterial2.Brush, Brush.OpacityProperty, brushOpacityBinding2);
+                    Binding brushOpacityBinding3 = new(nameof(S)) { Mode = BindingMode.OneWay, Source = this };
+                    BindingOperations.SetBinding(faceBrushDiffuseMaterial3.Brush, Brush.OpacityProperty, brushOpacityBinding3);
+                    Binding brushOpacityBinding4 = new(nameof(S)) { Mode = BindingMode.OneWay, Source = this };
+                    BindingOperations.SetBinding(faceBrushDiffuseMaterial4.Brush, Brush.OpacityProperty, brushOpacityBinding4);
+                    Binding brushOpacityBinding5 = new(nameof(S)) { Mode = BindingMode.OneWay, Source = this };
+                    BindingOperations.SetBinding(faceBrushDiffuseMaterial5.Brush, Brush.OpacityProperty, brushOpacityBinding5);
+                    Binding brushOpacityBinding6 = new(nameof(S)) { Mode = BindingMode.OneWay, Source = this };
+                    BindingOperations.SetBinding(faceBrushDiffuseMaterial6.Brush, Brush.OpacityProperty, brushOpacityBinding6);
+
+                    Hsl3dDisplayViewport3D.Camera = new OrthographicCamera(new Point3D(0, 0, -1), new Vector3D(0, 0, 1), new Vector3D(0, 1, 0), 1.6)
+                    {
+                        NearPlaneDistance = double.NegativeInfinity,
+                        FarPlaneDistance = double.PositiveInfinity,
+                    };
+
+                    Hsl3dDisplayModelVisual3DCube.Content = GenerateRgbCubeModel3DGroup();
+                    Hsl3dDisplayModelVisual3DCone.Content = GenerateRgbConeModel3DGroup();
+
+                    var transform3DGroup = new Transform3DGroup();
+                    transform3DGroup.Children.Add(new RotateTransform3D(modelVisual3dRotationY));
+                    transform3DGroup.Children.Add(new RotateTransform3D(modelVisual3dRotationX));
+                    transform3DGroup.Children.Add(new RotateTransform3D(modelVisual3dRotationZ));
+                    Hsl3dDisplayModelVisual3DCube.Transform = transform3DGroup;
+
+                    Hsl3dDisplayViewport3D.Children.Add(Hsl3dDisplayModelVisual3DCube);
+                    viewbox.Child = Hsl3dDisplayViewport3D;
+                    hsl3dDisplayDecorator.Child = viewbox;
+
+                    hsl3dDisplayDecorator.Cursor = Cursors.Hand;
+                    hsl3dDisplayDecorator.PreviewMouseMove += new MouseEventHandler(Hsl3dDisplayDecorator_PreviewMouseMove);
+                    hsl3dDisplayDecorator.PreviewMouseWheel += new MouseWheelEventHandler(Hsl3dDisplayDecorator_PreviewMouseWheel);
+                    hsl3dDisplayDecorator.PreviewMouseDown += new MouseButtonEventHandler(Hsl3dDisplayDecorator_PreviewMouseDown);
+                    hsl3dDisplayDecorator.PreviewMouseUp += new MouseButtonEventHandler(Hsl3dDisplayDecorator_PreviewMouseUp);
+                }
+            }
+        }
+
+        public Model3DGroup GenerateRgbConeModel3DGroup()
+        {
+            Model3DGroup model3DGroup = new();
+            model3DGroup.Transform = new Transform3DGroup()
+            {
+                Children = {
+                    new ScaleTransform3D(new Vector3D(-.33, -.33, -.33)),
+                    new TranslateTransform3D(new Vector3D(0,.1,0)),
+                    new RotateTransform3D()
+                    {
+                        Rotation = new AxisAngleRotation3D(new Vector3D(-1, 0, 0), 120)
+                    }
+                }
+            };
+
+            MaterialGroup group = new MaterialGroup();
+            group.Children.Add(new DiffuseMaterial(new RadialGradientBrush(new GradientStopCollection() { new GradientStop(Colors.White, 0), new GradientStop(Colors.Gray, 1) })));
+
+            GeometryModel3D meshId0Geometry = new GeometryModel3D()
+            {
+                Material = group,
+                Geometry = new MeshGeometry3D()
+                {
+
+                    Positions = new Point3DCollection(new List<Point3D>()
+        {
+        new Point3D(0.980785, 0.19509, -1),
+        new Point3D(0.19509, -0.980785, -1),
+        new Point3D(-0.980785, -0.19509, -1),
+        new Point3D(-0.19509, 0.980785, -1),
+        new Point3D(0, 1, -1),
+        new Point3D(0.19509, 0.980785, -1),
+        new Point3D(0.382683, 0.92388, -1),
+        new Point3D(0.55557, 0.83147, -1),
+        new Point3D(0.707107, 0.707107, -1),
+        new Point3D(0.83147, 0.55557, -1),
+        new Point3D(0.92388, 0.382683, -1),
+        new Point3D(1, 0, -1),
+        new Point3D(0.980785, -0.19509, -1),
+        new Point3D(0.92388, -0.382683, -1),
+        new Point3D(0.83147, -0.55557, -1),
+        new Point3D(0.707107, -0.707107, -1),
+        new Point3D(0.55557, -0.83147, -1),
+        new Point3D(0.382683, -0.92388, -1),
+        new Point3D(0, -1, -1),
+        new Point3D(-0.19509, -0.980785, -1),
+        new Point3D(-0.382683, -0.92388, -1),
+        new Point3D(-0.55557, -0.831469, -1),
+        new Point3D(-0.707107, -0.707107, -1),
+        new Point3D(-0.831469, -0.55557, -1),
+        new Point3D(-0.92388, -0.382684, -1),
+        new Point3D(-1, 0, -1),
+        new Point3D(-0.980785, 0.19509, -1),
+        new Point3D(-0.92388, 0.382684, -1),
+        new Point3D(-0.83147, 0.55557, -1),
+        new Point3D(-0.707107, 0.707107, -1),
+        new Point3D(-0.55557, 0.83147, -1),
+        new Point3D(-0.382683, 0.92388, -1),
+
+        }),
+
+                    Normals = new Vector3DCollection(new List<Vector3D>()
+        {
+        new Vector3D(0, 0, -1),
+        new Vector3D(0, 0, -1),
+        new Vector3D(0, 0, -1),
+        new Vector3D(0, 0, -1),
+        new Vector3D(0, 0, -1),
+        new Vector3D(0, 0, -1),
+        new Vector3D(0, 0, -1),
+        new Vector3D(0, 0, -1),
+        new Vector3D(0, 0, -1),
+        new Vector3D(0, 0, -1),
+        new Vector3D(0, 0, -1),
+        new Vector3D(0, 0, -1),
+        new Vector3D(0, 0, -1),
+        new Vector3D(0, 0, -1),
+        new Vector3D(0, 0, -1),
+        new Vector3D(0, 0, -1),
+        new Vector3D(0, 0, -1),
+        new Vector3D(0, 0, -1),
+        new Vector3D(0, 0, -1),
+        new Vector3D(0, 0, -1),
+        new Vector3D(0, 0, -1),
+        new Vector3D(0, 0, -1),
+        new Vector3D(0, 0, -1),
+        new Vector3D(0, 0, -1),
+        new Vector3D(0, 0, -1),
+        new Vector3D(0, 0, -1),
+        new Vector3D(0, 0, -1),
+        new Vector3D(0, 0, -1),
+        new Vector3D(0, 0, -1),
+        new Vector3D(0, 0, -1),
+        new Vector3D(0, 0, -1),
+        new Vector3D(0, 0, -1),
+
+        }),
+
+                    TextureCoordinates = new PointCollection(new List<Point>()
+        {
+        new Point(0.985389, 0.296822),
+        new Point(0.796822, 0.0146115),
+        new Point(0.514612, 0.203178),
+        new Point(0.703178, 0.485388),
+        new Point(0.75, 0.49),
+        new Point(0.796822, 0.485388),
+        new Point(0.841844, 0.471731),
+        new Point(0.883337, 0.449553),
+        new Point(0.919706, 0.419706),
+        new Point(0.949553, 0.383337),
+        new Point(0.971731, 0.341844),
+        new Point(0.99, 0.25),
+        new Point(0.985389, 0.203178),
+        new Point(0.971731, 0.158156),
+        new Point(0.949553, 0.116663),
+        new Point(0.919706, 0.0802944),
+        new Point(0.883337, 0.0504473),
+        new Point(0.841844, 0.0282689),
+        new Point(0.75, 0.00999999),
+        new Point(0.703178, 0.0146115),
+        new Point(0.658156, 0.0282689),
+        new Point(0.616663, 0.0504473),
+        new Point(0.580294, 0.0802944),
+        new Point(0.550447, 0.116663),
+        new Point(0.528269, 0.158156),
+        new Point(0.51, 0.25),
+        new Point(0.514612, 0.296822),
+        new Point(0.528269, 0.341844),
+        new Point(0.550447, 0.383337),
+        new Point(0.580294, 0.419706),
+        new Point(0.616663, 0.449553),
+        new Point(0.658156, 0.471731),
+
+        }),
+
+                    TriangleIndices = new Int32Collection(new List<int>()
+        {
+        0, 1, 2, 9, 10, 0, 0, 11, 12, 3, 5, 0, 5, 7, 0, 7, 9, 0, 0, 12, 14, 14, 16, 0, 16, 1, 0, 3, 0, 2, 7, 8, 9, 5, 6, 7, 3, 4, 5, 31, 3, 28, 2, 28, 3, 30, 31, 28, 27, 28, 2, 28, 29, 30, 26, 27, 2, 2, 25, 26, 23, 24, 2, 1, 19, 2, 19, 21, 2, 21, 23, 2, 21, 22, 23, 19, 20, 21, 1, 18, 19, 16, 17, 1, 14, 15, 16, 12, 13, 14,
+        }),
+                }
+            };
+            GeometryModel3D meshId1Geometry = new GeometryModel3D()
+            {
+                Material = new DiffuseMaterial(new LinearGradientBrush(new GradientStopCollection() { new GradientStop(Colors.Gray, 0), new GradientStop(Colors.Black, .5) }) { EndPoint = new Point(0,1) }),
+                Geometry = new MeshGeometry3D()
+                {
+
+                    Positions = new Point3DCollection(new List<Point3D>()
+        {
+        new Point3D(0, 1, -1),
+        new Point3D(0, 0, 1),
+        new Point3D(0.19509, 0.980785, -1),
+        new Point3D(0.19509, 0.980785, -1),
+        new Point3D(0, 0, 1),
+        new Point3D(0.382683, 0.92388, -1),
+        new Point3D(0.382683, 0.92388, -1),
+        new Point3D(0, 0, 1),
+        new Point3D(0.55557, 0.83147, -1),
+        new Point3D(0.55557, 0.83147, -1),
+        new Point3D(0, 0, 1),
+        new Point3D(0.707107, 0.707107, -1),
+        new Point3D(0.707107, 0.707107, -1),
+        new Point3D(0, 0, 1),
+        new Point3D(0.83147, 0.55557, -1),
+        new Point3D(0.83147, 0.55557, -1),
+        new Point3D(0, 0, 1),
+        new Point3D(0.92388, 0.382683, -1),
+        new Point3D(0.92388, 0.382683, -1),
+        new Point3D(0, 0, 1),
+        new Point3D(0.980785, 0.19509, -1),
+        new Point3D(0.980785, 0.19509, -1),
+        new Point3D(0, 0, 1),
+        new Point3D(1, 0, -1),
+        new Point3D(1, 0, -1),
+        new Point3D(0, 0, 1),
+        new Point3D(0.980785, -0.19509, -1),
+        new Point3D(0.980785, -0.19509, -1),
+        new Point3D(0, 0, 1),
+        new Point3D(0.92388, -0.382683, -1),
+        new Point3D(0.92388, -0.382683, -1),
+        new Point3D(0, 0, 1),
+        new Point3D(0.83147, -0.55557, -1),
+        new Point3D(0.83147, -0.55557, -1),
+        new Point3D(0, 0, 1),
+        new Point3D(0.707107, -0.707107, -1),
+        new Point3D(0.707107, -0.707107, -1),
+        new Point3D(0, 0, 1),
+        new Point3D(0.55557, -0.83147, -1),
+        new Point3D(0.55557, -0.83147, -1),
+        new Point3D(0, 0, 1),
+        new Point3D(0.382683, -0.92388, -1),
+        new Point3D(0.382683, -0.92388, -1),
+        new Point3D(0, 0, 1),
+        new Point3D(0.19509, -0.980785, -1),
+        new Point3D(0.19509, -0.980785, -1),
+        new Point3D(0, 0, 1),
+        new Point3D(0, -1, -1),
+        new Point3D(0, -1, -1),
+        new Point3D(0, 0, 1),
+        new Point3D(-0.19509, -0.980785, -1),
+        new Point3D(-0.19509, -0.980785, -1),
+        new Point3D(0, 0, 1),
+        new Point3D(-0.382683, -0.92388, -1),
+        new Point3D(-0.382683, -0.92388, -1),
+        new Point3D(0, 0, 1),
+        new Point3D(-0.55557, -0.831469, -1),
+        new Point3D(-0.55557, -0.831469, -1),
+        new Point3D(0, 0, 1),
+        new Point3D(-0.707107, -0.707107, -1),
+        new Point3D(-0.707107, -0.707107, -1),
+        new Point3D(0, 0, 1),
+        new Point3D(-0.831469, -0.55557, -1),
+        new Point3D(-0.831469, -0.55557, -1),
+        new Point3D(0, 0, 1),
+        new Point3D(-0.92388, -0.382684, -1),
+        new Point3D(-0.92388, -0.382684, -1),
+        new Point3D(0, 0, 1),
+        new Point3D(-0.980785, -0.19509, -1),
+        new Point3D(-0.980785, -0.19509, -1),
+        new Point3D(0, 0, 1),
+        new Point3D(-1, 0, -1),
+        new Point3D(-1, 0, -1),
+        new Point3D(0, 0, 1),
+        new Point3D(-0.980785, 0.19509, -1),
+        new Point3D(-0.980785, 0.19509, -1),
+        new Point3D(0, 0, 1),
+        new Point3D(-0.92388, 0.382684, -1),
+        new Point3D(-0.92388, 0.382684, -1),
+        new Point3D(0, 0, 1),
+        new Point3D(-0.83147, 0.55557, -1),
+        new Point3D(-0.83147, 0.55557, -1),
+        new Point3D(0, 0, 1),
+        new Point3D(-0.707107, 0.707107, -1),
+        new Point3D(-0.707107, 0.707107, -1),
+        new Point3D(0, 0, 1),
+        new Point3D(-0.55557, 0.83147, -1),
+        new Point3D(-0.55557, 0.83147, -1),
+        new Point3D(0, 0, 1),
+        new Point3D(-0.382683, 0.92388, -1),
+        new Point3D(-0.382683, 0.92388, -1),
+        new Point3D(0, 0, 1),
+        new Point3D(-0.19509, 0.980785, -1),
+        new Point3D(-0.19509, 0.980785, -1),
+        new Point3D(0, 0, 1),
+        new Point3D(0, 1, -1),
+
+        }),
+
+                    Normals = new Vector3DCollection(new List<Vector3D>()
+        {
+        new Vector3D(0.0877537, 0.890977, 0.445488),
+        new Vector3D(0.0877537, 0.890977, 0.445488),
+        new Vector3D(0.0877537, 0.890977, 0.445488),
+        new Vector3D(0.259888, 0.856737, 0.445488),
+        new Vector3D(0.259888, 0.856737, 0.445488),
+        new Vector3D(0.259888, 0.856737, 0.445488),
+        new Vector3D(0.422036, 0.789573, 0.445489),
+        new Vector3D(0.422036, 0.789573, 0.445489),
+        new Vector3D(0.422036, 0.789573, 0.445489),
+        new Vector3D(0.567965, 0.692067, 0.445488),
+        new Vector3D(0.567965, 0.692067, 0.445488),
+        new Vector3D(0.567965, 0.692067, 0.445488),
+        new Vector3D(0.692067, 0.567965, 0.445488),
+        new Vector3D(0.692067, 0.567965, 0.445488),
+        new Vector3D(0.692067, 0.567965, 0.445488),
+        new Vector3D(0.789573, 0.422036, 0.445488),
+        new Vector3D(0.789573, 0.422036, 0.445488),
+        new Vector3D(0.789573, 0.422036, 0.445488),
+        new Vector3D(0.856737, 0.259888, 0.445488),
+        new Vector3D(0.856737, 0.259888, 0.445488),
+        new Vector3D(0.856737, 0.259888, 0.445488),
+        new Vector3D(0.890977, 0.0877537, 0.445488),
+        new Vector3D(0.890977, 0.0877537, 0.445488),
+        new Vector3D(0.890977, 0.0877537, 0.445488),
+        new Vector3D(0.890977, -0.0877537, 0.445488),
+        new Vector3D(0.890977, -0.0877537, 0.445488),
+        new Vector3D(0.890977, -0.0877537, 0.445488),
+        new Vector3D(0.856737, -0.259888, 0.445488),
+        new Vector3D(0.856737, -0.259888, 0.445488),
+        new Vector3D(0.856737, -0.259888, 0.445488),
+        new Vector3D(0.789573, -0.422036, 0.445488),
+        new Vector3D(0.789573, -0.422036, 0.445488),
+        new Vector3D(0.789573, -0.422036, 0.445488),
+        new Vector3D(0.692067, -0.567965, 0.445488),
+        new Vector3D(0.692067, -0.567965, 0.445488),
+        new Vector3D(0.692067, -0.567965, 0.445488),
+        new Vector3D(0.567965, -0.692067, 0.445488),
+        new Vector3D(0.567965, -0.692067, 0.445488),
+        new Vector3D(0.567965, -0.692067, 0.445488),
+        new Vector3D(0.422036, -0.789573, 0.445488),
+        new Vector3D(0.422036, -0.789573, 0.445488),
+        new Vector3D(0.422036, -0.789573, 0.445488),
+        new Vector3D(0.259888, -0.856737, 0.445488),
+        new Vector3D(0.259888, -0.856737, 0.445488),
+        new Vector3D(0.259888, -0.856737, 0.445488),
+        new Vector3D(0.0877533, -0.890977, 0.445488),
+        new Vector3D(0.0877533, -0.890977, 0.445488),
+        new Vector3D(0.0877533, -0.890977, 0.445488),
+        new Vector3D(-0.0877535, -0.890977, 0.445488),
+        new Vector3D(-0.0877535, -0.890977, 0.445488),
+        new Vector3D(-0.0877535, -0.890977, 0.445488),
+        new Vector3D(-0.259888, -0.856737, 0.445488),
+        new Vector3D(-0.259888, -0.856737, 0.445488),
+        new Vector3D(-0.259888, -0.856737, 0.445488),
+        new Vector3D(-0.422036, -0.789573, 0.445488),
+        new Vector3D(-0.422036, -0.789573, 0.445488),
+        new Vector3D(-0.422036, -0.789573, 0.445488),
+        new Vector3D(-0.567965, -0.692067, 0.445488),
+        new Vector3D(-0.567965, -0.692067, 0.445488),
+        new Vector3D(-0.567965, -0.692067, 0.445488),
+        new Vector3D(-0.692067, -0.567965, 0.445488),
+        new Vector3D(-0.692067, -0.567965, 0.445488),
+        new Vector3D(-0.692067, -0.567965, 0.445488),
+        new Vector3D(-0.789573, -0.422036, 0.445488),
+        new Vector3D(-0.789573, -0.422036, 0.445488),
+        new Vector3D(-0.789573, -0.422036, 0.445488),
+        new Vector3D(-0.856737, -0.259888, 0.445488),
+        new Vector3D(-0.856737, -0.259888, 0.445488),
+        new Vector3D(-0.856737, -0.259888, 0.445488),
+        new Vector3D(-0.890977, -0.0877537, 0.445488),
+        new Vector3D(-0.890977, -0.0877537, 0.445488),
+        new Vector3D(-0.890977, -0.0877537, 0.445488),
+        new Vector3D(-0.890977, 0.0877537, 0.445488),
+        new Vector3D(-0.890977, 0.0877537, 0.445488),
+        new Vector3D(-0.890977, 0.0877537, 0.445488),
+        new Vector3D(-0.856737, 0.259888, 0.445488),
+        new Vector3D(-0.856737, 0.259888, 0.445488),
+        new Vector3D(-0.856737, 0.259888, 0.445488),
+        new Vector3D(-0.789573, 0.422036, 0.445488),
+        new Vector3D(-0.789573, 0.422036, 0.445488),
+        new Vector3D(-0.789573, 0.422036, 0.445488),
+        new Vector3D(-0.692067, 0.567964, 0.445488),
+        new Vector3D(-0.692067, 0.567964, 0.445488),
+        new Vector3D(-0.692067, 0.567964, 0.445488),
+        new Vector3D(-0.567965, 0.692067, 0.445489),
+        new Vector3D(-0.567965, 0.692067, 0.445489),
+        new Vector3D(-0.567965, 0.692067, 0.445489),
+        new Vector3D(-0.422036, 0.789573, 0.445488),
+        new Vector3D(-0.422036, 0.789573, 0.445488),
+        new Vector3D(-0.422036, 0.789573, 0.445488),
+        new Vector3D(-0.259888, 0.856737, 0.445488),
+        new Vector3D(-0.259888, 0.856737, 0.445488),
+        new Vector3D(-0.259888, 0.856737, 0.445488),
+        new Vector3D(-0.0877534, 0.890977, 0.445488),
+        new Vector3D(-0.0877534, 0.890977, 0.445488),
+        new Vector3D(-0.0877534, 0.890977, 0.445488),
+
+        }),
+
+                    TextureCoordinates = new PointCollection(new List<Point>()
+        {
+        new Point(0.25, 0.49),
+        new Point(0.25, 0.25),
+        new Point(0.296822, 0.485388),
+        new Point(0.296822, 0.485388),
+        new Point(0.25, 0.25),
+        new Point(0.341844, 0.471731),
+        new Point(0.341844, 0.471731),
+        new Point(0.25, 0.25),
+        new Point(0.383337, 0.449553),
+        new Point(0.383337, 0.449553),
+        new Point(0.25, 0.25),
+        new Point(0.419706, 0.419706),
+        new Point(0.419706, 0.419706),
+        new Point(0.25, 0.25),
+        new Point(0.449553, 0.383337),
+        new Point(0.449553, 0.383337),
+        new Point(0.25, 0.25),
+        new Point(0.471731, 0.341844),
+        new Point(0.471731, 0.341844),
+        new Point(0.25, 0.25),
+        new Point(0.485388, 0.296822),
+        new Point(0.485388, 0.296822),
+        new Point(0.25, 0.25),
+        new Point(0.49, 0.25),
+        new Point(0.49, 0.25),
+        new Point(0.25, 0.25),
+        new Point(0.485388, 0.203178),
+        new Point(0.485388, 0.203178),
+        new Point(0.25, 0.25),
+        new Point(0.471731, 0.158156),
+        new Point(0.471731, 0.158156),
+        new Point(0.25, 0.25),
+        new Point(0.449553, 0.116663),
+        new Point(0.449553, 0.116663),
+        new Point(0.25, 0.25),
+        new Point(0.419706, 0.0802944),
+        new Point(0.419706, 0.0802944),
+        new Point(0.25, 0.25),
+        new Point(0.383337, 0.0504473),
+        new Point(0.383337, 0.0504473),
+        new Point(0.25, 0.25),
+        new Point(0.341844, 0.0282689),
+        new Point(0.341844, 0.0282689),
+        new Point(0.25, 0.25),
+        new Point(0.296822, 0.0146115),
+        new Point(0.296822, 0.0146115),
+        new Point(0.25, 0.25),
+        new Point(0.25, 0.00999999),
+        new Point(0.25, 0.00999999),
+        new Point(0.25, 0.25),
+        new Point(0.203178, 0.0146115),
+        new Point(0.203178, 0.0146115),
+        new Point(0.25, 0.25),
+        new Point(0.158156, 0.0282689),
+        new Point(0.158156, 0.0282689),
+        new Point(0.25, 0.25),
+        new Point(0.116663, 0.0504473),
+        new Point(0.116663, 0.0504473),
+        new Point(0.25, 0.25),
+        new Point(0.0802944, 0.0802944),
+        new Point(0.0802944, 0.0802944),
+        new Point(0.25, 0.25),
+        new Point(0.0504473, 0.116663),
+        new Point(0.0504473, 0.116663),
+        new Point(0.25, 0.25),
+        new Point(0.0282689, 0.158156),
+        new Point(0.0282689, 0.158156),
+        new Point(0.25, 0.25),
+        new Point(0.0146115, 0.203178),
+        new Point(0.0146115, 0.203178),
+        new Point(0.25, 0.25),
+        new Point(0.00999999, 0.25),
+        new Point(0.00999999, 0.25),
+        new Point(0.25, 0.25),
+        new Point(0.0146115, 0.296822),
+        new Point(0.0146115, 0.296822),
+        new Point(0.25, 0.25),
+        new Point(0.0282689, 0.341844),
+        new Point(0.0282689, 0.341844),
+        new Point(0.25, 0.25),
+        new Point(0.0504472, 0.383337),
+        new Point(0.0504472, 0.383337),
+        new Point(0.25, 0.25),
+        new Point(0.0802943, 0.419706),
+        new Point(0.0802943, 0.419706),
+        new Point(0.25, 0.25),
+        new Point(0.116663, 0.449553),
+        new Point(0.116663, 0.449553),
+        new Point(0.25, 0.25),
+        new Point(0.158156, 0.471731),
+        new Point(0.158156, 0.471731),
+        new Point(0.25, 0.25),
+        new Point(0.203178, 0.485388),
+        new Point(0.203178, 0.485388),
+        new Point(0.25, 0.25),
+        new Point(0.25, 0.49),
+
+        }),
+
+                    TriangleIndices = new Int32Collection(new List<int>()
+        {
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95,
+        }),
+                }
+            };
+
+            model3DGroup.Children.Add(new AmbientLight());
+            model3DGroup.Children.Add(meshId0Geometry);
+            model3DGroup.Children.Add(meshId1Geometry);
+
+            return model3DGroup;
+        }
+
+        public Model3DGroup GenerateRgbCubeModel3DGroup()
+        {
+            Model3DGroup model3DGroup = new();
+            model3DGroup.Transform = new Transform3DGroup()
+            {
+                Children = {
+                            new ScaleTransform3D(new Vector3D(-.25, -.25, -.25)),
+                            new RotateTransform3D()
+                            {
+                                Rotation = new AxisAngleRotation3D(new Vector3D(-1, 0, 1), -90)
+                            }
+                        }
+            };
+
+            MaterialGroup materialGroup1 = new MaterialGroup();
+            materialGroup1.Children.Add(faceBrushDiffuseMaterialDesaturated1);
+            materialGroup1.Children.Add(faceBrushDiffuseMaterial1);
+            GeometryModel3D face1Geometry = new()
+            {
+                Material = materialGroup1,
+                Geometry = new MeshGeometry3D()
+                {
+                    Positions = new Point3DCollection(new List<Point3D>()
+                            {
+                                new Point3D(1, -1, 1),
+                                new Point3D(1, 1, 1),
+                                new Point3D(-1, 1, 1),
+                                new Point3D(-1, -1, 1),
+                            }),
+
+                    Normals = new Vector3DCollection(new List<Vector3D>()
+                            {
+                                new Vector3D(0, 0, 1),
+                                new Vector3D(0, 0, 1),
+                                new Vector3D(0, 0, 1),
+                                new Vector3D(0, 0, 1),
+                            }),
+
+                    TextureCoordinates = new PointCollection(new List<Point>()
+                            {
+                                new Point(0.375, 0.25),
+                                new Point(0.625, 0.25),
+                                new Point(0.625, 0.5),
+                                new Point(0.375, 0.5),
+                            }),
+
+                    TriangleIndices = new Int32Collection(new List<int>()
+                            {
+                                0, 1, 2, 0, 2, 3,
+                            }),
+                }
+            };
+            MaterialGroup materialGroup2 = new MaterialGroup();
+            materialGroup2.Children.Add(faceBrushDiffuseMaterialDesaturated2);
+            materialGroup2.Children.Add(faceBrushDiffuseMaterial2);
+            GeometryModel3D face2Geometry = new()
+            {
+                Material = materialGroup2,
+                Geometry = new MeshGeometry3D()
+                {
+                    Positions = new Point3DCollection(new List<Point3D>()
+                            {
+                                new Point3D(-1, -1, 1),
+                                new Point3D(-1, 1, 1),
+                                new Point3D(-1, 1, -1),
+                                new Point3D(-1, -1, -1),
+                            }),
+
+                    Normals = new Vector3DCollection(new List<Vector3D>()
+                            {
+                                new Vector3D(-1, 0, 0),
+                                new Vector3D(-1, 0, 0),
+                                new Vector3D(-1, 0, 0),
+                                new Vector3D(-1, 0, 0),
+                            }),
+
+                    TextureCoordinates = new PointCollection(new List<Point>()
+                            {
+                                new Point(0.375, 0.5),
+                                new Point(0.625, 0.5),
+                                new Point(0.625, 0.75),
+                                new Point(0.375, 0.75),
+                            }),
+
+                    TriangleIndices = new Int32Collection(new List<int>()
+                            {
+                                0, 1, 2, 0, 2, 3,
+                            }),
+                }
+            };
+            MaterialGroup materialGroup3 = new MaterialGroup();
+            materialGroup3.Children.Add(faceBrushDiffuseMaterialDesaturated3);
+            materialGroup3.Children.Add(faceBrushDiffuseMaterial3);
+            GeometryModel3D face3Geometry = new()
+            {
+                Material = materialGroup3,
+                Geometry = new MeshGeometry3D()
+                {
+                    Positions = new Point3DCollection(new List<Point3D>()
+                            {
+                                new Point3D(1, -1, -1),
+                                new Point3D(1, 1, -1),
+                                new Point3D(1, 1, 1),
+                                new Point3D(1, -1, 1),
+                            }),
+
+                    Normals = new Vector3DCollection(new List<Vector3D>()
+                            {
+                                new Vector3D(1, 0, 0),
+                                new Vector3D(1, 0, 0),
+                                new Vector3D(1, 0, 0),
+                                new Vector3D(1, 0, 0),
+                            }),
+
+                    TextureCoordinates = new PointCollection(new List<Point>()
+                            {
+                                new Point(0.375, 0),
+                                new Point(0.625, 0),
+                                new Point(0.625, 0.25),
+                                new Point(0.375, 0.25),
+                            }),
+
+                    TriangleIndices = new Int32Collection(new List<int>()
+                            {
+                                0, 1, 2, 0, 2, 3,
+                            }),
+                }
+            };
+            MaterialGroup materialGroup4 = new MaterialGroup();
+            materialGroup4.Children.Add(faceBrushDiffuseMaterialDesaturated4);
+            materialGroup4.Children.Add(faceBrushDiffuseMaterial4);
+            GeometryModel3D face4Geometry = new()
+            {
+                Material = materialGroup4,
+                Geometry = new MeshGeometry3D()
+                {
+                    Positions = new Point3DCollection(new List<Point3D>()
+                            {
+                                new Point3D(1, -1, 1),
+                                new Point3D(-1, -1, 1),
+                                new Point3D(-1, -1, -1),
+                                new Point3D(1, -1, -1),
+                            }),
+
+                    Normals = new Vector3DCollection(new List<Vector3D>()
+                            {
+                                new Vector3D(0, -1, 0),
+                                new Vector3D(0, -1, 0),
+                                new Vector3D(0, -1, 0),
+                                new Vector3D(0, -1, 0),
+                            }),
+
+                    TextureCoordinates = new PointCollection(new List<Point>()
+                            {
+                                new Point(0.125, 0.5),
+                                new Point(0.375, 0.5),
+                                new Point(0.375, 0.75),
+                                new Point(0.125, 0.75),
+                            }),
+
+                    TriangleIndices = new Int32Collection(new List<int>()
+                            {
+                                0, 1, 2, 0, 2, 3,
+                            }),
+                }
+            };
+            MaterialGroup materialGroup5 = new MaterialGroup();
+            materialGroup5.Children.Add(faceBrushDiffuseMaterialDesaturated5);
+            materialGroup5.Children.Add(faceBrushDiffuseMaterial5);
+            GeometryModel3D face5Geometry = new()
+            {
+                Material = materialGroup5,
+                Geometry = new MeshGeometry3D()
+                {
+                    Positions = new Point3DCollection(new List<Point3D>()
+                            {
+                                new Point3D(-1, -1, -1),
+                                new Point3D(-1, 1, -1),
+                                new Point3D(1, 1, -1),
+                                new Point3D(1, -1, -1),
+                            }),
+
+                    Normals = new Vector3DCollection(new List<Vector3D>()
+                            {
+                                new Vector3D(0, 0, -1),
+                                new Vector3D(0, 0, -1),
+                                new Vector3D(0, 0, -1),
+                                new Vector3D(0, 0, -1),
+                            }),
+
+                    TextureCoordinates = new PointCollection(new List<Point>()
+                            {
+                                new Point(0.375, 0.75),
+                                new Point(0.625, 0.75),
+                                new Point(0.625, 1),
+                                new Point(0.375, 1),
+                            }),
+
+                    TriangleIndices = new Int32Collection(new List<int>()
+                            {
+                                0, 1, 2, 0, 2, 3,
+                            }),
+                }
+            };
+
+            MaterialGroup materialGroup6 = new MaterialGroup();
+            materialGroup6.Children.Add(faceBrushDiffuseMaterialDesaturated6);
+            materialGroup6.Children.Add(faceBrushDiffuseMaterial6);
+            GeometryModel3D face6Geometry = new()
+            {
+                Material = materialGroup6,
+                Geometry = new MeshGeometry3D()
+                {
+                    Positions = new Point3DCollection(new List<Point3D>()
+                            {
+                                new Point3D(-1, 1, 1),
+                                new Point3D(1, 1, 1),
+                                new Point3D(1, 1, -1),
+                                new Point3D(-1, 1, -1),
+                            }),
+
+                    Normals = new Vector3DCollection(new List<Vector3D>()
+                            {
+                                new Vector3D(0, 1, 0),
+                                new Vector3D(0, 1, 0),
+                                new Vector3D(0, 1, 0),
+                                new Vector3D(0, 1, 0),
+                            }),
+
+                    TextureCoordinates = new PointCollection(new List<Point>()
+                            {
+                                new Point(0.625, 0.5),
+                                new Point(0.875, 0.5),
+                                new Point(0.875, 0.75),
+                                new Point(0.625, 0.75),
+                            }),
+
+                    TriangleIndices = new Int32Collection(new List<int>()
+                            {
+                                0, 1, 2, 0, 2, 3,
+                            }),
+
+                }
+            };
+
+            model3DGroup.Children.Add(new AmbientLight());
+
+            model3DGroup.Children.Add(face1Geometry);
+            model3DGroup.Children.Add(face2Geometry);
+            model3DGroup.Children.Add(face3Geometry);
+            model3DGroup.Children.Add(face4Geometry);
+            model3DGroup.Children.Add(face5Geometry);
+            model3DGroup.Children.Add(face6Geometry);
+
+            return model3DGroup;
+        }
+
+        Point hsl3dDisplayMousePoint = new Point();
+        bool hsl3dMouseInteraction = false;
+
+        private void Hsl3dDisplayDecorator_PreviewMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (e.LeftButton != MouseButtonState.Released)
+                return;
+
+            hsl3dMouseInteraction = false;
+        }
+
+
+        private void Hsl3dDisplayDecorator_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.LeftButton != MouseButtonState.Pressed || Hsl3dDisplayDecorator == null || ColorModel != ColorModel.HSL)
+                return;
+
+            hslComponentAreaInteraction = false;
+            hsl3dMouseInteraction = true;
+
+            hsl3dDisplayMousePoint = e.GetPosition(Hsl3dDisplayDecorator);
+        }
+
+        private void Hsl3dDisplayDecorator_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (Hsl3dDisplayDecorator == null || e.Delta == 0 || ColorModel != ColorModel.HSL)
+                return;
+            var polarity = (e.Delta > 0) ? 1 : -1;
+            var change = Math.Clamp(S + (polarity * (e.Delta / e.Delta) / 50.0), HSL_MIN, SL_MAX);
+            if (S != change)
+            {
+                S = change;
+            }
+        }
+
+        private void Hsl3dDisplayDecorator_PreviewMouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.LeftButton != MouseButtonState.Pressed || Hsl3dDisplayDecorator == null || hslComponentAreaInteraction == true || ColorModel != ColorModel.HSL)
+                return;
+
+            Point newPoint = e.GetPosition(Hsl3dDisplayDecorator);
+
+            // Method 1: recalculate H and V values based solely on point coordinates, disregarding pre-existing values:
+            //var calcH = Math.Clamp((H_MAX - (((newPoint.Y) / Hsl3dDisplayDecorator.ActualHeight) * H_MAX)), HSL_MIN, H_MAX);
+            //var calcV = Math.Clamp((newPoint.X / Hsl3dDisplayDecorator.ActualWidth), HSL_MIN, SL_MAX);
+
+            // Method 2: recalculate H and V values based on point coordinates and pre-existing values:
+            var xChange = (hsl3dDisplayMousePoint.X - newPoint.X) / Hsl3dDisplayDecorator.ActualWidth;
+            var yChange = hsl3dDisplayMousePoint.Y - newPoint.Y;
+
+            //Debug.WriteLine($"Change: {xChange} x {yChange}\nPoint: {newPoint.X} x {newPoint.Y}\nOldPoint: {hsl3dDisplayMousePoint.X} x {hsl3dDisplayMousePoint.Y}");
+
+            hsl3dDisplayMousePoint = newPoint;
+
+            bool skipH = false;
+            bool skipV = false;
+
+            if (H == H_MAX && yChange >= 0 || H == HSL_MIN && yChange <= 0)
+                skipH = true;
+
+            if (V == SL_MAX && xChange <= 0 || V == HSL_MIN && xChange >= 0)
+                skipV = true;
+
+            if (!skipH)
+            {
+                var calcH = Math.Clamp(H + ((yChange / Hsl3dDisplayDecorator.ActualHeight) * H_MAX), HSL_MIN, H_MAX);
+                if (H != calcH)
+                    H = calcH;
+            }
+
+            if (!skipV)
+            {
+                var calcV = Math.Clamp(V - xChange, HSL_MIN, SL_MAX);
+                if (V != calcV)
+                    V = calcV;
+            }
+        }
 
         private Selector? hslComponentSelector;
         protected Selector? HslComponentSelector
@@ -1553,11 +2896,7 @@ namespace ColorSelector
 
         private void HIncrementButtonBase_Click(object sender, RoutedEventArgs e)
         {
-            var o = H + H_ROC;
-            var r = Math.Round(o); 
-            var c = Math.Clamp(r, HSL_MIN, H_MAX);
-            H = c;
-        }
+            H = Math.Clamp(Math.Round(H + H_ROC), HSL_MIN, H_MAX);        }
 
         private void SIncrementButtonBase_Click(object sender, RoutedEventArgs e)
         {
@@ -1615,14 +2954,13 @@ namespace ColorSelector
             }
         }
 
-
-        GradientStop hslComponentAreaHueLowBoundGraientStop = new() { Color = Colors.Gray, Offset = 0 };
-        GradientStop hslComponentAreaHueHighBoundGradientStop = new() { Offset = 1 };
-        LinearGradientBrush hslComponentAreaSaturationGradientBrush = new() { EndPoint = new(1,0)};
-        LinearGradientBrush hslComponentAreaLightnessGradientBrush = new() { EndPoint = new(1, 0) };
-        LinearGradientBrush hslComponentAreaValueGradientBrush = new() { EndPoint = new(1, 0) };
-        LinearGradientBrush hslComponentAreaLightnessRelativeSaturationOverlay = new() 
-        { 
+        readonly GradientStop hslComponentAreaHueLowBoundGraientStop = new() { Color = Colors.Gray, Offset = 0 };
+        readonly GradientStop hslComponentAreaHueHighBoundGradientStop = new() { Offset = 1 };
+        readonly LinearGradientBrush hslComponentAreaSaturationGradientBrush = new() { EndPoint = new(1,0)};
+        readonly LinearGradientBrush hslComponentAreaLightnessGradientBrush = new() { EndPoint = new(1, 0) };
+        readonly LinearGradientBrush hslComponentAreaValueGradientBrush = new() { EndPoint = new(1, 0) };
+        readonly LinearGradientBrush hslComponentAreaLightnessRelativeSaturationOverlay = new() 
+        {
             EndPoint = new Point(0, 1),
             GradientStops = new GradientStopCollection()
             {
@@ -1630,7 +2968,7 @@ namespace ColorSelector
                 new GradientStop((Color)ColorConverter.ConvertFromString("#00000000"), 0)
             }
         };
-        LinearGradientBrush hslComponentAreaLightnessRelativeValueOverlay = new()
+        readonly LinearGradientBrush hslComponentAreaLightnessRelativeValueOverlay = new()
         {
             EndPoint = new Point(0, 1),
             GradientStops = new GradientStopCollection()
@@ -1639,12 +2977,22 @@ namespace ColorSelector
                 new GradientStop((Color)ColorConverter.ConvertFromString("#00000000"), 0)
             }
         };
-        SolidColorBrush hslComponentAreaLightnessWhiteBackground = new() { Color = Colors.White };
+        readonly SolidColorBrush hslComponentAreaLightnessWhiteBackground = new() { Color = Colors.White };
 
-        Grid hslComponentAreaXaxisValueGrid = new Grid() {  HorizontalAlignment = HorizontalAlignment.Left };
-        Grid hslComponentAreaYaxisValueGrid = new Grid() {  VerticalAlignment = VerticalAlignment.Top };
-        Border hslComponentAreaXaxisBoundGuide = makeHslComponentGridXaxisGuide();
-        Border hslComponentAreaYaxisBoundGuide = makeHslComponentGridYaxisGuide();
+        Grid hslComponentAreaXaxisValueGrid = new() {  HorizontalAlignment = HorizontalAlignment.Left };
+        Grid hslComponentAreaYaxisValueGrid = new() {  VerticalAlignment = VerticalAlignment.Top };
+        Border hslComponentAreaXaxisBoundGuide = MakeHslComponentGridXaxisGuide();
+        Border hslComponentAreaYaxisBoundGuide = MakeHslComponentGridYaxisGuide();
+        GradientStopCollection RgbSpectrumGraidentStops = new()
+        {
+            new GradientStop((Color)ColorConverter.ConvertFromString("#FF0000"), 0),
+            new GradientStop((Color)ColorConverter.ConvertFromString("#FFFF00"), 1.0 / 6),
+            new GradientStop((Color)ColorConverter.ConvertFromString("#00FF00"), (1.0 / 6) * 2),
+            new GradientStop((Color)ColorConverter.ConvertFromString("#00FFFF"), (1.0 / 6) * 3),
+            new GradientStop((Color)ColorConverter.ConvertFromString("#0000FF"), (1.0 / 6) * 4),
+            new GradientStop((Color)ColorConverter.ConvertFromString("#FF00FF"), (1.0 / 6) * 5),
+            new GradientStop((Color)ColorConverter.ConvertFromString("#FF0000"), 1),
+        };
         private Panel? hslComponentArea;
         protected Panel? HslComponentArea
         {
@@ -1663,6 +3011,7 @@ namespace ColorSelector
                     BindingOperations.ClearBinding(hslComponentAreaLightnessWhiteBackground, LinearGradientBrush.OpacityProperty);
                     hslComponentArea.PreviewMouseLeftButtonDown -= new MouseButtonEventHandler(HslComponentArea_PreviewMouseLeftButtonDown);
                     hslComponentArea.PreviewMouseMove -= new MouseEventHandler(HslComponentArea_PreviewMouseMove);
+                    hslComponentArea.PreviewMouseUp -= new MouseButtonEventHandler(HslComponentArea_PreviewMouseUp);
                     hslComponentArea.SizeChanged -= new SizeChangedEventHandler(HslComponentArea_SizeChanged);
                 }
                 hslComponentArea = value;
@@ -1671,38 +3020,28 @@ namespace ColorSelector
                 {
                     hslComponentArea.PreviewMouseMove += new MouseEventHandler(HslComponentArea_PreviewMouseMove);
                     hslComponentArea.PreviewMouseLeftButtonDown += new MouseButtonEventHandler(HslComponentArea_PreviewMouseLeftButtonDown);
+                    hslComponentArea.PreviewMouseUp += new MouseButtonEventHandler(HslComponentArea_PreviewMouseUp);
                     hslComponentArea.SizeChanged += new SizeChangedEventHandler(HslComponentArea_SizeChanged);
 
                     Binding highBoundBinding = new(nameof(CurrentHueColor)) { Mode = BindingMode.OneWay, Source = this };
                     BindingOperations.SetBinding(hslComponentAreaHueHighBoundGradientStop, GradientStop.ColorProperty, highBoundBinding);
 
-                    GradientStopCollection spectrum = new()
-                    {
-                        new GradientStop((Color)ColorConverter.ConvertFromString("#FF0000"), 0),
-                        new GradientStop((Color)ColorConverter.ConvertFromString("#FFFF00"), 1.0 / 6),
-                        new GradientStop((Color)ColorConverter.ConvertFromString("#00FF00"), (1.0 / 6) * 2),
-                        new GradientStop((Color)ColorConverter.ConvertFromString("#00FFFF"), (1.0 / 6) * 3),
-                        new GradientStop((Color)ColorConverter.ConvertFromString("#0000FF"), (1.0 / 6) * 4),
-                        new GradientStop((Color)ColorConverter.ConvertFromString("#FF00FF"), (1.0 / 6) * 5),
-                        new GradientStop((Color)ColorConverter.ConvertFromString("#FF0000"), 1),
-                    };
-
-                    hslComponentAreaSaturationGradientBrush.GradientStops = spectrum;
+                    hslComponentAreaSaturationGradientBrush.GradientStops = RgbSpectrumGraidentStops;
                     Binding saturationOpacityBinding = new(nameof(S)) { Mode = BindingMode.OneWay, Source = this };
                     BindingOperations.SetBinding(hslComponentAreaSaturationGradientBrush, LinearGradientBrush.OpacityProperty, saturationOpacityBinding);
 
-                    hslComponentAreaLightnessGradientBrush.GradientStops = spectrum;
-                    Binding lightnessOpacityBindinig = new(nameof(V)) { Mode = BindingMode.OneWay, Source = this, Converter = new doubleToReflectedAbsoluteValueDouble() };
+                    hslComponentAreaLightnessGradientBrush.GradientStops = RgbSpectrumGraidentStops;
+                    Binding lightnessOpacityBindinig = new(nameof(V)) { Mode = BindingMode.OneWay, Source = this, Converter = new DoubleToReflectedAbsoluteValueDouble() };
                     BindingOperations.SetBinding(hslComponentAreaLightnessGradientBrush, LinearGradientBrush.OpacityProperty, lightnessOpacityBindinig);
 
-                    hslComponentAreaValueGradientBrush.GradientStops = spectrum;
+                    hslComponentAreaValueGradientBrush.GradientStops = RgbSpectrumGraidentStops;
                     Binding valueOpacityBindinig = new(nameof(V)) { Mode = BindingMode.OneWay, Source = this };
                     BindingOperations.SetBinding(hslComponentAreaValueGradientBrush, LinearGradientBrush.OpacityProperty, valueOpacityBindinig);
 
                     Binding valueOpacityBindinig2 = new(nameof(V)) { Mode = BindingMode.OneWay, Source = this };
                     BindingOperations.SetBinding(hslComponentAreaLightnessRelativeValueOverlay, LinearGradientBrush.OpacityProperty, valueOpacityBindinig2);
 
-                    Binding lightnessOpacityBindinig2 = new(nameof(V)) { Mode = BindingMode.OneWay, Source = this, Converter = new doubleToReflectedAbsoluteValueDouble() };
+                    Binding lightnessOpacityBindinig2 = new(nameof(V)) { Mode = BindingMode.OneWay, Source = this, Converter = new DoubleToReflectedAbsoluteValueDouble() };
                     BindingOperations.SetBinding(hslComponentAreaLightnessRelativeSaturationOverlay, LinearGradientBrush.OpacityProperty, lightnessOpacityBindinig2);
 
                     Binding lightnessOpacityBindinig3 = new(nameof(V)) { Mode = BindingMode.OneWay, Source = this, Converter = new DoubleToBooleanSwitchDouble() };
@@ -1712,6 +3051,8 @@ namespace ColorSelector
                 }
             }
         }
+
+
 
         private void HslComponentArea_SizeChanged(object sender, SizeChangedEventArgs e)
         {
@@ -1772,7 +3113,7 @@ namespace ColorSelector
             }
         }
 
-        public static Border makeHslComponentGridMidPointGuide()
+        public static Border MakeHslComponentGridMidPointGuide()
         {
             return new Border()
             {
@@ -1782,7 +3123,7 @@ namespace ColorSelector
             };
         }
 
-        public static Border makeHslComponentGridXaxisGuide()
+        public static Border MakeHslComponentGridXaxisGuide()
         {
             return new Border()
             {
@@ -1793,7 +3134,7 @@ namespace ColorSelector
             };
         }
 
-        public static Border makeHslComponentGridYaxisGuide()
+        public static Border MakeHslComponentGridYaxisGuide()
         {
             return new Border()
             {
@@ -1808,8 +3149,8 @@ namespace ColorSelector
         {
             hslComponentAreaXaxisValueGrid = new Grid() { HorizontalAlignment = HorizontalAlignment.Left };
             hslComponentAreaYaxisValueGrid = new Grid() { VerticalAlignment = VerticalAlignment.Top };
-            hslComponentAreaXaxisBoundGuide = makeHslComponentGridXaxisGuide();
-            hslComponentAreaYaxisBoundGuide = makeHslComponentGridYaxisGuide();
+            hslComponentAreaXaxisBoundGuide = MakeHslComponentGridXaxisGuide();
+            hslComponentAreaYaxisBoundGuide = MakeHslComponentGridYaxisGuide();
 
             hslComponentAreaXaxisValueGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(0, GridUnitType.Auto) });
             hslComponentAreaXaxisValueGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(0, GridUnitType.Auto) });
@@ -1819,10 +3160,10 @@ namespace ColorSelector
             hslComponentAreaYaxisValueGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(0, GridUnitType.Auto) });
             hslComponentAreaYaxisValueGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
 
-            Border midGuideX = makeHslComponentGridMidPointGuide();
-            Border midGuideY = makeHslComponentGridMidPointGuide();
-            var guide2X = makeHslComponentGridXaxisGuide();
-            var guide2Y = makeHslComponentGridYaxisGuide();
+            Border midGuideX = MakeHslComponentGridMidPointGuide();
+            Border midGuideY = MakeHslComponentGridMidPointGuide();
+            var guide2X = MakeHslComponentGridXaxisGuide();
+            var guide2Y = MakeHslComponentGridYaxisGuide();
 
             Grid.SetRow(hslComponentAreaXaxisBoundGuide, 0);
             Grid.SetRow(midGuideX, 1);
@@ -2094,6 +3435,16 @@ namespace ColorSelector
             GenerateHslComponentAreaContainerGuides();
         }
 
+        bool hslComponentAreaInteraction = false;
+
+        private void HslComponentArea_PreviewMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ButtonState != MouseButtonState.Released)
+                return;
+
+            hslComponentAreaInteraction = false;
+        }
+
         /// <summary>
         /// When the HSL component area is clicked on, process the click coordinates and
         /// set the relevant color component properties.
@@ -2103,6 +3454,11 @@ namespace ColorSelector
         /// <seealso cref="ProcessHslComponentAreaMouseInput"/>
         private void HslComponentArea_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            if (e.ButtonState != MouseButtonState.Pressed)
+                return;
+
+            hsl3dMouseInteraction = false;
+            hslComponentAreaInteraction = true;
             ProcessHslComponentAreaMouseInput(e.GetPosition(HslComponentArea));
         }
 
@@ -2115,7 +3471,7 @@ namespace ColorSelector
         /// <seealso cref="ProcessHslComponentAreaMouseInput"/>
         private void HslComponentArea_PreviewMouseMove(object sender, MouseEventArgs e)
         {
-            if (e.LeftButton != MouseButtonState.Pressed)
+            if (e.LeftButton != MouseButtonState.Pressed || hsl3dMouseInteraction == true)
                 return;
 
             ProcessHslComponentAreaMouseInput(e.GetPosition(HslComponentArea));
@@ -2139,7 +3495,6 @@ namespace ColorSelector
                     V = Math.Clamp(1.0 - (point.Y) / HslComponentArea.ActualHeight, HSL_MIN, SL_MAX);
                     break;
                 case HslComponent.Saturation:
-
                     H = Math.Clamp(((point.X) / HslComponentArea.ActualWidth) * 360.0, HSL_MIN, H_MAX);
                     V = Math.Clamp(1.0 - (point.Y) / HslComponentArea.ActualHeight, HSL_MIN, SL_MAX);
                     break;
@@ -2172,7 +3527,7 @@ namespace ColorSelector
             bindingExpression.UpdateSource();
         }
 
-        public Color getColorFromRawColor()
+        public Color GetColorFromRawColor()
         {
             return Color.FromArgb(ToByte(CurrentColor.A), ToByte(CurrentColor.R), ToByte(CurrentColor.G), ToByte(CurrentColor.B));
         }
@@ -2191,7 +3546,7 @@ namespace ColorSelector
             var selected = e.AddedItems[0] as Color?;
             if (selected is not null)
             {
-                var color = getColorFromRawColor();
+                var color = GetColorFromRawColor();
                 if (color == selected.Value)
                     return;
 
@@ -2211,7 +3566,7 @@ namespace ColorSelector
             if (CustomColors.Count >= 10)
                 CustomColors.RemoveAt(CustomColors.Count - 1);
 
-            CustomColors.Insert(0, getColorFromRawColor());
+            CustomColors.Insert(0, GetColorFromRawColor());
 
             RaiseCustomColorSavedEvent();
         }
@@ -2223,7 +3578,7 @@ namespace ColorSelector
         /// <param name="e"></param>
         private void SelectCustomColorButtonBase_Click(object sender, RoutedEventArgs e)
         {
-            SelectedColor = getColorFromRawColor();
+            SelectedColor = GetColorFromRawColor();
             RaiseColorSelectedEvent();
         }
 
@@ -2273,12 +3628,58 @@ namespace ColorSelector
 
             HslComponentArea = GetTemplateChild(nameof(TemplatePart.PART_hslComponentAreaPanel)) as Panel;
 
-            // HslComponentViewport3D = GetTemplateChild(nameof(TemplatePart.PART_hslComponentViewport3D)) as Viewport3D;
+            Hsl3dDisplayDecorator = GetTemplateChild(nameof(TemplatePart.PART_hsl3dDisplayDecorator)) as Decorator;
+
+            MenuOpenButtonBase = GetTemplateChild(nameof(TemplatePart.PART_menuOpenButton)) as ButtonBase;
+            MenuCloseButtonBase = GetTemplateChild(nameof(TemplatePart.PART_menuCloseButton)) as ButtonBase;
+            CloseMenuDecorator = GetTemplateChild(nameof(TemplatePart.PART_closeMenuDecorator)) as Decorator;
+
+            ColorModelsVisibilityToggleButton = GetTemplateChild(nameof(TemplatePart.PART_colorModelsVisibilityToggleButton)) as ToggleButton;
+            PresetColorsVisibilityToggleButton = GetTemplateChild(nameof(TemplatePart.PART_presetColorsVisibilityToggleButton)) as ToggleButton;
+            Display2dVisibilityToggleButton = GetTemplateChild(nameof(TemplatePart.PART_display2dVisibilityToggleButton)) as ToggleButton;
+            Display3dVisibilityToggleButton = GetTemplateChild(nameof(TemplatePart.PART_display3dVisibilityToggleButton)) as ToggleButton;
+            ComponentsVisibilityToggleButton = GetTemplateChild(nameof(TemplatePart.PART_componentsVisibilityToggleButton)) as ToggleButton;
+            ColorPreviewVisibilityToggleButton = GetTemplateChild(nameof(TemplatePart.PART_colorPreviewVisibilityToggleButton)) as ToggleButton;
+            CustomColorsVisibilityToggleButton = GetTemplateChild(nameof(TemplatePart.PART_customColorsVisibilityToggleButton)) as ToggleButton;
+
+            HexadecimalComponentVisibilityToggleButton = GetTemplateChild(nameof(TemplatePart.PART_hexadecimalComponentVisibilityToggleButton)) as ToggleButton;
+            AlphaComponentVisibilityToggleButton = GetTemplateChild(nameof(TemplatePart.PART_alphaComponentVisibilityToggleButton)) as ToggleButton;
+            RgbComponentVisibilityToggleButton = GetTemplateChild(nameof(TemplatePart.PART_rgbComponentVisibilityToggleButton)) as ToggleButton;
+            HslvComponentVisibilityToggleButton = GetTemplateChild(nameof(TemplatePart.PART_hslvComponentVisibilityToggleButton)) as ToggleButton;
 
             HslComponentList = new ObservableCollection<HslComponent>((HslComponent[])Enum.GetValues(typeof(HslComponent)));
             RebuildColorModelList();
             RefreshRangeBaseVisuals();
             ProcessHslComponentSelection(HslComponentSelection);
+
+            // Setting ApplicationCommands.Paste on Control to enable Clipboard paste into the color selector:
+            this.CommandBindings.Remove(new CommandBinding(ApplicationCommands.Paste, new ExecutedRoutedEventHandler(PasteHandler)));
+            this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Paste, new ExecutedRoutedEventHandler(PasteHandler)));
+        }
+
+        /// <summary>
+        /// Support for recieving pasted data and attempting to parse it as a hexadecimal string.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void PasteHandler(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (Clipboard.ContainsData(DataFormats.Text) || Clipboard.ContainsData(DataFormats.UnicodeText))
+            {
+                var data = Clipboard.GetDataObject();
+                var formatted = data.GetData(nameof(DataFormats.UnicodeText), true);
+                if (formatted == null)
+                    return;
+
+                var validator = new ArgbHexadecimalColorStringValidationRule();
+                var result = validator.Validate(formatted, CultureInfo.CurrentCulture);
+                if (result.IsValid)
+                {
+                    var stringFormatted = System.Convert.ToString(formatted);
+                    if (stringFormatted != null)
+                        HexValueString = stringFormatted;
+                }
+            }
         }
 
         public static byte ToByte(double value)
@@ -2343,10 +3744,6 @@ namespace ColorSelector
             var min = Math.Min(Math.Min(r, g), b);
             var max = Math.Max(Math.Max(r, g), b);
 
-            // if maxRgbValue is 0, return black HSL;
-            //if (max == 0)
-            //    return new List<double>(3) { 0, 0, 0 };
-
             var lightness = (max + min) / 2;
 
             var chroma = max - min;
@@ -2355,36 +3752,30 @@ namespace ColorSelector
                 chroma / (max + min) : chroma / (2 - max - min);
 
             var hue = 0.0;
-            if (chroma == 0)
-            {
-                hue = 0;
-            }
-            else
-            {
-                if (r == max)
-                {
-                    var segment = (g - b) / chroma;
-                    var shift = 0 / 60;
-                    if (segment < 0)
-                    {
-                        shift = 360 / 60;
-                    }
-                    hue = segment + shift;
-                }
-                else if (g == max)
-                {
-                    var segment = (b - r) / chroma;
-                    var shift = 120 / 60;
-                    hue = segment + shift;
-                }
-                else if (b == max)
-                {
-                    var segment = (r - g) / chroma;
-                    var shift = 240 / 60;
-                    hue = segment + shift;
-                }
 
+            if (r == max)
+            {
+                var segment = (g - b) / chroma;
+                var shift = 0 / 60;
+                if (segment < 0)
+                {
+                    shift = 360 / 60;
+                }
+                hue = segment + shift;
             }
+            else if (g == max)
+            {
+                var segment = (b - r) / chroma;
+                var shift = 120 / 60;
+                hue = segment + shift;
+            }
+            else if (b == max)
+            {
+                var segment = (r - g) / chroma;
+                var shift = 240 / 60;
+                hue = segment + shift;
+            }
+
             var finalHue = hue * 60;
 
             return new List<double>(3) { finalHue, saturation, lightness };
@@ -2407,7 +3798,7 @@ namespace ColorSelector
             int hi = Convert.ToInt32(Math.Floor(hue / 60)) % 6;
             double f = hue / 60 - Math.Floor(hue / 60);
 
-            value = value * 255;
+            value *= 255;
             var v = value;
             var p = value * (1 - saturation);
             var q = value * (1 - f * saturation);
@@ -2456,6 +3847,8 @@ namespace ColorSelector
                     return HslToRgb(d1, d2, d3);
                 case ColorModel.HSV:
                     return HsvToRgb(d1, d2, d3);
+                default:
+                    break;
             }
             return new List<double>(3) { 0, 0, 0 };
         }
@@ -2468,6 +3861,8 @@ namespace ColorSelector
                     return RgbToHsl(d1, d2, d3);
                 case ColorModel.HSV:
                     return RgbToHsv(d1, d2, d3);
+                default:
+                    break;
             }
             return new List<double>(3) { 0, 0, 0 };
         }
@@ -2564,7 +3959,12 @@ namespace ColorSelector
             System.Drawing.Color d = System.Drawing.Color.FromArgb(colorBytes[0], colorBytes[1], colorBytes[2], colorBytes[3]);
 
             double hue = d.GetHue();
-            if (H != hue && nameof(H) != originatingPropertyName)
+
+            if (H != hue && V > HSL_MIN && S > HSL_MIN && V < SL_MAX && nameof(H) != originatingPropertyName)
+                H = hue;
+            else if (H != hue && H == HSL_MIN && V > HSL_MIN && nameof(H) != originatingPropertyName)
+                H = hue;
+            else if (H != hue && H == HSL_MIN && V == HSL_MIN && S == HSL_MIN && nameof(H) != originatingPropertyName)
                 H = hue;
 
             double saturation = 0;
@@ -2583,7 +3983,7 @@ namespace ColorSelector
                     break;
             }
 
-            if (S != saturation && nameof(S) != originatingPropertyName)
+            if (S != saturation && V < SL_MAX && nameof(S) != originatingPropertyName)
                 S = saturation;
 
             if (V != value && nameof(V) != originatingPropertyName)
@@ -2604,9 +4004,6 @@ namespace ColorSelector
                     BTextBox.Text = B.ToString();
 
             IgnoreChange = false;
-
-            // Debug.WriteLine($"{R} {G} {B}, {H} {S} {V}");
-
             RaiseCurrentColorChangedEvent();
         }
 
@@ -2802,7 +4199,7 @@ namespace ColorSelector
             set { SetValue(SelectedColorProperty, value); }
         }
 
-        static Color DefaultColor = Colors.Black;
+        static Color DefaultColor = (Color)ColorConverter.ConvertFromString("#FFF20D0D");//Colors.Black;
 
         public static readonly DependencyProperty CurrentColorProperty =
             DependencyProperty.Register(nameof(CurrentColor), typeof(RawColor), typeof(ColorSelector), new PropertyMetadata(new RawColor(DefaultColor.A, DefaultColor.R, DefaultColor.G, DefaultColor.B), new PropertyChangedCallback(CurrentColorChangedCallback)));
@@ -2857,14 +4254,29 @@ namespace ColorSelector
             }
         }
 
+        public void RefreshHsl3dDisplay()
+        {
+            switch (ColorModel)
+            {
+                case ColorModel.HSL:
+                    Hsl3dDisplayViewport3D.Children.Clear();
+                    Hsl3dDisplayViewport3D.Children.Add(Hsl3dDisplayModelVisual3DCube);
+                    break;
+                case ColorModel.HSV:
+                    Hsl3dDisplayViewport3D.Children.Clear();
+                    Hsl3dDisplayViewport3D.Children.Add(Hsl3dDisplayModelVisual3DCone);
+                    break;
+            }
+        }
+
         private static void ColorModelChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             ColorSelector cs = (ColorSelector)d;
             var rgb = cs.ModelToRgb(cs.H, cs.S, cs.V);
             cs.RebuildColorModelList();
             cs.RefreshCurrentColor(new RawColor(cs.A, rgb[0], rgb[1], rgb[2]));
-            // cs.RefreshRangeBaseVisuals();
             cs.ProcessHslComponentSelection(cs.HslComponentSelection);
+            cs.RefreshHsl3dDisplay();
         }
 
         public static readonly DependencyProperty ColorModelListProperty =
@@ -3001,6 +4413,64 @@ namespace ColorSelector
             set { SetValue(HueSector5Property, value); }
         }
 
+        public static readonly DependencyProperty FaceBrush1Property =
+            DependencyProperty.Register(nameof(FaceBrush1), typeof(ImageBrush), typeof(ColorSelector), new PropertyMetadata());
+
+        public ImageBrush FaceBrush1
+        {
+            get { return (ImageBrush)GetValue(FaceBrush1Property); }
+            set { SetValue(FaceBrush1Property, value); }
+        }
+
+        public static readonly DependencyProperty FaceBrush2Property =
+            DependencyProperty.Register(nameof(FaceBrush2), typeof(ImageBrush), typeof(ColorSelector), new PropertyMetadata());
+
+        public ImageBrush FaceBrush2
+        {
+            get { return (ImageBrush)GetValue(FaceBrush2Property); }
+            set { SetValue(FaceBrush2Property, value); }
+        }
+
+        public static readonly DependencyProperty FaceBrush3Property =
+            DependencyProperty.Register(nameof(FaceBrush3), typeof(ImageBrush), typeof(ColorSelector), new PropertyMetadata());
+
+        public ImageBrush FaceBrush3
+        {
+            get { return (ImageBrush)GetValue(FaceBrush3Property); }
+            set { SetValue(FaceBrush3Property, value); }
+        }
+
+        public static readonly DependencyProperty FaceBrush4Property =
+            DependencyProperty.Register(nameof(FaceBrush4), typeof(ImageBrush), typeof(ColorSelector), new PropertyMetadata());
+
+        public ImageBrush FaceBrush4
+        {
+            get { return (ImageBrush)GetValue(FaceBrush4Property); }
+            set { SetValue(FaceBrush4Property, value); }
+        }
+
+        public static readonly DependencyProperty FaceBrush5Property =
+            DependencyProperty.Register(nameof(FaceBrush5), typeof(ImageBrush), typeof(ColorSelector), new PropertyMetadata());
+
+        public ImageBrush FaceBrush5
+        {
+            get { return (ImageBrush)GetValue(FaceBrush5Property); }
+            set { SetValue(FaceBrush5Property, value); }
+        }
+
+        public static readonly DependencyProperty FaceBrush6Property =
+            DependencyProperty.Register(nameof(FaceBrush6), typeof(ImageBrush), typeof(ColorSelector), new PropertyMetadata());
+
+        public ImageBrush FaceBrush6
+        {
+            get { return (ImageBrush)GetValue(FaceBrush6Property); }
+            set { SetValue(FaceBrush6Property, value); }
+        }
+
+
+
+
+
         public static readonly DependencyProperty SColorLowBoundProperty =
             DependencyProperty.Register(nameof(SColorLowBound), typeof(Color), typeof(ColorSelector), new PropertyMetadata());
 
@@ -3048,6 +4518,8 @@ namespace ColorSelector
                 return;
 
             var currentColor = $"#{ToByte(cs.A):X2}{ToByte(cs.R):X2}{ToByte(cs.G):X2}{ToByte(cs.B):X2}";
+            if (!cs.HexValueString.StartsWith('#'))
+                cs.HexValueString = "#" + cs.HexValueString;
             var hexColor = (Color)ColorConverter.ConvertFromString(cs.HexValueString);
             if (cs.HexValueString != currentColor)
                 cs.RefreshCurrentColor(new RawColor(hexColor.A, hexColor.R, hexColor.G, hexColor.B));//(Color)ColorConverter.ConvertFromString(selector.HexValueString));
@@ -3509,6 +4981,114 @@ namespace ColorSelector
         {
             get { return (double)GetValue(VTextBoxValueProperty); }
             set { SetValue(VTextBoxValueProperty, value); }
-        }   
-    } 
+        }
+
+        public static readonly DependencyProperty IsMenuOpenProperty =
+            DependencyProperty.Register(nameof(IsMenuOpen), typeof(bool), typeof(ColorSelector), new PropertyMetadata(false));
+
+        public bool IsMenuOpen
+        {
+            get { return (bool)GetValue(IsMenuOpenProperty); }
+            set { SetValue(IsMenuOpenProperty, value); }
+        }
+
+        public static readonly DependencyProperty ColorModelsVisibleProperty =
+            DependencyProperty.Register(nameof(ColorModelsVisible), typeof(bool), typeof(ColorSelector), new PropertyMetadata(true));
+
+        public bool ColorModelsVisible
+        {
+            get { return (bool)GetValue(ColorModelsVisibleProperty); }
+            set { SetValue(ColorModelsVisibleProperty, value); }
+        }
+
+        public static readonly DependencyProperty PresetColorsVisibleProperty =
+            DependencyProperty.Register(nameof(PresetColorsVisible), typeof(bool), typeof(ColorSelector), new PropertyMetadata(true));
+
+        public bool PresetColorsVisible
+        {
+            get { return (bool)GetValue(PresetColorsVisibleProperty); }
+            set { SetValue(PresetColorsVisibleProperty, value); }
+        }
+
+        public static readonly DependencyProperty Display2dVisibleProperty =
+            DependencyProperty.Register(nameof(Display2dVisible), typeof(bool), typeof(ColorSelector), new PropertyMetadata(true));
+
+        public bool Display2dVisible
+        {
+            get { return (bool)GetValue(Display2dVisibleProperty); }
+            set { SetValue(Display2dVisibleProperty, value); }
+        }
+
+        public static readonly DependencyProperty Display3dVisibleProperty =
+            DependencyProperty.Register(nameof(Display3dVisible), typeof(bool), typeof(ColorSelector), new PropertyMetadata(true));
+
+        public bool Display3dVisible
+        {
+            get { return (bool)GetValue(Display3dVisibleProperty); }
+            set { SetValue(Display3dVisibleProperty, value); }
+        }
+
+        public static readonly DependencyProperty ComponentsVisibleProperty =
+            DependencyProperty.Register(nameof(ComponentsVisible), typeof(bool), typeof(ColorSelector), new PropertyMetadata(true));
+
+        public bool ComponentsVisible
+        {
+            get { return (bool)GetValue(ComponentsVisibleProperty); }
+            set { SetValue(ComponentsVisibleProperty, value); }
+        }
+
+        public static readonly DependencyProperty ColorPreviewVisibleProperty =
+            DependencyProperty.Register(nameof(ColorPreviewVisible), typeof(bool), typeof(ColorSelector), new PropertyMetadata(true));
+
+        public bool ColorPreviewVisible
+        {
+            get { return (bool)GetValue(ColorPreviewVisibleProperty); }
+            set { SetValue(ColorPreviewVisibleProperty, value); }
+        }
+
+        public static readonly DependencyProperty CustomColorsVisibleProperty =
+            DependencyProperty.Register(nameof(CustomColorsVisible), typeof(bool), typeof(ColorSelector), new PropertyMetadata(true));
+
+        public bool CustomColorsVisible
+        {
+            get { return (bool)GetValue(CustomColorsVisibleProperty); }
+            set { SetValue(CustomColorsVisibleProperty, value); }
+        }
+
+        public static readonly DependencyProperty HexadecimalComponentVisibleProperty =
+            DependencyProperty.Register(nameof(HexadecimalComponentVisible), typeof(bool), typeof(ColorSelector), new PropertyMetadata(true));
+
+        public bool HexadecimalComponentVisible
+        {
+            get { return (bool)GetValue(HexadecimalComponentVisibleProperty); }
+            set { SetValue(HexadecimalComponentVisibleProperty, value); }
+        }
+
+        public static readonly DependencyProperty AlphaComponentVisibleProperty =
+            DependencyProperty.Register(nameof(AlphaComponentVisible), typeof(bool), typeof(ColorSelector), new PropertyMetadata(true));
+
+        public bool AlphaComponentVisible
+        {
+            get { return (bool)GetValue(AlphaComponentVisibleProperty); }
+            set { SetValue(AlphaComponentVisibleProperty, value); }
+        }
+
+        public static readonly DependencyProperty RgbComponentVisibleProperty =
+            DependencyProperty.Register(nameof(RgbComponentVisible), typeof(bool), typeof(ColorSelector), new PropertyMetadata(true));
+
+        public bool RgbComponentVisible
+        {
+            get { return (bool)GetValue(RgbComponentVisibleProperty); }
+            set { SetValue(RgbComponentVisibleProperty, value); }
+        }
+
+        public static readonly DependencyProperty HslvComponentVisibleProperty =
+            DependencyProperty.Register(nameof(HslvComponentVisible), typeof(bool), typeof(ColorSelector), new PropertyMetadata(true));
+
+        public bool HslvComponentVisible
+        {
+            get { return (bool)GetValue(HslvComponentVisibleProperty); }
+            set { SetValue(HslvComponentVisibleProperty, value); }
+        }
+    }
 }

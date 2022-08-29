@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:ColorSelectorTestApp"
         xmlns:colorSelector="clr-namespace:ColorSelector;assembly=ColorSelector"
         mc:Ignorable="d"
-        Title="MainWindow" Height="636" Width="300">
+        Title="MainWindow" Height="830" Width="300">
     <Grid>
         <colorSelector:ColorSelector 
             x:Name="colorSelector"
