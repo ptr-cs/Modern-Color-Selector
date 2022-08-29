@@ -1,12 +1,14 @@
 # Zeno-Color-Selector
-&nbsp;&nbsp;&nbsp;&nbsp;Extensible and compact color selector implemented in C# with WPF. Works as both standalone (with test application) and as an imported Control.
+&nbsp;&nbsp;&nbsp;&nbsp;Extensible and compact color selector implemented in C# with WPF. Features highly-customizable default ControlTemplate and 3D color model interaction (:sunglasses:). Works as both standalone (with test application) and as an imported Control. 
 
 ![Zeno Color Selector - Short demo](/media/zeno_color_selector.gif "Zeno Color Selector - Short demo")
+![Zeno Color Selector - Menu demo](/media/zeno_color_selector_menu_demo.gif "Zeno Color Selector - Menu demo")
 
 # Features
 - Versatile color selector with modern user interface (UI) and emphasis on user experience (UX)
 - 3D interactive RGB and HSV color models with click-drag and mouse-wheel support for edit actions.
-- Menu 
+- Menu with options to control visibility of individual color editor components
+- Clipboard paste support for hexadecimal color strings - paste directly into the Control at any location
 - Ability to define a custom set of preset colors and save custom colors at runtime
 - Supports RGB, HSL, and HSV color modes, with hexadecimal RGBA string support
 - Error-checking for input fields with validation feedback
@@ -18,6 +20,9 @@
 # Setup
 &nbsp;&nbsp;&nbsp;&nbsp;The repository consists of two Visual Studio projects - the ColorSelector project and a companion test application. Opening the ColorSelector/ColorSelector.sln file in Visual Studio should allow both projects to be built and run. To use the ColorSelector as a Control in another WPF application, add the ColorSelector project to the parent solution in Visual Studio, then add a project reference to the ColorSelector project for any projects that will use the ColorSelector.
 
+# In-Progress
+- HSV Cone model and integration
+
 # Screenshots
 ## Normal Width, Wide, and Condensed Windows
 
@@ -27,4 +32,4 @@
 
 ## Menu
 
-![Zeno Color Selector - Menu](/media/zeno_color_selector_Menu.png "Zeno Color Selector - Menu")
+![Zeno Color Selector - Menu](/media/zeno_color_selector_menu.png "Zeno Color Selector - Menu")
