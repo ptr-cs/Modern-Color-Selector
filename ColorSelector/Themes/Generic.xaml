@@ -1794,7 +1794,7 @@
                                     <TextBlock Style="{StaticResource buttonText}" Text="≡" Foreground="White" FontSize="24" 
                                                FontWeight="Normal" LineHeight="24" LineStackingStrategy="BlockLineHeight"/>
                                 </Button>
-                                <TextBlock Text="Color Selector"
+                                <TextBlock Text="Zeno Color Selector"
                                            HorizontalAlignment="Center"
                                            Margin="8,0,8,0"
                                            Style="{StaticResource MenuSectionHeader}"
