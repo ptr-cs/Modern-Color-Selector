@@ -1,5 +1,5 @@
 # Zeno-Color-Selector
-&nbsp;&nbsp;&nbsp;&nbsp;Extensible and compact color selector implemented in C# with WPF. Features highly-customizable default ControlTemplate and 3D color model interaction (:sunglasses:). Works as both standalone (with test application) and as an imported Control. 
+&nbsp;&nbsp;&nbsp;&nbsp;Extensible and compact color selector implemented in C# with WPF. Features highly-customizable default ControlTemplate and interactive 3D color models (:sunglasses:). Works as both standalone (with test application) and as an imported Control. 
 
 ![Zeno Color Selector - Short demo](/media/zeno_color_selector.gif "Zeno Color Selector - Short demo")
 ![Zeno Color Selector - Menu demo](/media/zeno_color_selector_menu_demo.gif "Zeno Color Selector - Menu demo")
