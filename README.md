@@ -1,8 +1,8 @@
 # Zeno-Color-Selector
 &nbsp;&nbsp;&nbsp;&nbsp;Extensible and compact color selector implemented in C# with WPF. Works as both standalone (with test application) and as an imported Control.
 
+![Zeno Color Selector - Short demo](/media/zeno_color_selector.gif "Zeno Color Selector - Short demo")
 ![Zeno Color Selector - HSL color mode](/media/zeno_color_selector_HSL.png "Zeno Color Selector - HSL color mode")
-![Zeno Color Selector - HSV color mode](/media/zeno_color_selector_HSV.png "Zeno Color Selector - HSV color mode")
 
 # Features
 - Versatile color selector with modern user interface (UI) and emphasis on user experience (UX)
@@ -18,5 +18,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;The repository consists of two Visual Studio projects - the ColorSelector project and a companion test application. Opening the ColorSelector/ColorSelector.sln file in Visual Studio should allow both projects to be built and run. To use the ColorSelector as a Control in another WPF application, add the ColorSelector project to the parent solution in Visual Studio, then add a project reference to the ColorSelector project for any projects that will use the ColorSelector.
 
 # Screenshots
+## Wide Window
+![Zeno Color Selector - Wide Window](/media/zeno_color_selector_large_window.png "Zeno Color Selector - Wide Window")
 ## Condensed Window
-![Zeno Color Selector - Condensed](/media/zeno_color_selector_condensed.png "Zeno Color Selector - Condensed")
+![Zeno Color Selector - Condensed Window](/media/zeno_color_selector_condensed.png "Zeno Color Selector - Condensed Window")
