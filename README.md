@@ -1,14 +1,15 @@
 # Zeno-Color-Selector
-&nbsp;&nbsp;&nbsp;&nbsp;Extensible and compact color selector implemented in C# with WPF. Features highly-customizable default ControlTemplate and interactive 3D color models. Works as both standalone (with test application) and as an imported Control. 
+&nbsp;&nbsp;&nbsp;&nbsp;Extensible and compact color selector implemented in C# with WPF. Features highly-customizable default ControlTemplate and interactive 3D color models. Works as both standalone (with test application) and as an imported Control. Protoyped with Adobe XD and tested with NUnit unit testing framework.
 
 ![Zeno Color Selector - Prototyped UI](/media/zeno_color_selector_ui2.jpg "Zeno Color Selector - Prototyped UI")
 
-![Zeno Color Selector - Short demo](/media/zeno_color_selector.gif "Zeno Color Selector - Short demo")
-![Zeno Color Selector - Menu demo](/media/zeno_color_selector_menu_demo.gif "Zeno Color Selector - Menu demo")
+![Zeno Color Selector - Cube demo](/media/zeno_color_selector_cube.gif "Zeno Color Selector - Cube demo")
+![Zeno Color Selector - Cone demo](/media/zeno_color_selector_cone.gif "Zeno Color Selector - Cone demo")
+![Zeno Color Selector - Menu demo](/media/zeno_color_selector_menu.gif "Zeno Color Selector - Menu demo")
 
 # Features
 - Versatile color selector with modern user interface (UI) and emphasis on user experience (UX)
-- 3D interactive RGB and HSV color models with click-drag and mouse-wheel support for edit actions.
+- 3D interactive RGB cube and HSV cone color models with click-drag and mouse-wheel support for edit actions.
 - Menu with options to control visibility of individual color editor components
 - Clipboard paste support for hexadecimal color strings - paste directly into the Control at any location
 - Ability to define a custom set of preset colors and save custom colors at runtime
