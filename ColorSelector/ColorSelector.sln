@@ -5,7 +5,9 @@ VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ColorSelector", "ColorSelector.csproj", "{22A87EA8-55E7-44B1-A338-CBF6A5813298}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ColorSelectorTestApp", "..\ColorSelectorTestApp\ColorSelectorTestApp.csproj", "{2DDD1DBA-AFFF-4D89-ABAE-BCD25E2DD58F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ColorSelectorTestApp", "..\ColorSelectorTestApp\ColorSelectorTestApp.csproj", "{2DDD1DBA-AFFF-4D89-ABAE-BCD25E2DD58F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ColorSelectorUnitTests", "..\ColorSelectorUnitTests\ColorSelectorUnitTests.csproj", "{C4B960CE-E660-4527-9104-5EB18803E8AB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{2DDD1DBA-AFFF-4D89-ABAE-BCD25E2DD58F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2DDD1DBA-AFFF-4D89-ABAE-BCD25E2DD58F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2DDD1DBA-AFFF-4D89-ABAE-BCD25E2DD58F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C4B960CE-E660-4527-9104-5EB18803E8AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4B960CE-E660-4527-9104-5EB18803E8AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4B960CE-E660-4527-9104-5EB18803E8AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4B960CE-E660-4527-9104-5EB18803E8AB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -426,6 +426,52 @@ namespace ColorSelector
         }
     }
 
+    [ValueConversion(typeof(double), typeof(double))]
+    public class RotationAngleConverterConeValue : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            double angle = System.Convert.ToDouble(value);
+            return (angle * -180.0) + 90.0;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return System.Convert.ToDouble(value);
+        }
+    }
+
+    [ValueConversion(typeof(double), typeof(double))]
+    public class RotationAngleConverterConeSaturation : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            double angle = System.Convert.ToDouble(value);
+            return (angle * 90.0);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return System.Convert.ToDouble(value);
+        }
+    }
+
+    [ValueConversion(typeof(object[]), typeof(double))]
+    public class MultiAngleConverterConeSaturationValue : IMultiValueConverter
+    {
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            double value = System.Convert.ToDouble(values[0]);
+            double saturation = System.Convert.ToDouble(values[1]);
+            return (value * -(180 - (saturation * 90))) + 90.0;
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            return new object[2] { 0, 0 };
+        }
+    }
+
     public enum TemplatePart
     {
         PART_hexTextBox,
@@ -446,6 +492,7 @@ namespace ColorSelector
         PART_hslRangeBase,
         PART_selectCustomColorButtonBase,
         PART_saveCustomColorButtonBase,
+        PART_deleteCustomColorsButtonBase,
         PART_aIncrementButtonBase,
         PART_rIncrementButtonBase,
         PART_gIncrementButtonBase,
@@ -500,6 +547,7 @@ namespace ColorSelector
     [TemplatePart(Name = nameof(TemplatePart.PART_hslRangeBase), Type = typeof(RangeBase))]
     [TemplatePart(Name = nameof(TemplatePart.PART_selectCustomColorButtonBase), Type = typeof(ButtonBase))]
     [TemplatePart(Name = nameof(TemplatePart.PART_saveCustomColorButtonBase), Type = typeof(ButtonBase))]
+    [TemplatePart(Name = nameof(TemplatePart.PART_deleteCustomColorsButtonBase), Type = typeof(ButtonBase))]
     [TemplatePart(Name = nameof(TemplatePart.PART_aIncrementButtonBase), Type = typeof(ButtonBase))]
     [TemplatePart(Name = nameof(TemplatePart.PART_rIncrementButtonBase), Type = typeof(ButtonBase))]
     [TemplatePart(Name = nameof(TemplatePart.PART_gIncrementButtonBase), Type = typeof(ButtonBase))]
@@ -1551,6 +1599,31 @@ namespace ColorSelector
             }
         }
 
+        private ButtonBase? deleteCustomColorsButtonBase;
+        private ButtonBase? DeleteCustomColorsButtonBase
+        {
+            get { return deleteCustomColorsButtonBase; }
+
+            set
+            {
+                if (deleteCustomColorsButtonBase != null)
+                {
+                    deleteCustomColorsButtonBase.Click -= new RoutedEventHandler(DeleteCustomColorsButtonBase_Click);
+                }
+                deleteCustomColorsButtonBase = value;
+
+                if (deleteCustomColorsButtonBase != null)
+                {
+                    deleteCustomColorsButtonBase.Click += new RoutedEventHandler(DeleteCustomColorsButtonBase_Click);
+                }
+            }
+        }
+
+        private void DeleteCustomColorsButtonBase_Click(object sender, RoutedEventArgs e)
+        {
+            CustomColors.Clear();
+        }
+
         private ButtonBase? aIncrementButtonBase;
         private ButtonBase? AIncrementButtonBase
         {
@@ -1831,51 +1904,51 @@ namespace ColorSelector
             }
         }
 
-        DiffuseMaterial faceBrushDiffuseMaterial2 = new DiffuseMaterial()
+        readonly DiffuseMaterial faceBrushDiffuseMaterial2 = new()
         {
             Brush = CreateBilinearGradient(100, 100, Colors.Cyan, Colors.White, Colors.Lime, Colors.Yellow)
         };
-        DiffuseMaterial faceBrushDiffuseMaterial6 = new DiffuseMaterial()
+        readonly DiffuseMaterial faceBrushDiffuseMaterial6 = new()
         {
             Brush = CreateBilinearGradient(100, 100, Colors.White, Colors.Magenta, Colors.Yellow, Colors.Red)
         };
-        DiffuseMaterial faceBrushDiffuseMaterial1 = new DiffuseMaterial()
+        readonly DiffuseMaterial faceBrushDiffuseMaterial1 = new()
         {
             Brush = CreateBilinearGradient(100, 100, Colors.Blue, Colors.Magenta, Colors.Cyan, Colors.White)
         };
-        DiffuseMaterial faceBrushDiffuseMaterial5 = new DiffuseMaterial()
+        readonly DiffuseMaterial faceBrushDiffuseMaterial5 = new()
         {
             Brush = CreateBilinearGradient(100, 100, Colors.Lime, Colors.Yellow, Colors.Black, Colors.Red)
         };
-        DiffuseMaterial faceBrushDiffuseMaterial4 = new DiffuseMaterial()
+        readonly DiffuseMaterial faceBrushDiffuseMaterial4 = new()
         {
             Brush = CreateBilinearGradient(100, 100, Colors.Blue, Colors.Cyan, Colors.Black, Colors.Lime)
         };
-        DiffuseMaterial faceBrushDiffuseMaterial3 = new DiffuseMaterial()
+        readonly DiffuseMaterial faceBrushDiffuseMaterial3 = new()
         {
             Brush = CreateBilinearGradient(100, 100, Colors.Black, Colors.Red, Colors.Blue, Colors.Magenta)
         };
-        DiffuseMaterial faceBrushDiffuseMaterialDesaturated2 = new DiffuseMaterial()
+        readonly DiffuseMaterial faceBrushDiffuseMaterialDesaturated2 = new()
         {
             Brush = CreateBilinearGradient(100, 100, Colors.Gray, Colors.White, Colors.Gray, Colors.Gray)
         };
-        DiffuseMaterial faceBrushDiffuseMaterialDesaturated6 = new DiffuseMaterial()
+        readonly DiffuseMaterial faceBrushDiffuseMaterialDesaturated6 = new()
         {
             Brush = CreateBilinearGradient(100, 100, Colors.White, Colors.Gray, Colors.Gray, Colors.Gray)
         };
-        DiffuseMaterial faceBrushDiffuseMaterialDesaturated1 = new DiffuseMaterial()
+        readonly DiffuseMaterial faceBrushDiffuseMaterialDesaturated1 = new()
         {
             Brush = CreateBilinearGradient(100, 100, Colors.Gray, Colors.Gray, Colors.Gray, Colors.White)
         };
-        DiffuseMaterial faceBrushDiffuseMaterialDesaturated5 = new DiffuseMaterial()
+        readonly DiffuseMaterial faceBrushDiffuseMaterialDesaturated5 = new()
         {
             Brush = CreateBilinearGradient(100, 100, Colors.Gray, Colors.Gray, Colors.Black, Colors.Gray)
         };
-        DiffuseMaterial faceBrushDiffuseMaterialDesaturated4 = new DiffuseMaterial()
+        readonly DiffuseMaterial faceBrushDiffuseMaterialDesaturated4 = new()
         {
             Brush = CreateBilinearGradient(100, 100, Colors.Gray, Colors.Gray, Colors.Black, Colors.Gray)
         };
-        DiffuseMaterial faceBrushDiffuseMaterialDesaturated3 = new DiffuseMaterial()
+        readonly DiffuseMaterial faceBrushDiffuseMaterialDesaturated3 = new()
         {
             Brush = CreateBilinearGradient(100, 100, Colors.Black, Colors.Gray, Colors.Gray, Colors.Gray)
         };
@@ -1884,10 +1957,14 @@ namespace ColorSelector
         readonly AxisAngleRotation3D modelVisual3dRotationY = new(new Vector3D(0, 1, 0), -90);
         readonly AxisAngleRotation3D modelVisual3dRotationX = new(new Vector3D(-1, 0, 0), 0);
 
+        readonly AxisAngleRotation3D modelVisual3dRotationYCone = new(new Vector3D(0, 1, 0), 0);
+        readonly AxisAngleRotation3D modelVisual3dRotationXValueCone = new(new Vector3D(1, 0, 0), 0);
+        readonly AxisAngleRotation3D modelVisual3dRotationXSaturationCone = new(new Vector3D(1, 0, 0), 0);
+
         public ModelVisual3D Hsl3dDisplayModelVisual3DCone = new();
         public ModelVisual3D Hsl3dDisplayModelVisual3DCube = new();
-        public Viewport3D Hsl3dDisplayViewport3D = new Viewport3D() { Height = 100, Width = 200, ClipToBounds = false };
-        Viewbox viewbox = new Viewbox() { MaxHeight = 380 };
+        public Viewport3D Hsl3dDisplayViewport3D = new() { Height = 100, Width = 200, ClipToBounds = false };
+        readonly Viewbox viewbox = new() { MaxHeight = 380 };
         private Decorator? hsl3dDisplayDecorator;
         private Decorator? Hsl3dDisplayDecorator
         {
@@ -1905,6 +1982,9 @@ namespace ColorSelector
                     // BindingOperations.ClearBinding(modelVisual3dRotationY, AxisAngleRotation3D.AngleProperty);
                     BindingOperations.ClearBinding(modelVisual3dRotationZ, AxisAngleRotation3D.AngleProperty);
                     BindingOperations.ClearBinding(modelVisual3dRotationX, AxisAngleRotation3D.AngleProperty);
+                    BindingOperations.ClearBinding(modelVisual3dRotationYCone, AxisAngleRotation3D.AngleProperty);
+                    BindingOperations.ClearBinding(modelVisual3dRotationXValueCone, AxisAngleRotation3D.AngleProperty);
+                    //BindingOperations.ClearBinding(modelVisual3dRotationXSaturationCone, AxisAngleRotation3D.AngleProperty);
                     BindingOperations.ClearBinding(faceBrushDiffuseMaterial1.Brush, Brush.OpacityProperty);
                     BindingOperations.ClearBinding(faceBrushDiffuseMaterial2.Brush, Brush.OpacityProperty);
                     BindingOperations.ClearBinding(faceBrushDiffuseMaterial3.Brush, Brush.OpacityProperty);
@@ -1922,6 +2002,18 @@ namespace ColorSelector
                     BindingOperations.SetBinding(modelVisual3dRotationX, AxisAngleRotation3D.AngleProperty, angleBindingX);
                     Binding angleBindingZ = new(nameof(V)) { Mode = BindingMode.OneWay, Source = this, Converter = new RotationAngleConverterZ() };
                     BindingOperations.SetBinding(modelVisual3dRotationZ, AxisAngleRotation3D.AngleProperty, angleBindingZ);
+
+                    Binding angleBindingCone = new(nameof(H)) { Mode = BindingMode.OneWay, Source = this, Converter = new RotationAngleConverterX() };
+                    BindingOperations.SetBinding(modelVisual3dRotationYCone, AxisAngleRotation3D.AngleProperty, angleBindingCone);
+
+                    MultiBinding multiBinding = new MultiBinding() { Converter = new MultiAngleConverterConeSaturationValue(), Mode = BindingMode.OneWay };
+                    multiBinding.Bindings.Add(new Binding(nameof(V)) { Mode = BindingMode.OneWay, Source = this });
+                    multiBinding.Bindings.Add(new Binding(nameof(S)) { Mode = BindingMode.OneWay, Source = this });
+                    BindingOperations.SetBinding(modelVisual3dRotationXValueCone, AxisAngleRotation3D.AngleProperty, multiBinding);
+                    //Binding angleBindingConeValue = new(nameof(V)) { Mode = BindingMode.OneWay, Source = this, Converter = new RotationAngleConverterConeValue() };
+                    //BindingOperations.SetBinding(modelVisual3dRotationXValueCone, AxisAngleRotation3D.AngleProperty, angleBindingConeValue);
+                    //Binding angleBindingConeSaturation = new(nameof(S)) { Mode = BindingMode.OneWay, Source = this, Converter = new RotationAngleConverterConeSaturation() };
+                    //BindingOperations.SetBinding(modelVisual3dRotationXSaturationCone, AxisAngleRotation3D.AngleProperty, angleBindingConeSaturation);
 
                     Binding brushOpacityBinding1 = new(nameof(S)) { Mode = BindingMode.OneWay, Source = this };
                     BindingOperations.SetBinding(faceBrushDiffuseMaterial1.Brush, Brush.OpacityProperty, brushOpacityBinding1);
@@ -1945,11 +2037,21 @@ namespace ColorSelector
                     Hsl3dDisplayModelVisual3DCube.Content = GenerateRgbCubeModel3DGroup();
                     Hsl3dDisplayModelVisual3DCone.Content = GenerateRgbConeModel3DGroup();
 
-                    var transform3DGroup = new Transform3DGroup();
-                    transform3DGroup.Children.Add(new RotateTransform3D(modelVisual3dRotationY));
-                    transform3DGroup.Children.Add(new RotateTransform3D(modelVisual3dRotationX));
-                    transform3DGroup.Children.Add(new RotateTransform3D(modelVisual3dRotationZ));
-                    Hsl3dDisplayModelVisual3DCube.Transform = transform3DGroup;
+                    var cubeTransform3DGroup = new Transform3DGroup();
+                    cubeTransform3DGroup.Children.Add(new RotateTransform3D(modelVisual3dRotationY));
+                    cubeTransform3DGroup.Children.Add(new RotateTransform3D(modelVisual3dRotationX));
+                    cubeTransform3DGroup.Children.Add(new RotateTransform3D(modelVisual3dRotationZ));
+                    Hsl3dDisplayModelVisual3DCube.Transform = cubeTransform3DGroup;
+
+                    var coneTransform3DGroup = new Transform3DGroup();
+                    var coneValueSaturationTransform3DGroup = new Transform3DGroup();
+                    coneValueSaturationTransform3DGroup.Children.Add(new RotateTransform3D(modelVisual3dRotationXValueCone));
+                    coneValueSaturationTransform3DGroup.Children.Add(new RotateTransform3D(modelVisual3dRotationXSaturationCone));
+                    coneTransform3DGroup.Children.Add(new TranslateTransform3D(new Vector3D(0, -0.1, 0)));
+                    coneTransform3DGroup.Children.Add(new RotateTransform3D(modelVisual3dRotationYCone));
+                    coneTransform3DGroup.Children.Add(coneValueSaturationTransform3DGroup);
+                    coneTransform3DGroup.Children.Add(new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(1,0,0), 0)));
+                    Hsl3dDisplayModelVisual3DCone.Transform = coneTransform3DGroup;
 
                     Hsl3dDisplayViewport3D.Children.Add(Hsl3dDisplayModelVisual3DCube);
                     viewbox.Child = Hsl3dDisplayViewport3D;
@@ -1970,460 +2072,111 @@ namespace ColorSelector
             model3DGroup.Transform = new Transform3DGroup()
             {
                 Children = {
-                    new ScaleTransform3D(new Vector3D(-.33, -.33, -.33)),
-                    new TranslateTransform3D(new Vector3D(0,.1,0)),
+                    new ScaleTransform3D(new Vector3D(-.3, -.3, -.3)),
+                    new TranslateTransform3D(new Vector3D(0,0,0)),
                     new RotateTransform3D()
                     {
-                        Rotation = new AxisAngleRotation3D(new Vector3D(-1, 0, 0), 120)
+                        Rotation = new AxisAngleRotation3D(new Vector3D(-1, 0, 0), 90)
                     }
                 }
             };
 
-            MaterialGroup group = new MaterialGroup();
-            group.Children.Add(new DiffuseMaterial(new RadialGradientBrush(new GradientStopCollection() { new GradientStop(Colors.White, 0), new GradientStop(Colors.Gray, 1) })));
+            DiffuseMaterial shaderBlack = new(new LinearGradientBrush(new GradientStopCollection() { new GradientStop((Color)ColorConverter.ConvertFromString("#00000000"), 0), new GradientStop(Colors.Black, 1) }) { EndPoint = new Point(1, 0) });
+            DiffuseMaterial shaderWhite = new(new LinearGradientBrush(new GradientStopCollection() { new GradientStop(Colors.Transparent, 0), new GradientStop(Colors.White, 1) }) { StartPoint = new Point(0,1), EndPoint = new Point(0, 0) });
+            DiffuseMaterial shaderGray = new(new SolidColorBrush(Colors.Gray));
 
-            GeometryModel3D meshId0Geometry = new GeometryModel3D()
+            int faces = 128;
+
+            for (int i = 0; i < faces; ++i)
             {
-                Material = group,
-                Geometry = new MeshGeometry3D()
+
+                DiffuseMaterial material = new(new SolidColorBrush(GetRgbColorFromModel((360.0 * i) / faces, 1, 1)));
+                Binding brushOpacity = new(nameof(S)) { Mode = BindingMode.OneWay, Source = this };
+                BindingOperations.SetBinding(material.Brush, Brush.OpacityProperty, brushOpacity);
+
+                MaterialGroup group = new();
+
+                group.Children.Add(shaderGray);
+                group.Children.Add(material);
+                group.Children.Add(shaderBlack);
+
+                MaterialGroup group2 = new();
+
+                group2.Children.Add(shaderGray);
+                group2.Children.Add(material);
+                group2.Children.Add(shaderWhite);
+
+                RotateTransform3D transform = new(new AxisAngleRotation3D(new Vector3D(0, 0, 1), i * (360.0 / faces) + 180.0));
+                GeometryModel3D body = new()
                 {
+                    Material = group,
+                    Transform = transform,
+                    Geometry = new MeshGeometry3D()
+                    {
+                        Positions = new Point3DCollection(new List<Point3D>()
+                        {
+                            new Point3D(0, 0.996881, -0.9968811),
+                            new Point3D(0.04891461, 0.9956802, -0.9968811),
+                            new Point3D(0, 0, 0.9968811),
+                        }),
 
-                    Positions = new Point3DCollection(new List<Point3D>()
-        {
-        new Point3D(0.980785, 0.19509, -1),
-        new Point3D(0.19509, -0.980785, -1),
-        new Point3D(-0.980785, -0.19509, -1),
-        new Point3D(-0.19509, 0.980785, -1),
-        new Point3D(0, 1, -1),
-        new Point3D(0.19509, 0.980785, -1),
-        new Point3D(0.382683, 0.92388, -1),
-        new Point3D(0.55557, 0.83147, -1),
-        new Point3D(0.707107, 0.707107, -1),
-        new Point3D(0.83147, 0.55557, -1),
-        new Point3D(0.92388, 0.382683, -1),
-        new Point3D(1, 0, -1),
-        new Point3D(0.980785, -0.19509, -1),
-        new Point3D(0.92388, -0.382683, -1),
-        new Point3D(0.83147, -0.55557, -1),
-        new Point3D(0.707107, -0.707107, -1),
-        new Point3D(0.55557, -0.83147, -1),
-        new Point3D(0.382683, -0.92388, -1),
-        new Point3D(0, -1, -1),
-        new Point3D(-0.19509, -0.980785, -1),
-        new Point3D(-0.382683, -0.92388, -1),
-        new Point3D(-0.55557, -0.831469, -1),
-        new Point3D(-0.707107, -0.707107, -1),
-        new Point3D(-0.831469, -0.55557, -1),
-        new Point3D(-0.92388, -0.382684, -1),
-        new Point3D(-1, 0, -1),
-        new Point3D(-0.980785, 0.19509, -1),
-        new Point3D(-0.92388, 0.382684, -1),
-        new Point3D(-0.83147, 0.55557, -1),
-        new Point3D(-0.707107, 0.707107, -1),
-        new Point3D(-0.55557, 0.83147, -1),
-        new Point3D(-0.382683, 0.92388, -1),
+                        Normals = new Vector3DCollection(new List<Vector3D>()
+                        {
+                            new Vector3D(0.02195179, 0.8942117, 0.4471058),
+                        }),
 
-        }),
+                        TextureCoordinates = new PointCollection(new List<Point>()
+                        {
+                            new Point(0.25, 0.49),
+                            new Point(0.25, 0.25),
+                            new Point(0.2617762, 0.4897109),
 
-                    Normals = new Vector3DCollection(new List<Vector3D>()
-        {
-        new Vector3D(0, 0, -1),
-        new Vector3D(0, 0, -1),
-        new Vector3D(0, 0, -1),
-        new Vector3D(0, 0, -1),
-        new Vector3D(0, 0, -1),
-        new Vector3D(0, 0, -1),
-        new Vector3D(0, 0, -1),
-        new Vector3D(0, 0, -1),
-        new Vector3D(0, 0, -1),
-        new Vector3D(0, 0, -1),
-        new Vector3D(0, 0, -1),
-        new Vector3D(0, 0, -1),
-        new Vector3D(0, 0, -1),
-        new Vector3D(0, 0, -1),
-        new Vector3D(0, 0, -1),
-        new Vector3D(0, 0, -1),
-        new Vector3D(0, 0, -1),
-        new Vector3D(0, 0, -1),
-        new Vector3D(0, 0, -1),
-        new Vector3D(0, 0, -1),
-        new Vector3D(0, 0, -1),
-        new Vector3D(0, 0, -1),
-        new Vector3D(0, 0, -1),
-        new Vector3D(0, 0, -1),
-        new Vector3D(0, 0, -1),
-        new Vector3D(0, 0, -1),
-        new Vector3D(0, 0, -1),
-        new Vector3D(0, 0, -1),
-        new Vector3D(0, 0, -1),
-        new Vector3D(0, 0, -1),
-        new Vector3D(0, 0, -1),
-        new Vector3D(0, 0, -1),
+                        }),
 
-        }),
+                        TriangleIndices = new Int32Collection(new List<int>()
+                        {
+                            0, 0, 0, 2, 0, 1, 1, 0, 2,
+                        }),
+                    }
+                };
+                model3DGroup.Children.Add(body);
 
-                    TextureCoordinates = new PointCollection(new List<Point>()
-        {
-        new Point(0.985389, 0.296822),
-        new Point(0.796822, 0.0146115),
-        new Point(0.514612, 0.203178),
-        new Point(0.703178, 0.485388),
-        new Point(0.75, 0.49),
-        new Point(0.796822, 0.485388),
-        new Point(0.841844, 0.471731),
-        new Point(0.883337, 0.449553),
-        new Point(0.919706, 0.419706),
-        new Point(0.949553, 0.383337),
-        new Point(0.971731, 0.341844),
-        new Point(0.99, 0.25),
-        new Point(0.985389, 0.203178),
-        new Point(0.971731, 0.158156),
-        new Point(0.949553, 0.116663),
-        new Point(0.919706, 0.0802944),
-        new Point(0.883337, 0.0504473),
-        new Point(0.841844, 0.0282689),
-        new Point(0.75, 0.00999999),
-        new Point(0.703178, 0.0146115),
-        new Point(0.658156, 0.0282689),
-        new Point(0.616663, 0.0504473),
-        new Point(0.580294, 0.0802944),
-        new Point(0.550447, 0.116663),
-        new Point(0.528269, 0.158156),
-        new Point(0.51, 0.25),
-        new Point(0.514612, 0.296822),
-        new Point(0.528269, 0.341844),
-        new Point(0.550447, 0.383337),
-        new Point(0.580294, 0.419706),
-        new Point(0.616663, 0.449553),
-        new Point(0.658156, 0.471731),
-
-        }),
-
-                    TriangleIndices = new Int32Collection(new List<int>()
-        {
-        0, 1, 2, 9, 10, 0, 0, 11, 12, 3, 5, 0, 5, 7, 0, 7, 9, 0, 0, 12, 14, 14, 16, 0, 16, 1, 0, 3, 0, 2, 7, 8, 9, 5, 6, 7, 3, 4, 5, 31, 3, 28, 2, 28, 3, 30, 31, 28, 27, 28, 2, 28, 29, 30, 26, 27, 2, 2, 25, 26, 23, 24, 2, 1, 19, 2, 19, 21, 2, 21, 23, 2, 21, 22, 23, 19, 20, 21, 1, 18, 19, 16, 17, 1, 14, 15, 16, 12, 13, 14,
-        }),
-                }
-            };
-            GeometryModel3D meshId1Geometry = new GeometryModel3D()
-            {
-                Material = new DiffuseMaterial(new LinearGradientBrush(new GradientStopCollection() { new GradientStop(Colors.Gray, 0), new GradientStop(Colors.Black, .5) }) { EndPoint = new Point(0,1) }),
-                Geometry = new MeshGeometry3D()
+                GeometryModel3D head = new()
                 {
+                    Material = group2,
+                    Transform = transform,
+                    Geometry = new MeshGeometry3D()
+                    {
+                        Positions = new Point3DCollection(new List<Point3D>()
+                        {
+                            new Point3D(0, 0, -0.9968811),
+                            new Point3D(0, 0.996881, -0.9968811),
+                            new Point3D(0.04891461, 0.9956802, -0.9968811),
+                        }),
 
-                    Positions = new Point3DCollection(new List<Point3D>()
-        {
-        new Point3D(0, 1, -1),
-        new Point3D(0, 0, 1),
-        new Point3D(0.19509, 0.980785, -1),
-        new Point3D(0.19509, 0.980785, -1),
-        new Point3D(0, 0, 1),
-        new Point3D(0.382683, 0.92388, -1),
-        new Point3D(0.382683, 0.92388, -1),
-        new Point3D(0, 0, 1),
-        new Point3D(0.55557, 0.83147, -1),
-        new Point3D(0.55557, 0.83147, -1),
-        new Point3D(0, 0, 1),
-        new Point3D(0.707107, 0.707107, -1),
-        new Point3D(0.707107, 0.707107, -1),
-        new Point3D(0, 0, 1),
-        new Point3D(0.83147, 0.55557, -1),
-        new Point3D(0.83147, 0.55557, -1),
-        new Point3D(0, 0, 1),
-        new Point3D(0.92388, 0.382683, -1),
-        new Point3D(0.92388, 0.382683, -1),
-        new Point3D(0, 0, 1),
-        new Point3D(0.980785, 0.19509, -1),
-        new Point3D(0.980785, 0.19509, -1),
-        new Point3D(0, 0, 1),
-        new Point3D(1, 0, -1),
-        new Point3D(1, 0, -1),
-        new Point3D(0, 0, 1),
-        new Point3D(0.980785, -0.19509, -1),
-        new Point3D(0.980785, -0.19509, -1),
-        new Point3D(0, 0, 1),
-        new Point3D(0.92388, -0.382683, -1),
-        new Point3D(0.92388, -0.382683, -1),
-        new Point3D(0, 0, 1),
-        new Point3D(0.83147, -0.55557, -1),
-        new Point3D(0.83147, -0.55557, -1),
-        new Point3D(0, 0, 1),
-        new Point3D(0.707107, -0.707107, -1),
-        new Point3D(0.707107, -0.707107, -1),
-        new Point3D(0, 0, 1),
-        new Point3D(0.55557, -0.83147, -1),
-        new Point3D(0.55557, -0.83147, -1),
-        new Point3D(0, 0, 1),
-        new Point3D(0.382683, -0.92388, -1),
-        new Point3D(0.382683, -0.92388, -1),
-        new Point3D(0, 0, 1),
-        new Point3D(0.19509, -0.980785, -1),
-        new Point3D(0.19509, -0.980785, -1),
-        new Point3D(0, 0, 1),
-        new Point3D(0, -1, -1),
-        new Point3D(0, -1, -1),
-        new Point3D(0, 0, 1),
-        new Point3D(-0.19509, -0.980785, -1),
-        new Point3D(-0.19509, -0.980785, -1),
-        new Point3D(0, 0, 1),
-        new Point3D(-0.382683, -0.92388, -1),
-        new Point3D(-0.382683, -0.92388, -1),
-        new Point3D(0, 0, 1),
-        new Point3D(-0.55557, -0.831469, -1),
-        new Point3D(-0.55557, -0.831469, -1),
-        new Point3D(0, 0, 1),
-        new Point3D(-0.707107, -0.707107, -1),
-        new Point3D(-0.707107, -0.707107, -1),
-        new Point3D(0, 0, 1),
-        new Point3D(-0.831469, -0.55557, -1),
-        new Point3D(-0.831469, -0.55557, -1),
-        new Point3D(0, 0, 1),
-        new Point3D(-0.92388, -0.382684, -1),
-        new Point3D(-0.92388, -0.382684, -1),
-        new Point3D(0, 0, 1),
-        new Point3D(-0.980785, -0.19509, -1),
-        new Point3D(-0.980785, -0.19509, -1),
-        new Point3D(0, 0, 1),
-        new Point3D(-1, 0, -1),
-        new Point3D(-1, 0, -1),
-        new Point3D(0, 0, 1),
-        new Point3D(-0.980785, 0.19509, -1),
-        new Point3D(-0.980785, 0.19509, -1),
-        new Point3D(0, 0, 1),
-        new Point3D(-0.92388, 0.382684, -1),
-        new Point3D(-0.92388, 0.382684, -1),
-        new Point3D(0, 0, 1),
-        new Point3D(-0.83147, 0.55557, -1),
-        new Point3D(-0.83147, 0.55557, -1),
-        new Point3D(0, 0, 1),
-        new Point3D(-0.707107, 0.707107, -1),
-        new Point3D(-0.707107, 0.707107, -1),
-        new Point3D(0, 0, 1),
-        new Point3D(-0.55557, 0.83147, -1),
-        new Point3D(-0.55557, 0.83147, -1),
-        new Point3D(0, 0, 1),
-        new Point3D(-0.382683, 0.92388, -1),
-        new Point3D(-0.382683, 0.92388, -1),
-        new Point3D(0, 0, 1),
-        new Point3D(-0.19509, 0.980785, -1),
-        new Point3D(-0.19509, 0.980785, -1),
-        new Point3D(0, 0, 1),
-        new Point3D(0, 1, -1),
+                        Normals = new Vector3DCollection(new List<Vector3D>()
+                        {
+                            new Vector3D(-4.05861e-7, 0, -1),
+                        }),
 
-        }),
+                        TextureCoordinates = new PointCollection(new List<Point>()
+                        {
+                            new Point(0.75, 0.25),
+                            new Point(0.75, 0.49),
+                            new Point(0.7617763, 0.4897109),
 
-                    Normals = new Vector3DCollection(new List<Vector3D>()
-        {
-        new Vector3D(0.0877537, 0.890977, 0.445488),
-        new Vector3D(0.0877537, 0.890977, 0.445488),
-        new Vector3D(0.0877537, 0.890977, 0.445488),
-        new Vector3D(0.259888, 0.856737, 0.445488),
-        new Vector3D(0.259888, 0.856737, 0.445488),
-        new Vector3D(0.259888, 0.856737, 0.445488),
-        new Vector3D(0.422036, 0.789573, 0.445489),
-        new Vector3D(0.422036, 0.789573, 0.445489),
-        new Vector3D(0.422036, 0.789573, 0.445489),
-        new Vector3D(0.567965, 0.692067, 0.445488),
-        new Vector3D(0.567965, 0.692067, 0.445488),
-        new Vector3D(0.567965, 0.692067, 0.445488),
-        new Vector3D(0.692067, 0.567965, 0.445488),
-        new Vector3D(0.692067, 0.567965, 0.445488),
-        new Vector3D(0.692067, 0.567965, 0.445488),
-        new Vector3D(0.789573, 0.422036, 0.445488),
-        new Vector3D(0.789573, 0.422036, 0.445488),
-        new Vector3D(0.789573, 0.422036, 0.445488),
-        new Vector3D(0.856737, 0.259888, 0.445488),
-        new Vector3D(0.856737, 0.259888, 0.445488),
-        new Vector3D(0.856737, 0.259888, 0.445488),
-        new Vector3D(0.890977, 0.0877537, 0.445488),
-        new Vector3D(0.890977, 0.0877537, 0.445488),
-        new Vector3D(0.890977, 0.0877537, 0.445488),
-        new Vector3D(0.890977, -0.0877537, 0.445488),
-        new Vector3D(0.890977, -0.0877537, 0.445488),
-        new Vector3D(0.890977, -0.0877537, 0.445488),
-        new Vector3D(0.856737, -0.259888, 0.445488),
-        new Vector3D(0.856737, -0.259888, 0.445488),
-        new Vector3D(0.856737, -0.259888, 0.445488),
-        new Vector3D(0.789573, -0.422036, 0.445488),
-        new Vector3D(0.789573, -0.422036, 0.445488),
-        new Vector3D(0.789573, -0.422036, 0.445488),
-        new Vector3D(0.692067, -0.567965, 0.445488),
-        new Vector3D(0.692067, -0.567965, 0.445488),
-        new Vector3D(0.692067, -0.567965, 0.445488),
-        new Vector3D(0.567965, -0.692067, 0.445488),
-        new Vector3D(0.567965, -0.692067, 0.445488),
-        new Vector3D(0.567965, -0.692067, 0.445488),
-        new Vector3D(0.422036, -0.789573, 0.445488),
-        new Vector3D(0.422036, -0.789573, 0.445488),
-        new Vector3D(0.422036, -0.789573, 0.445488),
-        new Vector3D(0.259888, -0.856737, 0.445488),
-        new Vector3D(0.259888, -0.856737, 0.445488),
-        new Vector3D(0.259888, -0.856737, 0.445488),
-        new Vector3D(0.0877533, -0.890977, 0.445488),
-        new Vector3D(0.0877533, -0.890977, 0.445488),
-        new Vector3D(0.0877533, -0.890977, 0.445488),
-        new Vector3D(-0.0877535, -0.890977, 0.445488),
-        new Vector3D(-0.0877535, -0.890977, 0.445488),
-        new Vector3D(-0.0877535, -0.890977, 0.445488),
-        new Vector3D(-0.259888, -0.856737, 0.445488),
-        new Vector3D(-0.259888, -0.856737, 0.445488),
-        new Vector3D(-0.259888, -0.856737, 0.445488),
-        new Vector3D(-0.422036, -0.789573, 0.445488),
-        new Vector3D(-0.422036, -0.789573, 0.445488),
-        new Vector3D(-0.422036, -0.789573, 0.445488),
-        new Vector3D(-0.567965, -0.692067, 0.445488),
-        new Vector3D(-0.567965, -0.692067, 0.445488),
-        new Vector3D(-0.567965, -0.692067, 0.445488),
-        new Vector3D(-0.692067, -0.567965, 0.445488),
-        new Vector3D(-0.692067, -0.567965, 0.445488),
-        new Vector3D(-0.692067, -0.567965, 0.445488),
-        new Vector3D(-0.789573, -0.422036, 0.445488),
-        new Vector3D(-0.789573, -0.422036, 0.445488),
-        new Vector3D(-0.789573, -0.422036, 0.445488),
-        new Vector3D(-0.856737, -0.259888, 0.445488),
-        new Vector3D(-0.856737, -0.259888, 0.445488),
-        new Vector3D(-0.856737, -0.259888, 0.445488),
-        new Vector3D(-0.890977, -0.0877537, 0.445488),
-        new Vector3D(-0.890977, -0.0877537, 0.445488),
-        new Vector3D(-0.890977, -0.0877537, 0.445488),
-        new Vector3D(-0.890977, 0.0877537, 0.445488),
-        new Vector3D(-0.890977, 0.0877537, 0.445488),
-        new Vector3D(-0.890977, 0.0877537, 0.445488),
-        new Vector3D(-0.856737, 0.259888, 0.445488),
-        new Vector3D(-0.856737, 0.259888, 0.445488),
-        new Vector3D(-0.856737, 0.259888, 0.445488),
-        new Vector3D(-0.789573, 0.422036, 0.445488),
-        new Vector3D(-0.789573, 0.422036, 0.445488),
-        new Vector3D(-0.789573, 0.422036, 0.445488),
-        new Vector3D(-0.692067, 0.567964, 0.445488),
-        new Vector3D(-0.692067, 0.567964, 0.445488),
-        new Vector3D(-0.692067, 0.567964, 0.445488),
-        new Vector3D(-0.567965, 0.692067, 0.445489),
-        new Vector3D(-0.567965, 0.692067, 0.445489),
-        new Vector3D(-0.567965, 0.692067, 0.445489),
-        new Vector3D(-0.422036, 0.789573, 0.445488),
-        new Vector3D(-0.422036, 0.789573, 0.445488),
-        new Vector3D(-0.422036, 0.789573, 0.445488),
-        new Vector3D(-0.259888, 0.856737, 0.445488),
-        new Vector3D(-0.259888, 0.856737, 0.445488),
-        new Vector3D(-0.259888, 0.856737, 0.445488),
-        new Vector3D(-0.0877534, 0.890977, 0.445488),
-        new Vector3D(-0.0877534, 0.890977, 0.445488),
-        new Vector3D(-0.0877534, 0.890977, 0.445488),
+                        }),
 
-        }),
-
-                    TextureCoordinates = new PointCollection(new List<Point>()
-        {
-        new Point(0.25, 0.49),
-        new Point(0.25, 0.25),
-        new Point(0.296822, 0.485388),
-        new Point(0.296822, 0.485388),
-        new Point(0.25, 0.25),
-        new Point(0.341844, 0.471731),
-        new Point(0.341844, 0.471731),
-        new Point(0.25, 0.25),
-        new Point(0.383337, 0.449553),
-        new Point(0.383337, 0.449553),
-        new Point(0.25, 0.25),
-        new Point(0.419706, 0.419706),
-        new Point(0.419706, 0.419706),
-        new Point(0.25, 0.25),
-        new Point(0.449553, 0.383337),
-        new Point(0.449553, 0.383337),
-        new Point(0.25, 0.25),
-        new Point(0.471731, 0.341844),
-        new Point(0.471731, 0.341844),
-        new Point(0.25, 0.25),
-        new Point(0.485388, 0.296822),
-        new Point(0.485388, 0.296822),
-        new Point(0.25, 0.25),
-        new Point(0.49, 0.25),
-        new Point(0.49, 0.25),
-        new Point(0.25, 0.25),
-        new Point(0.485388, 0.203178),
-        new Point(0.485388, 0.203178),
-        new Point(0.25, 0.25),
-        new Point(0.471731, 0.158156),
-        new Point(0.471731, 0.158156),
-        new Point(0.25, 0.25),
-        new Point(0.449553, 0.116663),
-        new Point(0.449553, 0.116663),
-        new Point(0.25, 0.25),
-        new Point(0.419706, 0.0802944),
-        new Point(0.419706, 0.0802944),
-        new Point(0.25, 0.25),
-        new Point(0.383337, 0.0504473),
-        new Point(0.383337, 0.0504473),
-        new Point(0.25, 0.25),
-        new Point(0.341844, 0.0282689),
-        new Point(0.341844, 0.0282689),
-        new Point(0.25, 0.25),
-        new Point(0.296822, 0.0146115),
-        new Point(0.296822, 0.0146115),
-        new Point(0.25, 0.25),
-        new Point(0.25, 0.00999999),
-        new Point(0.25, 0.00999999),
-        new Point(0.25, 0.25),
-        new Point(0.203178, 0.0146115),
-        new Point(0.203178, 0.0146115),
-        new Point(0.25, 0.25),
-        new Point(0.158156, 0.0282689),
-        new Point(0.158156, 0.0282689),
-        new Point(0.25, 0.25),
-        new Point(0.116663, 0.0504473),
-        new Point(0.116663, 0.0504473),
-        new Point(0.25, 0.25),
-        new Point(0.0802944, 0.0802944),
-        new Point(0.0802944, 0.0802944),
-        new Point(0.25, 0.25),
-        new Point(0.0504473, 0.116663),
-        new Point(0.0504473, 0.116663),
-        new Point(0.25, 0.25),
-        new Point(0.0282689, 0.158156),
-        new Point(0.0282689, 0.158156),
-        new Point(0.25, 0.25),
-        new Point(0.0146115, 0.203178),
-        new Point(0.0146115, 0.203178),
-        new Point(0.25, 0.25),
-        new Point(0.00999999, 0.25),
-        new Point(0.00999999, 0.25),
-        new Point(0.25, 0.25),
-        new Point(0.0146115, 0.296822),
-        new Point(0.0146115, 0.296822),
-        new Point(0.25, 0.25),
-        new Point(0.0282689, 0.341844),
-        new Point(0.0282689, 0.341844),
-        new Point(0.25, 0.25),
-        new Point(0.0504472, 0.383337),
-        new Point(0.0504472, 0.383337),
-        new Point(0.25, 0.25),
-        new Point(0.0802943, 0.419706),
-        new Point(0.0802943, 0.419706),
-        new Point(0.25, 0.25),
-        new Point(0.116663, 0.449553),
-        new Point(0.116663, 0.449553),
-        new Point(0.25, 0.25),
-        new Point(0.158156, 0.471731),
-        new Point(0.158156, 0.471731),
-        new Point(0.25, 0.25),
-        new Point(0.203178, 0.485388),
-        new Point(0.203178, 0.485388),
-        new Point(0.25, 0.25),
-        new Point(0.25, 0.49),
-
-        }),
-
-                    TriangleIndices = new Int32Collection(new List<int>()
-        {
-        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95,
-        }),
-                }
-            };
+                        TriangleIndices = new Int32Collection(new List<int>()
+                        {
+                            0, 0, 0, 2, 0, 1, 1, 0, 2
+                        }),
+                    }
+                };
+                model3DGroup.Children.Add(head);
+            }
 
             model3DGroup.Children.Add(new AmbientLight());
-            model3DGroup.Children.Add(meshId0Geometry);
-            model3DGroup.Children.Add(meshId1Geometry);
 
             return model3DGroup;
         }
@@ -2442,7 +2195,7 @@ namespace ColorSelector
                         }
             };
 
-            MaterialGroup materialGroup1 = new MaterialGroup();
+            MaterialGroup materialGroup1 = new();
             materialGroup1.Children.Add(faceBrushDiffuseMaterialDesaturated1);
             materialGroup1.Children.Add(faceBrushDiffuseMaterial1);
             GeometryModel3D face1Geometry = new()
@@ -2480,7 +2233,7 @@ namespace ColorSelector
                             }),
                 }
             };
-            MaterialGroup materialGroup2 = new MaterialGroup();
+            MaterialGroup materialGroup2 = new();
             materialGroup2.Children.Add(faceBrushDiffuseMaterialDesaturated2);
             materialGroup2.Children.Add(faceBrushDiffuseMaterial2);
             GeometryModel3D face2Geometry = new()
@@ -2518,7 +2271,7 @@ namespace ColorSelector
                             }),
                 }
             };
-            MaterialGroup materialGroup3 = new MaterialGroup();
+            MaterialGroup materialGroup3 = new();
             materialGroup3.Children.Add(faceBrushDiffuseMaterialDesaturated3);
             materialGroup3.Children.Add(faceBrushDiffuseMaterial3);
             GeometryModel3D face3Geometry = new()
@@ -2556,7 +2309,7 @@ namespace ColorSelector
                             }),
                 }
             };
-            MaterialGroup materialGroup4 = new MaterialGroup();
+            MaterialGroup materialGroup4 = new();
             materialGroup4.Children.Add(faceBrushDiffuseMaterialDesaturated4);
             materialGroup4.Children.Add(faceBrushDiffuseMaterial4);
             GeometryModel3D face4Geometry = new()
@@ -2594,7 +2347,7 @@ namespace ColorSelector
                             }),
                 }
             };
-            MaterialGroup materialGroup5 = new MaterialGroup();
+            MaterialGroup materialGroup5 = new();
             materialGroup5.Children.Add(faceBrushDiffuseMaterialDesaturated5);
             materialGroup5.Children.Add(faceBrushDiffuseMaterial5);
             GeometryModel3D face5Geometry = new()
@@ -2633,7 +2386,7 @@ namespace ColorSelector
                 }
             };
 
-            MaterialGroup materialGroup6 = new MaterialGroup();
+            MaterialGroup materialGroup6 = new();
             materialGroup6.Children.Add(faceBrushDiffuseMaterialDesaturated6);
             materialGroup6.Children.Add(faceBrushDiffuseMaterial6);
             GeometryModel3D face6Geometry = new()
@@ -2685,7 +2438,7 @@ namespace ColorSelector
             return model3DGroup;
         }
 
-        Point hsl3dDisplayMousePoint = new Point();
+        Point hsl3dDisplayMousePoint = new();
         bool hsl3dMouseInteraction = false;
 
         private void Hsl3dDisplayDecorator_PreviewMouseUp(object sender, MouseButtonEventArgs e)
@@ -2699,7 +2452,7 @@ namespace ColorSelector
 
         private void Hsl3dDisplayDecorator_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (e.LeftButton != MouseButtonState.Pressed || Hsl3dDisplayDecorator == null || ColorModel != ColorModel.HSL)
+            if (e.LeftButton != MouseButtonState.Pressed || Hsl3dDisplayDecorator == null)
                 return;
 
             hslComponentAreaInteraction = false;
@@ -2710,7 +2463,7 @@ namespace ColorSelector
 
         private void Hsl3dDisplayDecorator_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
-            if (Hsl3dDisplayDecorator == null || e.Delta == 0 || ColorModel != ColorModel.HSL)
+            if (Hsl3dDisplayDecorator == null || e.Delta == 0)
                 return;
             var polarity = (e.Delta > 0) ? 1 : -1;
             var change = Math.Clamp(S + (polarity * (e.Delta / e.Delta) / 50.0), HSL_MIN, SL_MAX);
@@ -2722,44 +2475,61 @@ namespace ColorSelector
 
         private void Hsl3dDisplayDecorator_PreviewMouseMove(object sender, MouseEventArgs e)
         {
-            if (e.LeftButton != MouseButtonState.Pressed || Hsl3dDisplayDecorator == null || hslComponentAreaInteraction == true || ColorModel != ColorModel.HSL)
+            if (e.LeftButton != MouseButtonState.Pressed || Hsl3dDisplayDecorator == null || hslComponentAreaInteraction == true)
                 return;
 
             Point newPoint = e.GetPosition(Hsl3dDisplayDecorator);
 
-            // Method 1: recalculate H and V values based solely on point coordinates, disregarding pre-existing values:
-            //var calcH = Math.Clamp((H_MAX - (((newPoint.Y) / Hsl3dDisplayDecorator.ActualHeight) * H_MAX)), HSL_MIN, H_MAX);
-            //var calcV = Math.Clamp((newPoint.X / Hsl3dDisplayDecorator.ActualWidth), HSL_MIN, SL_MAX);
-
-            // Method 2: recalculate H and V values based on point coordinates and pre-existing values:
-            var xChange = (hsl3dDisplayMousePoint.X - newPoint.X) / Hsl3dDisplayDecorator.ActualWidth;
-            var yChange = hsl3dDisplayMousePoint.Y - newPoint.Y;
-
-            //Debug.WriteLine($"Change: {xChange} x {yChange}\nPoint: {newPoint.X} x {newPoint.Y}\nOldPoint: {hsl3dDisplayMousePoint.X} x {hsl3dDisplayMousePoint.Y}");
-
-            hsl3dDisplayMousePoint = newPoint;
-
-            bool skipH = false;
-            bool skipV = false;
-
-            if (H == H_MAX && yChange >= 0 || H == HSL_MIN && yChange <= 0)
-                skipH = true;
-
-            if (V == SL_MAX && xChange <= 0 || V == HSL_MIN && xChange >= 0)
-                skipV = true;
-
-            if (!skipH)
+            switch (ColorModel)
             {
-                var calcH = Math.Clamp(H + ((yChange / Hsl3dDisplayDecorator.ActualHeight) * H_MAX), HSL_MIN, H_MAX);
-                if (H != calcH)
-                    H = calcH;
-            }
+                case ColorModel.HSL:
+                    // Method 1: recalculate H and V values based solely on point coordinates, disregarding pre-existing values:
+                    //var calcH = Math.Clamp((H_MAX - (((newPoint.Y) / Hsl3dDisplayDecorator.ActualHeight) * H_MAX)), HSL_MIN, H_MAX);
+                    //var calcV = Math.Clamp((newPoint.X / Hsl3dDisplayDecorator.ActualWidth), HSL_MIN, SL_MAX);
 
-            if (!skipV)
-            {
-                var calcV = Math.Clamp(V - xChange, HSL_MIN, SL_MAX);
-                if (V != calcV)
-                    V = calcV;
+                    // Method 2: recalculate H and V values based on point coordinates and pre-existing values:
+                    var xChange = (hsl3dDisplayMousePoint.X - newPoint.X) / Hsl3dDisplayDecorator.ActualWidth;
+                    var yChange = hsl3dDisplayMousePoint.Y - newPoint.Y;
+
+                    hsl3dDisplayMousePoint = newPoint;
+
+                    bool skipH = false;
+                    bool skipV = false;
+
+                    if (H == H_MAX && yChange >= 0 || H == HSL_MIN && yChange <= 0)
+                        skipH = true;
+
+                    if (V == SL_MAX && xChange <= 0 || V == HSL_MIN && xChange >= 0)
+                        skipV = true;
+
+                    if (!skipH)
+                    {
+                        var calcH = Math.Clamp(H + ((yChange / Hsl3dDisplayDecorator.ActualHeight) * H_MAX), HSL_MIN, H_MAX);
+                        if (H != calcH)
+                            H = calcH;
+                    }
+
+                    if (!skipV)
+                    {
+                        var calcV = Math.Clamp(V - xChange, HSL_MIN, SL_MAX);
+                        if (V != calcV)
+                            V = calcV;
+                    }
+                    break;
+                case ColorModel.HSV:
+                    xChange = (hsl3dDisplayMousePoint.X - newPoint.X) * 360.0 / Hsl3dDisplayDecorator.ActualWidth;
+                    yChange = (hsl3dDisplayMousePoint.Y - newPoint.Y) / 100.0;
+                    hsl3dDisplayMousePoint = newPoint;
+                    var calcH2 = Math.Clamp(H + xChange, HSL_MIN, H_MAX);
+                    if (H != calcH2)
+                        H = calcH2;
+
+                    var calcV2 = Math.Clamp(V - yChange, HSL_MIN, SL_MAX);
+                    if (V != calcV2)
+                        V = calcV2;
+                    break;
+                default:
+                    break;
             }
         }
 
@@ -2983,7 +2753,7 @@ namespace ColorSelector
         Grid hslComponentAreaYaxisValueGrid = new() {  VerticalAlignment = VerticalAlignment.Top };
         Border hslComponentAreaXaxisBoundGuide = MakeHslComponentGridXaxisGuide();
         Border hslComponentAreaYaxisBoundGuide = MakeHslComponentGridYaxisGuide();
-        GradientStopCollection RgbSpectrumGraidentStops = new()
+        readonly GradientStopCollection RgbSpectrumGraidentStops = new()
         {
             new GradientStop((Color)ColorConverter.ConvertFromString("#FF0000"), 0),
             new GradientStop((Color)ColorConverter.ConvertFromString("#FFFF00"), 1.0 / 6),
@@ -3586,6 +3356,7 @@ namespace ColorSelector
         {
             SelectCustomColorButtonBase = GetTemplateChild(nameof(TemplatePart.PART_selectCustomColorButtonBase)) as ButtonBase;
             SaveCustomColorButtonBase = GetTemplateChild(nameof(TemplatePart.PART_saveCustomColorButtonBase)) as ButtonBase;
+            DeleteCustomColorsButtonBase = GetTemplateChild(nameof(TemplatePart.PART_deleteCustomColorsButtonBase)) as ButtonBase;
 
             AIncrementButtonBase = GetTemplateChild(nameof(TemplatePart.PART_aIncrementButtonBase)) as ButtonBase;
             RIncrementButtonBase = GetTemplateChild(nameof(TemplatePart.PART_rIncrementButtonBase)) as ButtonBase;
@@ -3781,14 +3552,177 @@ namespace ColorSelector
             return new List<double>(3) { finalHue, saturation, lightness };
         }
 
+        public static double GetHueFromRgbByteRange(double r, double g, double b)
+        {
+            r /= Byte.MaxValue;
+            g /= Byte.MaxValue;
+            b /= Byte.MaxValue;
+
+            return GetHueFromRgbPercent(r, g, b);
+        }
+
+        public static double GetHueFromRgbPercent(double r, double g, double b)
+        {
+            var min = Math.Min(Math.Min(r, g), b);
+            var max = Math.Max(Math.Max(r, g), b);
+
+            var chroma = max - min;
+
+            if (chroma == 0)
+                return 0;
+
+            var hue = 0.0;
+
+            if (r == max)
+            {
+                var segment = (g - b) / chroma;
+                var shift = 0 / 60;
+                if (segment < 0)
+                {
+                    shift = 360 / 60;
+                }
+                hue = segment + shift;
+            }
+            else if (g == max)
+            {
+                var segment = (b - r) / chroma;
+                var shift = 120 / 60;
+                hue = segment + shift;
+            }
+            else if (b == max)
+            {
+                var segment = (r - g) / chroma;
+                var shift = 240 / 60;
+                hue = segment + shift;
+            }
+
+            return hue * 60;
+        }
+
+        public static double GetHueFromRgbPercent(double r, double g, double b, double min, double max)
+        {
+            var chroma = max - min;
+
+            if (chroma == 0)
+                return 0;
+
+            var hue = 0.0;
+
+            if (r == max)
+            {
+                var segment = (g - b) / chroma;
+                var shift = 0 / 60;
+                if (segment < 0)
+                {
+                    shift = 360 / 60;
+                }
+                hue = segment + shift;
+            }
+            else if (g == max)
+            {
+                var segment = (b - r) / chroma;
+                var shift = 120 / 60;
+                hue = segment + shift;
+            }
+            else if (b == max)
+            {
+                var segment = (r - g) / chroma;
+                var shift = 240 / 60;
+                hue = segment + shift;
+            }
+
+            return hue * 60;
+        }
+
+        public static double GetHslSaturationFromRgbByteRange(double r, double g, double b)
+        {
+            r /= Byte.MaxValue;
+            g /= Byte.MaxValue;
+            b /= Byte.MaxValue;
+
+            return GetHslSaturationFromRgbPercent(r, g, b);
+        }
+
+        public static double GetHslSaturationFromRgbPercent(double r, double g, double b)
+        {
+            var min = Math.Min(Math.Min(r, g), b);
+            var max = Math.Max(Math.Max(r, g), b);
+
+            var lightness = (max + min) / 2;
+
+            var chroma = max - min;
+
+            if (chroma == 0)
+                return 0;
+
+            return (lightness <= 0.5) ? chroma / (max + min) : chroma / (2 - max - min);
+        }
+
+        public static double GetHslSaturationFromRgbPercent(double min, double max)
+        {
+            var lightness = (max + min) / 2;
+
+            var chroma = max - min;
+
+            if (chroma == 0)
+                return 0;
+
+            return (lightness <= 0.5) ? chroma / (max + min) : chroma / (2 - max - min);
+        }
+
+        public static double GetLightnessFromRgbByteRange(double r, double g, double b)
+        {
+            r /= Byte.MaxValue;
+            g /= Byte.MaxValue;
+            b /= Byte.MaxValue;
+
+            return GetLightnessFromRgbPercent(r, g, b);
+        }
+
+        public static double GetLightnessFromRgbPercent(double r, double g, double b)
+        {
+            var min = Math.Min(Math.Min(r, g), b);
+            var max = Math.Max(Math.Max(r, g), b);
+
+            return (max + min) / 2;
+        }
+
+        public static double GetLightnessFromRgbPercent(double min, double max)
+        {
+            return (max + min) / 2;
+        }
+
+        public static double GetHsvValueFromRgbByteRange(double r, double g, double b)
+        {
+            var max = Math.Max(Math.Max(r, g), b);
+            return max / Byte.MaxValue;
+        }
+
+        public static double GetHsvValueFromRgbByteRange(double max)
+        {
+            return max / Byte.MaxValue;
+        }
+
+        public static double GetHsvSaturationFromRgbByteRange(double r, double g, double b)
+        {
+            var max = Math.Max(r, Math.Max(g, b));
+            var min = Math.Min(r, Math.Min(g, b));
+            return (max == 0) ? 0 : 1.0 - (1.0 * min / max);
+        }
+
+        public static double GetHsvSaturationFromRgbByteRange(double min, double max)
+        {
+            return (max == 0) ? 0 : 1.0 - (1.0 * min / max);
+        }
+
         public static List<double> RgbToHsv(double r, double g, double b)
         {
             double max = Math.Max(r, Math.Max(g, b));
             double min = Math.Min(r, Math.Min(g, b));
 
-            double hue = System.Drawing.Color.FromArgb(255, ToByte(r), ToByte(g), ToByte(b)).GetHue();
-            double saturation = (max == 0) ? 0 : 1d - (1d * min / max);
-            double value = max / 255d;
+            double hue = GetHueFromRgbByteRange(r,g,b);
+            double saturation = GetHsvSaturationFromRgbByteRange(min, max);
+            double value = GetHsvValueFromRgbByteRange(max);
 
             return new List<double>(3) { hue, saturation, value };
         }
@@ -3933,7 +3867,7 @@ namespace ColorSelector
             RefreshRangeBaseVisuals();
         }
 
-        public void ProcessColorChange(string originatingPropertyName)
+        public void ProcessColorChange(string originatingPropertyName = "")
         {
             RawColor c = CurrentColor;
             if (c is null)
@@ -3956,9 +3890,14 @@ namespace ColorSelector
             if (B != c.B)
                 B = c.B;
 
-            System.Drawing.Color d = System.Drawing.Color.FromArgb(colorBytes[0], colorBytes[1], colorBytes[2], colorBytes[3]);
+            double rPercent = c.R / Byte.MaxValue;
+            double gPercent = c.G / Byte.MaxValue;
+            double bPercent = c.B / Byte.MaxValue;
 
-            double hue = d.GetHue();
+            var min = Math.Min(Math.Min(rPercent, gPercent), bPercent);
+            var max = Math.Max(Math.Max(rPercent, gPercent), bPercent);
+
+            double hue = GetHueFromRgbPercent(rPercent, gPercent, bPercent, min, max);
 
             if (H != hue && V > HSL_MIN && S > HSL_MIN && V < SL_MAX && nameof(H) != originatingPropertyName)
                 H = hue;
@@ -3973,8 +3912,8 @@ namespace ColorSelector
             switch (ColorModel)
             {
                 case ColorModel.HSL:
-                    saturation = d.GetSaturation();
-                    value = d.GetBrightness();
+                    saturation = GetHslSaturationFromRgbPercent(min, max);
+                    value = GetLightnessFromRgbPercent(min, max);
                     break;
                 case ColorModel.HSV:
                     var rgb = RgbToModel(c.R, c.G, c.B);
@@ -3983,7 +3922,7 @@ namespace ColorSelector
                     break;
             }
 
-            if (S != saturation && V < SL_MAX && nameof(S) != originatingPropertyName)
+            if (S != saturation && V < SL_MAX && V > HSL_MIN &&  nameof(S) != originatingPropertyName)
                 S = saturation;
 
             if (V != value && nameof(V) != originatingPropertyName)
@@ -4291,7 +4230,7 @@ namespace ColorSelector
 
         public static readonly DependencyProperty HslComponentListProperty =
             DependencyProperty.Register(nameof(HslComponentList), typeof(ObservableCollection<HslComponent>), typeof(ColorSelector), 
-                new PropertyMetadata());
+                new PropertyMetadata(new ObservableCollection<HslComponent>()));
 
         public ObservableCollection<HslComponent> HslComponentList
         {

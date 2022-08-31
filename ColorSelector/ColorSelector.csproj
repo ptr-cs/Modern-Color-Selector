@@ -4,7 +4,28 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Description>Extensible and compact color selector implemented in C# with WPF. Features highly-customizable default ControlTemplate and interactive 3D color models. Works as both standalone (with test application) and as an imported Control.
+
+</Description>
+    <Copyright>Divide By Zeno</Copyright>
+    <PackageProjectUrl>https://github.com/DivideByZeno/Zeno-Color-Selector</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/DivideByZeno/Zeno-Color-Selector</RepositoryUrl>
+    <PackageIcon>zeno_color_selector_ui2.jpg</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>colors;color-selector;color-picker;rgb;hsv;model;3D;WPF;Control</PackageTags>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\media\zeno_color_selector_ui2.jpg">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
