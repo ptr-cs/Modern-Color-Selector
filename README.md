@@ -21,10 +21,11 @@
 - Functions well in nearly any window size, from narrow-wdith window to full-screen
 
 # Setup
-&nbsp;&nbsp;&nbsp;&nbsp;The repository consists of two Visual Studio projects - the ColorSelector project and a companion test application. Opening the ColorSelector/ColorSelector.sln file in Visual Studio should allow both projects to be built and run. To use the ColorSelector as a Control in another WPF application, add the ColorSelector project to the parent solution in Visual Studio, then add a project reference to the ColorSelector project for any projects that will use the ColorSelector.
+&nbsp;&nbsp;&nbsp;&nbsp;The repository consists of three Visual Studio projects - the ColorSelector project, a companion standalone application project, and an NUnit unit testing project. Opening the ColorSelector/ColorSelector.sln file in Visual Studio should allow all projects to be built and run. To use the ColorSelector as a Control in another WPF application, add the ColorSelector project to the parent solution in Visual Studio, then add a project reference to the ColorSelector project for any projects that will use the ColorSelector.
 
 # In-Progress
-- HSV Cone model and integration
+- JSON import and export
+- Dynamically scalable UI controls
 
 # Screenshots
 
