@@ -19,7 +19,7 @@ namespace ColorSelectorUnitTests
         public const double MinSLV = 0.0;
         public const double MaxSLV = 1.0;
         public const int ValidatorRand = 1000;
-        public const string FuzzingChars = " \"!#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+        public const string FuzzingChars = " \"!#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
         readonly ArgbHexadecimalColorStringValidationRule hexRule = new();
         readonly ColorByteStringValidationRule argbRule = new();
         readonly HueStringValidationRule hueRule = new();

@@ -232,6 +232,15 @@
         </Style.Setters>
     </Style>
 
+    <Style TargetType="{x:Type TextBlock}"
+           BasedOn="{StaticResource MenuSectionHeader}"
+           x:Key="MenuSectionHeaderExpanderText">
+        <Style.Setters>
+            <Setter Property="FontSize"
+                    Value="20" />
+        </Style.Setters>
+    </Style>
+
     <Style TargetType="{x:Type Run}"
            x:Key="MenuSectionHeaderRun">
         <Style.Setters>
@@ -1453,8 +1462,6 @@
             </Setter.Value>
         </Setter>
     </Style>
-    
-    
 
     <DataTemplate x:Key="ColorListItemDataTemplate" DataType="{x:Type Color}">
         <Border BorderThickness="0"
@@ -1462,6 +1469,25 @@
                 Width="Auto"
                 x:Name="colorBorder"
                 Height="24">
+            <Border.ToolTip>
+                <TextBlock Text="{Binding Mode=OneWay}" Foreground="Black" Margin="8,0" FontWeight="DemiBold" FontSize="15" FontFamily="Consolas" />
+            </Border.ToolTip>
+            <Border.Resources>
+                <SolidColorBrush x:Key="BackgroundBrush" Color="{Binding Mode=OneWay}" />
+            </Border.Resources>
+            <Border.Background>
+                <StaticResource ResourceKey="BackgroundBrush" />
+            </Border.Background>
+        </Border>
+    </DataTemplate>
+
+    <DataTemplate x:Key="ColorListItemDataTemplateAnimated" DataType="{x:Type Color}">
+        <Border BorderThickness="0"
+                Margin="0"
+                Width="Auto"
+                x:Name="colorBorder"
+                MinHeight="24"
+                MinWidth="24">
             <Border.ToolTip>
                 <TextBlock Text="{Binding Mode=OneWay}" Foreground="Black" Margin="8,0" FontWeight="DemiBold" FontSize="15" FontFamily="Consolas" />
             </Border.ToolTip>
@@ -1769,6 +1795,12 @@
         </Setter>
     </Style>
 
+    <Style TargetType="{x:Type Grid}" x:Key="menuItemGrid">
+        <Setter Property="ClipToBounds" Value="True"/>
+        <Setter Property="Margin" Value="0,4"/>
+        <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+
     <Style x:Key="ExpanderStyle1"
            TargetType="{x:Type Expander}">
         <Setter Property="Foreground"
@@ -1896,6 +1928,9 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:ColorSelector}">
                     <Grid>
+                        <Grid.LayoutTransform>
+                            <ScaleTransform ScaleX="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=ApplicationScale, Mode=OneWay}" ScaleY="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=ApplicationScale, Mode=OneWay}" />
+                        </Grid.LayoutTransform>
                         <Grid Background="{TemplateBinding Background}" x:Name="mainInterface">
                             <Grid.Resources>
                                 <Style TargetType="{x:Type TextBlock}"
@@ -1969,7 +2004,7 @@
                                          HorizontalContentAlignment="Stretch"
                                          Background="Transparent"
                                          IsTabStop="False"
-                                         ItemTemplate="{StaticResource ColorListItemDataTemplate}"
+                                         ItemTemplate="{StaticResource ColorListItemDataTemplateAnimated}"
                                          ItemContainerStyle="{StaticResource ColorSelectorListItemStyle}"
                                          ItemsPanel="{StaticResource ColorListItemPanelTemplate}"
                                              Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=PresetColorsVisible, Mode=OneWay, Converter={StaticResource b2v}}"/>
@@ -2473,7 +2508,7 @@
                                             <TextBlock Text="🗑" FontWeight="Normal" />
                                         </Button>
                                     </Grid>
-                                    
+
 
                                     <ListBox ItemsSource="{Binding Path=CustomColors, Mode=OneWay}"
                                          x:Name="PART_customColorsSelector"
@@ -2486,10 +2521,11 @@
                                          HorizontalAlignment="Stretch"
                                          HorizontalContentAlignment="Stretch"
                                          Background="Transparent"
-                                         ItemTemplate="{StaticResource ColorListItemDataTemplate}"
+                                         ItemTemplate="{StaticResource ColorListItemDataTemplateAnimated}"
                                          ItemContainerStyle="{StaticResource ColorSelectorListItemStyle}"
                                          ItemsPanel="{StaticResource ColorListItemPanelTemplate}" 
-                                        Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=CustomColorsVisible, Mode=OneWay, Converter={StaticResource b2v}}"/>
+                                         Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=CustomColorsVisible, Mode=OneWay, Converter={StaticResource b2v}}">
+                                    </ListBox>
                                 </StackPanel>
                             </ScrollViewer>
 
@@ -2667,12 +2703,17 @@
                                             </StackPanel.Resources>
                                             <Expander Style="{StaticResource ExpanderStyle1}" IsExpanded="False">
                                                 <Expander.Header>
-                                                    <WrapPanel ClipToBounds="True"
-                                                                   Cursor="Hand">
+                                                    <Grid Style="{StaticResource menuItemGrid}">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition />
+                                                            <ColumnDefinition Width="Auto"/>
+                                                        </Grid.ColumnDefinitions>
                                                         <TextBlock Style="{StaticResource MenuSectionHeader}">
-                                                            <Run Text="🖳 " FontWeight="Normal" FontSize="24" BaselineAlignment="Center"/><Run Text="Import Options"/> <Run>
-                                                            <Run.Style>
-                                                                <Style TargetType="{x:Type Run}" BasedOn="{StaticResource MenuSectionHeaderRun}">
+                                                            <Run Text="🎛️ " FontWeight="Normal" FontSize="16" BaselineAlignment="Center"/><Run Text="App Options"/>
+                                                        </TextBlock>
+                                                        <TextBlock Grid.Column="1">
+                                                            <TextBlock.Style>
+                                                                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MenuSectionHeaderExpanderText}">
                                                                     <Setter Property="Text"
                                                                                 Value=" +" />
                                                                     <Style.Triggers>
@@ -2682,11 +2723,78 @@
                                                                         </DataTrigger>
                                                                     </Style.Triggers>
                                                                 </Style>
-                                                            </Run.Style>
-                                                        </Run>
+                                                            </TextBlock.Style>
                                                         </TextBlock>
+                                                    </Grid>
+                                                </Expander.Header>
+                                                <Grid>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition />
+                                                        <RowDefinition />
+                                                        <RowDefinition />
+                                                        <RowDefinition />
+                                                        <RowDefinition />
+                                                        <RowDefinition />
+                                                        <RowDefinition />
+                                                        <RowDefinition />
+                                                    </Grid.RowDefinitions>
+                                                    <Border Grid.Row="1" />
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition />
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBlock Text="Scale" Grid.Column="0" Width="Auto" />
+                                                        <WrapPanel Grid.Column="1" Margin="8">
+                                                            <Button Style="{StaticResource ButtonStyle1}" Margin="0,0,8,0" ToolTip="Reset Scale" 
+                                                                    x:Name="PART_resetAppScaleButtonBase">
+                                                                <TextBlock Text="Reset" Style="{StaticResource buttonText}" Padding="8,0"/>
+                                                            </Button>
+                                                            <WrapPanel>
 
+                                                                <Button Style="{StaticResource ButtonStyle1}" Grid.Column="1" ToolTip="Decrease Scale" Background="{StaticResource redColorBrush}" MinWidth="32"
+                                                                    x:Name="PART_decreaseAppScaleButtonBase">
+                                                                    <TextBlock Text="-" Style="{StaticResource buttonTextIcon}" TextBlock.LineHeight="24" TextBlock.LineStackingStrategy="BlockLineHeight"/>
+                                                                </Button>
+                                                                <Button Style="{StaticResource ButtonStyle1}" Grid.Column="2" ToolTip="Increase Scale" Background="{StaticResource greenColorBrush}" MinWidth="32"
+                                                                    x:Name="PART_increaseAppScaleButtonBase">
+                                                                    <TextBlock Text="+" Style="{StaticResource buttonTextIcon}" TextBlock.LineHeight="24"  TextBlock.LineStackingStrategy="BlockLineHeight"/>
+                                                                </Button>
+                                                            </WrapPanel>
+                                                        </WrapPanel>
+                                                    </Grid>
+                                                    <WrapPanel Grid.Row="1">
+                                                        <TextBlock Text="Orientation" />
+                                                        <ToggleButton IsChecked="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=HexadecimalComponentVisible, Mode=OneWay}"/>
                                                     </WrapPanel>
+                                                </Grid>
+                                            </Expander>
+                                            
+                                            <Expander Style="{StaticResource ExpanderStyle1}" IsExpanded="False">
+                                                <Expander.Header>
+                                                    <Grid Style="{StaticResource menuItemGrid}">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition />
+                                                            <ColumnDefinition Width="Auto"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBlock Style="{StaticResource MenuSectionHeader}">
+                                                            <Run Text="🖳 " FontWeight="Normal" FontSize="24" BaselineAlignment="Center"/><Run Text="Import Options"/>
+                                                        </TextBlock>
+                                                        <TextBlock Grid.Column="1">
+                                                            <TextBlock.Style>
+                                                                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MenuSectionHeaderExpanderText}">
+                                                                    <Setter Property="Text"
+                                                                                Value=" +" />
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Expander}}, Path=IsExpanded, Mode=OneWay}" Value="True">
+                                                                            <Setter Property="Text"
+                                                                                        Value=" −" />
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </TextBlock.Style>
+                                                        </TextBlock>
+                                                    </Grid>
                                                 </Expander.Header>
                                                 <Grid>
                                                     <Grid.RowDefinitions>
@@ -2701,22 +2809,27 @@
                                                     </Grid.RowDefinitions>
                                                     <Border Grid.Row="1" />
 
-                                                    <Button Style="{StaticResource ButtonStyle1}" Margin="8" Padding="8" Height="Auto">
-                                                        <TextBlock Text="Presets from File..." Style="{StaticResource buttonText}" TextWrapping="Wrap"/>
+                                                    <Button Style="{StaticResource ButtonStyle1}" Margin="8,8,8,0" Padding="8" Height="Auto" x:Name="PART_importPresetColorsButtonBase">
+                                                        <TextBlock Text="Presets from .JSON ..." Style="{StaticResource buttonText}" TextWrapping="Wrap"/>
                                                     </Button>
-                                                    <Button Style="{StaticResource ButtonStyle1}" Margin="8" Padding="8" Height="Auto" Grid.Row="1">
-                                                        <TextBlock Text="Custom from File..." Style="{StaticResource buttonText}" TextWrapping="Wrap"/>
+                                                    <Button Style="{StaticResource ButtonStyle1}" Margin="8" Padding="8" Height="Auto" Grid.Row="1" x:Name="PART_importCustomColorsButtonBase">
+                                                        <TextBlock Text="Custom from .JSON ..." Style="{StaticResource buttonText}" TextWrapping="Wrap"/>
                                                     </Button>
                                                 </Grid>
                                             </Expander>
                                             <Expander Style="{StaticResource ExpanderStyle1}" IsExpanded="False">
                                                 <Expander.Header>
-                                                    <WrapPanel ClipToBounds="True"
-                                                                   Cursor="Hand">
+                                                    <Grid Style="{StaticResource menuItemGrid}">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition />
+                                                            <ColumnDefinition Width="Auto"/>
+                                                        </Grid.ColumnDefinitions>
                                                         <TextBlock Style="{StaticResource MenuSectionHeader}">
-                                                            <Run Text="🖫 " FontWeight="Normal" FontSize="24" BaselineAlignment="Center"/><Run Text="Export Options"/> <Run>
-                                                            <Run.Style>
-                                                                <Style TargetType="{x:Type Run}" BasedOn="{StaticResource MenuSectionHeaderRun}">
+                                                            <Run Text="🖫 " FontWeight="Normal" FontSize="24" BaselineAlignment="Center"/><Run Text="Export Options"/>
+                                                        </TextBlock>
+                                                        <TextBlock Grid.Column="1">
+                                                            <TextBlock.Style>
+                                                                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MenuSectionHeaderExpanderText}">
                                                                     <Setter Property="Text"
                                                                                 Value=" +" />
                                                                     <Style.Triggers>
@@ -2726,11 +2839,9 @@
                                                                         </DataTrigger>
                                                                     </Style.Triggers>
                                                                 </Style>
-                                                            </Run.Style>
-                                                        </Run>
+                                                            </TextBlock.Style>
                                                         </TextBlock>
-
-                                                    </WrapPanel>
+                                                    </Grid>
                                                 </Expander.Header>
                                                 <Grid>
                                                     <Grid.RowDefinitions>
@@ -2748,19 +2859,24 @@
                                                     <Button Style="{StaticResource ButtonStyle1}" Margin="8" Padding="8" Height="Auto">
                                                         <TextBlock Text="Presets from File..." Style="{StaticResource buttonText}" TextWrapping="Wrap"/>
                                                     </Button>-->
-                                                    <Button Style="{StaticResource ButtonStyle1}" Margin="8" Padding="8" Height="Auto" Grid.Row="1">
-                                                        <TextBlock Text="Custom to File..." Style="{StaticResource buttonText}" TextWrapping="Wrap"/>
+                                                    <Button x:Name="PART_exportCustomColorsButtonBase" Style="{StaticResource ButtonStyle1}" Margin="8" Padding="8" Height="Auto" Grid.Row="1">
+                                                        <TextBlock Text="Custom to .JSON ..." Style="{StaticResource buttonText}" TextWrapping="Wrap"/>
                                                     </Button>
                                                 </Grid>
                                             </Expander>
-                                            <Expander Style="{StaticResource ExpanderStyle1}" IsExpanded="True">
+                                            <Expander Style="{StaticResource ExpanderStyle1}" IsExpanded="False" >
                                                 <Expander.Header>
-                                                    <WrapPanel ClipToBounds="True"
-                                                                   Cursor="Hand">
+                                                    <Grid Style="{StaticResource menuItemGrid}">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition />
+                                                            <ColumnDefinition Width="Auto"/>
+                                                        </Grid.ColumnDefinitions>
                                                         <TextBlock Style="{StaticResource MenuSectionHeader}">
-                                                            <Run Text="👁 " FontWeight="Normal"/><Run Text="Visible Controls"/> <Run>
-                                                            <Run.Style>
-                                                                <Style TargetType="{x:Type Run}" BasedOn="{StaticResource MenuSectionHeaderRun}">
+                                                            <Run Text="👁 " FontWeight="Normal"/><Run Text="Visible Controls"/> 
+                                                        </TextBlock>
+                                                        <TextBlock Grid.Column="1">
+                                                            <TextBlock.Style>
+                                                                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MenuSectionHeaderExpanderText}">
                                                                     <Setter Property="Text"
                                                                                 Value=" +" />
                                                                     <Style.Triggers>
@@ -2770,11 +2886,9 @@
                                                                         </DataTrigger>
                                                                     </Style.Triggers>
                                                                 </Style>
-                                                            </Run.Style>
-                                                        </Run>
+                                                            </TextBlock.Style>
                                                         </TextBlock>
-
-                                                    </WrapPanel>
+                                                    </Grid>
                                                 </Expander.Header>
                                                 <Grid>
                                                     <Grid.RowDefinitions>
@@ -2821,14 +2935,19 @@
                                                 </Grid>
                                             </Expander>
 
-                                            <Expander Style="{StaticResource ExpanderStyle1}" IsExpanded="True">
+                                            <Expander Style="{StaticResource ExpanderStyle1}" IsExpanded="False">
                                                 <Expander.Header>
-                                                    <WrapPanel ClipToBounds="True"
-                                                                   Cursor="Hand">
+                                                    <Grid Style="{StaticResource menuItemGrid}">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition />
+                                                            <ColumnDefinition Width="Auto"/>
+                                                        </Grid.ColumnDefinitions>
                                                         <TextBlock Style="{StaticResource MenuSectionHeader}">
-                                                        <Run Text="🎚 " FontWeight="Normal"/><Run Text="Component Editors"/> <Run>
-                                                            <Run.Style>
-                                                                <Style TargetType="{x:Type Run}" BasedOn="{StaticResource MenuSectionHeaderRun}">
+                                                            <Run Text="🎚 " FontWeight="Normal"/><Run Text="Component Editors"/> 
+                                                        </TextBlock>
+                                                        <TextBlock Grid.Column="1">
+                                                            <TextBlock.Style>
+                                                                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MenuSectionHeaderExpanderText}">
                                                                     <Setter Property="Text"
                                                                                 Value=" +" />
                                                                     <Style.Triggers>
@@ -2838,10 +2957,9 @@
                                                                         </DataTrigger>
                                                                     </Style.Triggers>
                                                                 </Style>
-                                                            </Run.Style>
-                                                        </Run>
+                                                            </TextBlock.Style>
                                                         </TextBlock>
-                                                    </WrapPanel>
+                                                    </Grid>
                                                 </Expander.Header>
                                                 <Grid>
                                                     <Grid.RowDefinitions>

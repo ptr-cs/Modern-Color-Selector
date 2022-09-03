@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
@@ -507,6 +509,12 @@ namespace ColorSelector
         PART_hDecrementButtonBase,
         PART_sDecrementButtonBase,
         PART_vDecrementButtonBase,
+        PART_importPresetColorsButtonBase,
+        PART_importCustomColorsButtonBase,
+        PART_exportCustomColorsButtonBase,
+        PART_resetAppScaleButtonBase,
+        PART_decreaseAppScaleButtonBase,
+        PART_increaseAppScaleButtonBase,
         PART_hslComponentAreaPanel,
         PART_hslComponentSelector,
         PART_colorModelSelector,
@@ -562,6 +570,12 @@ namespace ColorSelector
     [TemplatePart(Name = nameof(TemplatePart.PART_hDecrementButtonBase), Type = typeof(ButtonBase))]
     [TemplatePart(Name = nameof(TemplatePart.PART_sDecrementButtonBase), Type = typeof(ButtonBase))]
     [TemplatePart(Name = nameof(TemplatePart.PART_vDecrementButtonBase), Type = typeof(ButtonBase))]
+    [TemplatePart(Name = nameof(TemplatePart.PART_importPresetColorsButtonBase), Type = typeof(ButtonBase))]
+    [TemplatePart(Name = nameof(TemplatePart.PART_importCustomColorsButtonBase), Type = typeof(ButtonBase))]
+    [TemplatePart(Name = nameof(TemplatePart.PART_exportCustomColorsButtonBase), Type = typeof(ButtonBase))]
+    [TemplatePart(Name = nameof(TemplatePart.PART_resetAppScaleButtonBase), Type = typeof(ButtonBase))]
+    [TemplatePart(Name = nameof(TemplatePart.PART_decreaseAppScaleButtonBase), Type = typeof(ButtonBase))]
+    [TemplatePart(Name = nameof(TemplatePart.PART_increaseAppScaleButtonBase), Type = typeof(ButtonBase))]
     [TemplatePart(Name = nameof(TemplatePart.PART_hslComponentAreaPanel), Type = typeof(Panel))]
     [TemplatePart(Name = nameof(TemplatePart.PART_hslComponentSelector), Type = typeof(Selector))]
     [TemplatePart(Name = nameof(TemplatePart.PART_colorModelSelector), Type = typeof(Selector))]
@@ -626,15 +640,6 @@ namespace ColorSelector
             double green = g1 + (deltaGreen * fraction);
             double blue = b1 + (deltaBlue * fraction);
             double alpha = a1 + (deltaAlpha * fraction);
-
-            //red = Math.Min(red, 1.0);
-            //red = Math.Max(red, 0.0);
-            //green = Math.Min(green, 1.0);
-            //green = Math.Max(green, 0.0);
-            //blue = Math.Min(blue, 1.0);
-            //blue = Math.Max(blue, 0.0);
-            //alpha = Math.Min(alpha, 1.0);
-            //alpha = Math.Max(alpha, 0.0);
 
             return Color.FromArgb((byte)(alpha * 255), (byte)(red * 255), (byte)(green * 255), (byte)(blue * 255));
         }
@@ -1639,7 +1644,7 @@ namespace ColorSelector
 
                 if (aIncrementButtonBase != null)
                 {
-                    aIncrementButtonBase.Click += AIncrementButtonBase_Click;
+                    aIncrementButtonBase.Click += new RoutedEventHandler(AIncrementButtonBase_Click);
                 }
             }
         }
@@ -1659,7 +1664,7 @@ namespace ColorSelector
 
                 if (rIncrementButtonBase != null)
                 {
-                    rIncrementButtonBase.Click += RIncrementButtonBase_Click;
+                    rIncrementButtonBase.Click += new RoutedEventHandler(RIncrementButtonBase_Click);
                 }
             }
         }
@@ -1679,7 +1684,7 @@ namespace ColorSelector
 
                 if (gIncrementButtonBase != null)
                 {
-                    gIncrementButtonBase.Click += GIncrementButtonBase_Click;
+                    gIncrementButtonBase.Click += new RoutedEventHandler(GIncrementButtonBase_Click);
                 }
             }
         }
@@ -1699,7 +1704,7 @@ namespace ColorSelector
 
                 if (bIncrementButtonBase != null)
                 {
-                    bIncrementButtonBase.Click += BIncrementButtonBase_Click;
+                    bIncrementButtonBase.Click += new RoutedEventHandler(BIncrementButtonBase_Click);
                 }
             }
         }
@@ -1719,7 +1724,7 @@ namespace ColorSelector
 
                 if (hIncrementButtonBase != null)
                 {
-                    hIncrementButtonBase.Click += HIncrementButtonBase_Click;
+                    hIncrementButtonBase.Click += new RoutedEventHandler(HIncrementButtonBase_Click);
                 }
             }
         }
@@ -1739,7 +1744,7 @@ namespace ColorSelector
 
                 if (sIncrementButtonBase != null)
                 {
-                    sIncrementButtonBase.Click += SIncrementButtonBase_Click;
+                    sIncrementButtonBase.Click += new RoutedEventHandler(SIncrementButtonBase_Click);
                 }
             }
         }
@@ -1759,7 +1764,7 @@ namespace ColorSelector
 
                 if (vIncrementButtonBase != null)
                 {
-                    vIncrementButtonBase.Click += VIncrementButtonBase_Click;
+                    vIncrementButtonBase.Click += new RoutedEventHandler(VIncrementButtonBase_Click);
                 }
             }
         }
@@ -1779,7 +1784,7 @@ namespace ColorSelector
 
                 if (aDecrementButtonBase != null)
                 {
-                    aDecrementButtonBase.Click += ADecrementButtonBase_Click;
+                    aDecrementButtonBase.Click += new RoutedEventHandler(ADecrementButtonBase_Click);
                 }
             }
         }
@@ -1799,7 +1804,7 @@ namespace ColorSelector
 
                 if (rDecrementButtonBase != null)
                 {
-                    rDecrementButtonBase.Click += RDecrementButtonBase_Click;
+                    rDecrementButtonBase.Click += new RoutedEventHandler(RDecrementButtonBase_Click);
                 }
             }
         }
@@ -1819,7 +1824,7 @@ namespace ColorSelector
 
                 if (gDecrementButtonBase != null)
                 {
-                    gDecrementButtonBase.Click += GDecrementButtonBase_Click;
+                    gDecrementButtonBase.Click += new RoutedEventHandler(GDecrementButtonBase_Click);
                 }
             }
         }
@@ -1839,7 +1844,7 @@ namespace ColorSelector
 
                 if (bDecrementButtonBase != null)
                 {
-                    bDecrementButtonBase.Click += BDecrementButtonBase_Click;
+                    bDecrementButtonBase.Click += new RoutedEventHandler(BDecrementButtonBase_Click);
                 }
             }
         }
@@ -1859,7 +1864,7 @@ namespace ColorSelector
 
                 if (hDecrementButtonBase != null)
                 {
-                    hDecrementButtonBase.Click += HDecrementButtonBase_Click;
+                    hDecrementButtonBase.Click += new RoutedEventHandler(HDecrementButtonBase_Click);
                 }
             }
         }
@@ -1879,7 +1884,7 @@ namespace ColorSelector
 
                 if (sDecrementButtonBase != null)
                 {
-                    sDecrementButtonBase.Click += SDecrementButtonBase_Click;
+                    sDecrementButtonBase.Click += new RoutedEventHandler(SDecrementButtonBase_Click);
                 }
             }
         }
@@ -1899,8 +1904,245 @@ namespace ColorSelector
 
                 if (vDecrementButtonBase != null)
                 {
-                    vDecrementButtonBase.Click += VDecrementButtonBase_Click;
+                    vDecrementButtonBase.Click += new RoutedEventHandler(VDecrementButtonBase_Click);
                 }
+            }
+        }
+
+        private ButtonBase? importPresetColorsButtonBase;
+        private ButtonBase? ImportPresetColorsButtonBase
+        {
+            get { return importPresetColorsButtonBase; }
+
+            set
+            {
+                if (importPresetColorsButtonBase != null)
+                {
+                    importPresetColorsButtonBase.Click -= new RoutedEventHandler(ImportPresetColorsButtonBase_Click);
+                }
+                importPresetColorsButtonBase = value;
+
+                if (importPresetColorsButtonBase != null)
+                {
+                    importPresetColorsButtonBase.Click += new RoutedEventHandler(ImportPresetColorsButtonBase_Click);
+                }
+            }
+        }
+
+        private void ImportPresetColorsButtonBase_Click(object sender, RoutedEventArgs e)
+        {
+            ImportFromFile(ImportType.PresetColors);
+        }
+
+        private ButtonBase? importCustomColorsButtonBase;
+        private ButtonBase? ImportCustomColorsButtonBase
+        {
+            get { return importCustomColorsButtonBase; }
+
+            set
+            {
+                if (importCustomColorsButtonBase != null)
+                {
+                    importCustomColorsButtonBase.Click -= new RoutedEventHandler(ImportCustomColorsButtonBase_Click);
+                }
+                importCustomColorsButtonBase = value;
+
+                if (importCustomColorsButtonBase != null)
+                {
+                    importCustomColorsButtonBase.Click += new RoutedEventHandler(ImportCustomColorsButtonBase_Click);
+                }
+            }
+        }
+
+        private void ImportCustomColorsButtonBase_Click(object sender, RoutedEventArgs e)
+        {
+            ImportFromFile(ImportType.CustomColors);
+        }
+
+        private ButtonBase? exportCustomColorsButtonBase;
+        private ButtonBase? ExportCustomColorsButtonBase
+        {
+            get { return exportCustomColorsButtonBase; }
+
+            set
+            {
+                if (exportCustomColorsButtonBase != null)
+                {
+                    exportCustomColorsButtonBase.Click -= new RoutedEventHandler(ExportCustomColorsButtonBase_Click);
+                }
+                exportCustomColorsButtonBase = value;
+
+                if (exportCustomColorsButtonBase != null)
+                {
+                    exportCustomColorsButtonBase.Click += new RoutedEventHandler(ExportCustomColorsButtonBase_Click);
+                }
+            }
+        }
+
+        private void ExportCustomColorsButtonBase_Click(object sender, RoutedEventArgs e)
+        {
+            OnExportToFile();
+        }
+
+        private ButtonBase? resetAppScaleButtonBase;
+        private ButtonBase? ResetAppScaleButtonBase
+        {
+            get { return resetAppScaleButtonBase; }
+
+            set
+            {
+                if (resetAppScaleButtonBase != null)
+                {
+                    resetAppScaleButtonBase.Click -= new RoutedEventHandler(ResetAppScaleButtonBase_Click);
+                }
+                resetAppScaleButtonBase = value;
+
+                if (resetAppScaleButtonBase != null)
+                {
+                    resetAppScaleButtonBase.Click += new RoutedEventHandler(ResetAppScaleButtonBase_Click);
+                }
+            }
+        }
+
+        private void ResetAppScaleButtonBase_Click(object sender, RoutedEventArgs e)
+        {
+            ApplicationScale = 1.0;
+        }
+
+        private ButtonBase? decreaseAppScaleButtonBase;
+        private ButtonBase? DecreaseAppScaleButtonBase
+        {
+            get { return decreaseAppScaleButtonBase; }
+
+            set
+            {
+                if (decreaseAppScaleButtonBase != null)
+                {
+                    decreaseAppScaleButtonBase.Click -= new RoutedEventHandler(DecreaseAppScaleButtonBase_Click);
+                }
+                decreaseAppScaleButtonBase = value;
+
+                if (decreaseAppScaleButtonBase != null)
+                {
+                    decreaseAppScaleButtonBase.Click += new RoutedEventHandler(DecreaseAppScaleButtonBase_Click);
+                }
+            }
+        }
+
+        private void DecreaseAppScaleButtonBase_Click(object sender, RoutedEventArgs e)
+        {
+            ApplicationScale = Math.Clamp(ApplicationScale -= 0.1, 1.0, 2.0);
+        }
+
+        private ButtonBase? increaseAppScaleButtonBase;
+        private ButtonBase? IncreaseAppScaleButtonBase
+        {
+            get { return increaseAppScaleButtonBase; }
+
+            set
+            {
+                if (increaseAppScaleButtonBase != null)
+                {
+                    increaseAppScaleButtonBase.Click -= new RoutedEventHandler(IncreaseAppScaleButtonBase_Click);
+                }
+                increaseAppScaleButtonBase = value;
+
+                if (increaseAppScaleButtonBase != null)
+                {
+                    increaseAppScaleButtonBase.Click += new RoutedEventHandler(IncreaseAppScaleButtonBase_Click);
+                }
+            }
+        }
+
+        private void IncreaseAppScaleButtonBase_Click(object sender, RoutedEventArgs e)
+        {
+            ApplicationScale = Math.Clamp(ApplicationScale += 0.1, 1.0, 2.0);
+        }
+
+        private void OnExportToFile()
+        {
+            string fileName = $"{DateTime.Now:MM-dd-yy_H-mm-ss}_colors.json";
+            string jsonString = JsonSerializer.Serialize(CustomColors, new JsonSerializerOptions() { WriteIndented = true });
+
+            var filePath = "";
+            var myDocsDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            var initialDirectory = (myDocsDirectory != "") ? myDocsDirectory : "c:\\";
+
+            using (System.Windows.Forms.SaveFileDialog saveFileDialog = new()
+            {
+                Filter = "JSON files (*.json)|*.json",
+                InitialDirectory = initialDirectory,
+                RestoreDirectory = true,
+                FileName = fileName
+            })
+            {
+                if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    filePath = saveFileDialog.FileName;
+                }
+            }
+
+            if (filePath != "")
+                File.WriteAllText(filePath, jsonString);
+        }
+
+        public enum ImportType
+        {
+            PresetColors = 0,
+            CustomColors = 1
+        }
+
+        private void ImportFromFile(ImportType importType, string filePath = "")
+        {
+            // PresetImportFailed = false;
+
+            if (filePath == "")
+            {
+                var myDocsDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                var initialDirectory = (myDocsDirectory != "") ? myDocsDirectory : "c:\\";
+
+                using (System.Windows.Forms.OpenFileDialog openFileDialog = new()
+                {
+                    Filter = "JSON files (*.json)|*.json",
+                    InitialDirectory = initialDirectory,
+                    RestoreDirectory = true,
+                    CheckFileExists = true
+                })
+                {
+                    if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                    {
+                        filePath = openFileDialog.FileName;
+                    }
+                }
+
+                if (filePath == "")
+                    return;
+            }
+
+
+            string jsonString = File.ReadAllText(filePath);
+
+            try
+            {
+                var collection = JsonSerializer.Deserialize<IEnumerable<Color>>(jsonString);
+                if (collection != null)
+                {
+                    switch (importType)
+                    {
+                        case ImportType.CustomColors:
+                            CustomColors = new ObservableCollection<Color>(collection);
+                            break;
+                        case ImportType.PresetColors:
+                            PresetColors = new ObservableCollection<Color>(collection);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                return;
             }
         }
 
@@ -2081,8 +2323,17 @@ namespace ColorSelector
                 }
             };
 
-            DiffuseMaterial shaderBlack = new(new LinearGradientBrush(new GradientStopCollection() { new GradientStop((Color)ColorConverter.ConvertFromString("#00000000"), 0), new GradientStop(Colors.Black, 1) }) { EndPoint = new Point(1, 0) });
-            DiffuseMaterial shaderWhite = new(new LinearGradientBrush(new GradientStopCollection() { new GradientStop(Colors.Transparent, 0), new GradientStop(Colors.White, 1) }) { StartPoint = new Point(0,1), EndPoint = new Point(0, 0) });
+            DiffuseMaterial shaderBlack = new(new LinearGradientBrush(new GradientStopCollection() 
+            { 
+                new GradientStop((Color)ColorConverter.ConvertFromString("#00000000"), 0), 
+                new GradientStop(Colors.Black, 1) }) { EndPoint = new Point(1, 0) 
+            });
+            DiffuseMaterial shaderWhite = new(new LinearGradientBrush(new GradientStopCollection() 
+            { 
+                new GradientStop(Colors.Transparent, 0), 
+                new GradientStop(Colors.White, 1) 
+            }) { StartPoint = new Point(0,1), 
+                 EndPoint = new Point(0, 0) });
             DiffuseMaterial shaderGray = new(new SolidColorBrush(Colors.Gray));
 
             int faces = 128;
@@ -2186,13 +2437,14 @@ namespace ColorSelector
             Model3DGroup model3DGroup = new();
             model3DGroup.Transform = new Transform3DGroup()
             {
-                Children = {
-                            new ScaleTransform3D(new Vector3D(-.25, -.25, -.25)),
-                            new RotateTransform3D()
-                            {
-                                Rotation = new AxisAngleRotation3D(new Vector3D(-1, 0, 1), -90)
-                            }
-                        }
+                Children = 
+                {
+                    new ScaleTransform3D(new Vector3D(-.25, -.25, -.25)),
+                    new RotateTransform3D()
+                    {
+                        Rotation = new AxisAngleRotation3D(new Vector3D(-1, 0, 1), -90)
+                    }
+                }
             };
 
             MaterialGroup materialGroup1 = new();
@@ -2204,33 +2456,33 @@ namespace ColorSelector
                 Geometry = new MeshGeometry3D()
                 {
                     Positions = new Point3DCollection(new List<Point3D>()
-                            {
-                                new Point3D(1, -1, 1),
-                                new Point3D(1, 1, 1),
-                                new Point3D(-1, 1, 1),
-                                new Point3D(-1, -1, 1),
-                            }),
+                    {
+                        new Point3D(1, -1, 1),
+                        new Point3D(1, 1, 1),
+                        new Point3D(-1, 1, 1),
+                        new Point3D(-1, -1, 1),
+                    }),
 
                     Normals = new Vector3DCollection(new List<Vector3D>()
-                            {
-                                new Vector3D(0, 0, 1),
-                                new Vector3D(0, 0, 1),
-                                new Vector3D(0, 0, 1),
-                                new Vector3D(0, 0, 1),
-                            }),
+                    {
+                        new Vector3D(0, 0, 1),
+                        new Vector3D(0, 0, 1),
+                        new Vector3D(0, 0, 1),
+                        new Vector3D(0, 0, 1),
+                    }),
 
                     TextureCoordinates = new PointCollection(new List<Point>()
-                            {
-                                new Point(0.375, 0.25),
-                                new Point(0.625, 0.25),
-                                new Point(0.625, 0.5),
-                                new Point(0.375, 0.5),
-                            }),
+                    {
+                        new Point(0.375, 0.25),
+                        new Point(0.625, 0.25),
+                        new Point(0.625, 0.5),
+                        new Point(0.375, 0.5),
+                    }),
 
                     TriangleIndices = new Int32Collection(new List<int>()
-                            {
-                                0, 1, 2, 0, 2, 3,
-                            }),
+                    {
+                        0, 1, 2, 0, 2, 3,
+                    }),
                 }
             };
             MaterialGroup materialGroup2 = new();
@@ -2689,14 +2941,21 @@ namespace ColorSelector
                 {
                     BindingOperations.ClearBinding(presetColorsSelector, ItemsControl.ItemsSourceProperty);
                     presetColorsSelector.SelectionChanged -= new SelectionChangedEventHandler(ColorsSelector_SelectionChanged);
+                    presetColorsSelector.PreviewDragEnter -= new DragEventHandler(ColorsSelector_PreviewDragEnter);
+                    presetColorsSelector.PreviewDragLeave -= new DragEventHandler(ColorsSelector_PreviewDragLeave);
+                    presetColorsSelector.PreviewDrop -= new DragEventHandler(PresetColorsSelector_PreviewDrop);
                 }
                 presetColorsSelector = value;
 
                 if (presetColorsSelector != null)
                 {
+                    presetColorsSelector.AllowDrop = true;
                     Binding binding = new(nameof(PresetColors)) { Mode = BindingMode.OneWay, Source = this };
                     presetColorsSelector.SetBinding(ItemsControl.ItemsSourceProperty, binding);
                     presetColorsSelector.SelectionChanged += new SelectionChangedEventHandler(ColorsSelector_SelectionChanged);
+                    presetColorsSelector.PreviewDragEnter += new DragEventHandler(ColorsSelector_PreviewDragEnter);
+                    presetColorsSelector.PreviewDragLeave += new DragEventHandler(ColorsSelector_PreviewDragLeave);
+                    presetColorsSelector.PreviewDrop += new DragEventHandler(PresetColorsSelector_PreviewDrop);
                 }
             }
         }
@@ -2712,16 +2971,68 @@ namespace ColorSelector
                 {
                     BindingOperations.ClearBinding(customColorsSelector, ItemsControl.ItemsSourceProperty);
                     customColorsSelector.SelectionChanged -= new SelectionChangedEventHandler(ColorsSelector_SelectionChanged);
+                    customColorsSelector.PreviewDragEnter -= new DragEventHandler(ColorsSelector_PreviewDragEnter);
+                    customColorsSelector.PreviewDragLeave -= new DragEventHandler(ColorsSelector_PreviewDragLeave);
+                    customColorsSelector.PreviewDrop -= new DragEventHandler(CustomColorsSelector_PreviewDrop);
                 }
                 customColorsSelector = value;
 
                 if (customColorsSelector != null)
                 {
+                    customColorsSelector.AllowDrop = true;
                     Binding binding = new(nameof(CustomColors)) { Mode = BindingMode.OneWay, Source = this };
                     customColorsSelector.SetBinding(ItemsControl.ItemsSourceProperty, binding);
                     customColorsSelector.SelectionChanged += new SelectionChangedEventHandler(ColorsSelector_SelectionChanged);
+                    customColorsSelector.PreviewDragEnter += new DragEventHandler(ColorsSelector_PreviewDragEnter);
+                    customColorsSelector.PreviewDragLeave += new DragEventHandler(ColorsSelector_PreviewDragLeave);
+                    customColorsSelector.PreviewDrop += new DragEventHandler(CustomColorsSelector_PreviewDrop);
                 }
             }
+        }
+
+        private void PresetColorsSelector_PreviewDrop(object sender, DragEventArgs e)
+        {
+            Selector selector = (Selector)sender;
+            if (selector != null)
+            {
+                ProcessColorSelectorFileDrop(e, selector, ImportType.PresetColors);
+            }
+        }
+
+        private void CustomColorsSelector_PreviewDrop(object sender, DragEventArgs e)
+        {
+            Selector selector = (Selector)sender;
+            if (selector != null)
+            {
+                ProcessColorSelectorFileDrop(e, selector, ImportType.CustomColors);
+            }
+        }
+
+        private void ProcessColorSelectorFileDrop(DragEventArgs e, Selector selector, ImportType importType)
+        {
+            selector.Background = new SolidColorBrush(Colors.Transparent);
+            Debug.WriteLine(e.Data);
+            var formats = e.Data.GetFormats();
+            if (!formats.Contains(DataFormats.FileDrop))
+                return;
+
+            string[] formatted = (string[])e.Data.GetData(DataFormats.FileDrop);
+            if (formatted != null && formatted.Length > 0)
+                ImportFromFile(importType, formatted[0]);
+        }
+
+        private void ColorsSelector_PreviewDragLeave(object sender, DragEventArgs e)
+        {
+            Selector selector = (Selector)sender;
+            if (selector != null)
+                selector.Background = new SolidColorBrush(Colors.Transparent);
+        }
+
+        private void ColorsSelector_PreviewDragEnter(object sender, DragEventArgs e)
+        {
+            Selector selector = (Selector)sender;
+            if (selector != null)
+                selector.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#88ffffff"));
         }
 
         readonly GradientStop hslComponentAreaHueLowBoundGraientStop = new() { Color = Colors.Gray, Offset = 0 };
@@ -3373,6 +3684,14 @@ namespace ColorSelector
             HDecrementButtonBase = GetTemplateChild(nameof(TemplatePart.PART_hDecrementButtonBase)) as ButtonBase;
             SDecrementButtonBase = GetTemplateChild(nameof(TemplatePart.PART_sDecrementButtonBase)) as ButtonBase;
             VDecrementButtonBase = GetTemplateChild(nameof(TemplatePart.PART_vDecrementButtonBase)) as ButtonBase;
+
+            ImportPresetColorsButtonBase = GetTemplateChild(nameof(TemplatePart.PART_importPresetColorsButtonBase)) as ButtonBase;
+            ImportCustomColorsButtonBase = GetTemplateChild(nameof(TemplatePart.PART_importCustomColorsButtonBase)) as ButtonBase;
+            ExportCustomColorsButtonBase = GetTemplateChild(nameof(TemplatePart.PART_exportCustomColorsButtonBase)) as ButtonBase;
+
+            ResetAppScaleButtonBase = GetTemplateChild(nameof(TemplatePart.PART_resetAppScaleButtonBase)) as ButtonBase;
+            DecreaseAppScaleButtonBase = GetTemplateChild(nameof(TemplatePart.PART_decreaseAppScaleButtonBase)) as ButtonBase;
+            IncreaseAppScaleButtonBase = GetTemplateChild(nameof(TemplatePart.PART_increaseAppScaleButtonBase)) as ButtonBase;
 
             HexTextBox = GetTemplateChild(nameof(TemplatePart.PART_hexTextBox)) as TextBox;
             ATextBox = GetTemplateChild(nameof(TemplatePart.PART_aTextBox)) as TextBox;
@@ -4118,7 +4437,14 @@ namespace ColorSelector
             GenerateHslComponentAreaContainer(selection);
         }
 
-        public ObservableCollection<Color> CustomColors { get; set; } = new ObservableCollection<Color>() { };
+        public static readonly DependencyProperty CustomColorsProperty =
+            DependencyProperty.Register(nameof(CustomColors), typeof(ObservableCollection<Color>), typeof(ColorSelector), new PropertyMetadata(new ObservableCollection<Color>()));
+
+        public ObservableCollection<Color> CustomColors
+        {
+            get { return (ObservableCollection<Color>)GetValue(CustomColorsProperty); }
+            set { SetValue(CustomColorsProperty, value); }
+        }
 
         public static readonly DependencyProperty PresetColorsProperty =
             DependencyProperty.Register(nameof(PresetColors), typeof(ObservableCollection<Color>), typeof(ColorSelector), new PropertyMetadata(new ObservableCollection<Color>()));
@@ -5028,6 +5354,24 @@ namespace ColorSelector
         {
             get { return (bool)GetValue(HslvComponentVisibleProperty); }
             set { SetValue(HslvComponentVisibleProperty, value); }
+        }
+
+        public static readonly DependencyProperty ApplicationScaleProperty =
+            DependencyProperty.Register(nameof(ApplicationScale), typeof(double), typeof(ColorSelector), new PropertyMetadata(1.0));
+
+        public double ApplicationScale
+        {
+            get { return (double)GetValue(ApplicationScaleProperty); }
+            set { SetValue(ApplicationScaleProperty, value); }
+        }
+
+        public static readonly DependencyProperty ApplicationOrientationProperty =
+            DependencyProperty.Register(nameof(ApplicationOrientation), typeof(Orientation), typeof(ColorSelector), new PropertyMetadata(Orientation.Vertical));
+
+        public Orientation ApplicationOrientation
+        {
+            get { return (Orientation)GetValue(ApplicationOrientationProperty); }
+            set { SetValue(ApplicationOrientationProperty, value); }
         }
     }
 }
