@@ -457,6 +457,16 @@
            BasedOn="{StaticResource BaseButtonStyle}">
     </Style>
 
+    <Style x:Key="MenuButtonStyle1"
+           TargetType="{x:Type Button}"
+           BasedOn="{StaticResource ButtonStyle1}">
+        <Setter Property="Tag">
+            <Setter.Value>
+                <CornerRadius>4,4,4,4</CornerRadius>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style x:Key="RegularToggleButtonStyle"
            TargetType="{x:Type ToggleButton}"
            BasedOn="{StaticResource BaseButtonStyle}">
@@ -1485,6 +1495,7 @@
         <Border BorderThickness="0"
                 Margin="0"
                 Width="Auto"
+                Height="Auto"
                 x:Name="colorBorder"
                 MinHeight="24"
                 MinWidth="24">
@@ -1964,8 +1975,31 @@
                                 </TabControl>
                             </WrapPanel>
 
-                            <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Grid.Row="1">
+                            <ScrollViewer Grid.Row="1">
+                                <ScrollViewer.Style>
+                                    <Style TargetType="{x:Type ScrollViewer}">
+                                        <Setter Property="HorizontalScrollBarVisibility" Value="Disabled"/>
+                                        <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=ApplicationOrientation, Mode=OneWay}" Value="true">
+                                                <Setter Property="HorizontalScrollBarVisibility" Value="Auto"/>
+                                                <Setter Property="VerticalScrollBarVisibility" Value="Disabled"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ScrollViewer.Style>
                                 <StackPanel>
+                                    <StackPanel.Style>
+                                        <Style TargetType="{x:Type StackPanel}">
+                                            <Setter Property="Orientation" Value="Vertical"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=ApplicationOrientation, Mode=OneWay}" Value="true">
+                                                    <Setter Property="Orientation" Value="Horizontal"/>
+                                                    <Setter Property="VerticalAlignment" Value="Stretch"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </StackPanel.Style>
                                     <StackPanel.Resources>
                                         <Style TargetType="{x:Type Slider}"
                                    BasedOn="{StaticResource SliderStyle1}">
@@ -1989,8 +2023,14 @@
                                         Value="24" />
                                             <Setter Property="BorderThickness"
                                         Value="0" />
+                                            <!--<Setter Property="MinWidth" Value="64"/>-->
                                             <Setter Property="FocusVisualStyle"
                                         Value="{StaticResource FocusVisual1}" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=ApplicationOrientation, Mode=OneWay}" Value="true">
+                                                    <Setter Property="MinWidth" Value="64"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
                                         </Style>
                                     </StackPanel.Resources>
                                     <ListBox x:Name="PART_presetColorsSelector"
@@ -1999,18 +2039,29 @@
                                          Padding="0"
                                          BorderThickness="0"
                                          KeyboardNavigation.TabNavigation="Continue"
-                                         Margin="4,8,4,0"
+                                         Margin="4,8"
                                          HorizontalAlignment="Stretch"
                                          HorizontalContentAlignment="Stretch"
+                                         VerticalAlignment="Stretch"
+                                         VerticalContentAlignment="Stretch"
                                          Background="Transparent"
                                          IsTabStop="False"
                                          ItemTemplate="{StaticResource ColorListItemDataTemplateAnimated}"
                                          ItemContainerStyle="{StaticResource ColorSelectorListItemStyle}"
                                          ItemsPanel="{StaticResource ColorListItemPanelTemplate}"
-                                             Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=PresetColorsVisible, Mode=OneWay, Converter={StaticResource b2v}}"/>
+                                         Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=PresetColorsVisible, Mode=OneWay, Converter={StaticResource b2v}}"/>
 
-                                    <Grid Margin="8,8,8,0" 
+                                    <Grid Margin="8,8,8,8" 
                                           Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=Display2dVisible, Mode=OneWay, Converter={StaticResource b2v}}">
+                                        <Grid.Style>
+                                            <Style TargetType="{x:Type Grid}">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=ApplicationOrientation, Mode=OneWay}" Value="true">
+                                                        <Setter Property="MinWidth" Value="300"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Grid.Style>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto" />
                                             <ColumnDefinition Width="Auto" />
@@ -2027,13 +2078,15 @@
                                             </TabControl.ItemTemplate>
                                         </TabControl>
 
-                                        <Slider Grid.Column="1"
-                                    Width="24"
-                                    x:Name="PART_hslRangeBase"
-                                    Background="Black"
-                                    Orientation="Vertical"
-                                    Height="Auto"
-                                    Margin="8,0">
+                                        <Slider 
+                                            Grid.Column="1"
+                                            Width="24"
+                                            MinWidth="0"
+                                            x:Name="PART_hslRangeBase"
+                                            Background="Black"
+                                            Orientation="Vertical"
+                                            Height="Auto"
+                                            Margin="8,0">
                                             <Slider.Style>
                                                 <Style TargetType="{x:Type Slider}"
                                            BasedOn="{StaticResource {x:Type Slider}}">
@@ -2115,21 +2168,118 @@
                                     </Grid>
 
                                     <StackPanel Margin="0,8,0,0" Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=ComponentsVisible, Mode=OneWay, Converter={StaticResource b2v}}">
-                                        <DockPanel Margin="0,0,0,4" Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=HexadecimalComponentVisible, Mode=OneWay, Converter={StaticResource b2v}}">
+                                        <StackPanel.Style>
+                                            <Style TargetType="{x:Type StackPanel}">
+                                                <Setter Property="Orientation" Value="Vertical"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=ApplicationOrientation, Mode=OneWay}" Value="true">
+                                                        <Setter Property="Orientation" Value="Horizontal"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </StackPanel.Style>
+                                        <StackPanel.Resources>
+                                            <Style TargetType="{x:Type TextBox}">
+                                                <Setter Property="Width"
+                                            Value="48" />
+                                                <Setter Property="BorderThickness"
+                                            Value="0" />
+                                                <Setter Property="FontFamily"
+                                            Value="Consolas" />
+                                                <Setter Property="FontSize"
+                                            Value="15" />
+                                                <Setter Property="FontWeight"
+                                            Value="DemiBold" />
+                                                <Setter Property="Foreground"
+                                            Value="#333" />
+                                                <Setter Property="VerticalContentAlignment"
+                                            Value="Center" />
+                                                <Setter Property="Margin"
+                                            Value="0,4,8,4" />
+                                                <Setter Property="Validation.ErrorTemplate"
+                                            Value="{StaticResource textBoxErrorTemplateAdornLeft}" />
+                                                <Style.Triggers>
+                                                    <Trigger Property="Validation.HasError"
+                                                 Value="True">
+                                                        <Setter Property="Margin"
+                                                    Value="32,4,8,4" />
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+
+                                            <Style TargetType="{x:Type RepeatButton}"
+                                       BasedOn="{StaticResource BaseButtonStyle}"
+                                       x:Key="upChevronButton">
+                                                <!--<Setter Property="Delay"
+                                            Value="0" />-->
+                                                <Setter Property="Interval"
+                                            Value="1" />
+                                                <Style.Resources>
+                                                    <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MenuText}">
+                                                        <Setter Property="Margin"
+                                                    Value="0,0,0,16" />
+                                                        <Setter Property="VerticalAlignment"
+                                                    Value="Center" />
+                                                    </Style>
+                                                </Style.Resources>
+                                            </Style>
+
+                                            <Style TargetType="{x:Type RepeatButton}"
+                                       BasedOn="{StaticResource BaseButtonStyle}"
+                                       x:Key="downChevronButton">
+                                                <!--<Setter Property="Delay"
+                                            Value="0" />-->
+                                                <Setter Property="Interval"
+                                            Value="1" />
+                                                <Style.Resources>
+                                                    <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MenuText}">
+                                                        <Setter Property="Margin"
+                                                    Value="0,-24,0,0" />
+                                                        <Setter Property="VerticalAlignment"
+                                                    Value="Center" />
+                                                        <!--<Setter Property="Foreground"
+                                                    Value="{StaticResource whiteColorBrush}" />-->
+                                                    </Style>
+                                                </Style.Resources>
+                                            </Style>
+
+                                            <system:String x:Key="upChevron">🞁</system:String>
+                                            <system:String x:Key="downChevron">🞃</system:String>
+
+                                            <Style TargetType="{x:Type UniformGrid}"
+                                       x:Key="chevronButtonsGrid">
+                                                <!-- Grid.Column="2" Rows="2" Columns="1" Width="24" Height="24" Margin="0,0,8,0"-->
+                                                <Setter Property="Grid.Column"
+                                            Value="3" />
+                                                <Setter Property="UniformGrid.Rows"
+                                            Value="2" />
+                                                <Setter Property="Columns"
+                                            Value="1" />
+                                                <Setter Property="Width"
+                                            Value="24" />
+                                                <Setter Property="Height"
+                                            Value="24" />
+                                                <Setter Property="Margin"
+                                            Value="0,0,8,0" />
+                                            </Style>
+
+                                        </StackPanel.Resources>
+                                        <StackPanel>
+                                            <DockPanel Margin="0,0,0,4" Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=HexadecimalComponentVisible, Mode=OneWay, Converter={StaticResource b2v}}">
                                             <TextBlock Text="Hex"
-                                       Style="{StaticResource buttonText}"
-                                       Margin="8,0,8,0" />
+                                               Style="{StaticResource buttonText}"
+                                               Margin="8,0,8,0" />
                                             <TextBox Height="24"
-                                     BorderThickness="0"
-                                     Foreground="#333"
-                                     FontFamily="Consolas"
-                                     FontWeight="DemiBold"
-                                     FontSize="15"
-                                     Padding="2,0,2,0"
-                                     MaxLength="9"
-                                     x:Name="PART_hexTextBox"
-                                     VerticalContentAlignment="Center"
-                                     Validation.ErrorTemplate="{StaticResource textBoxErrorTemplateAdornRight}">
+                                                 BorderThickness="0"
+                                                 Foreground="#333"
+                                                 FontFamily="Consolas"
+                                                 FontWeight="DemiBold"
+                                                 FontSize="15"
+                                                 Padding="2,0,2,0"
+                                                 MaxLength="9"
+                                                 x:Name="PART_hexTextBox"
+                                                 VerticalContentAlignment="Center"
+                                                 Validation.ErrorTemplate="{StaticResource textBoxErrorTemplateAdornRight}">
                                                 <TextBox.Style>
                                                     <Style TargetType="{x:Type TextBox}">
                                                         <Setter Property="Margin"
@@ -2145,103 +2295,6 @@
                                                 </TextBox.Style>
                                             </TextBox>
                                         </DockPanel>
-
-                                        <Grid Margin="0,0,0,0">
-                                            <Grid.Resources>
-                                                <Style TargetType="{x:Type TextBox}">
-                                                    <Setter Property="Width"
-                                            Value="48" />
-                                                    <Setter Property="BorderThickness"
-                                            Value="0" />
-                                                    <Setter Property="FontFamily"
-                                            Value="Consolas" />
-                                                    <Setter Property="FontSize"
-                                            Value="15" />
-                                                    <Setter Property="FontWeight"
-                                            Value="DemiBold" />
-                                                    <Setter Property="Foreground"
-                                            Value="#333" />
-                                                    <Setter Property="VerticalContentAlignment"
-                                            Value="Center" />
-                                                    <Setter Property="Margin"
-                                            Value="0,4,8,4" />
-                                                    <Setter Property="Validation.ErrorTemplate"
-                                            Value="{StaticResource textBoxErrorTemplateAdornLeft}" />
-                                                    <Style.Triggers>
-                                                        <Trigger Property="Validation.HasError"
-                                                 Value="True">
-                                                            <Setter Property="Margin"
-                                                    Value="32,4,8,4" />
-                                                        </Trigger>
-                                                    </Style.Triggers>
-                                                </Style>
-
-                                                <Style TargetType="{x:Type RepeatButton}"
-                                       BasedOn="{StaticResource BaseButtonStyle}"
-                                       x:Key="upChevronButton">
-                                                    <!--<Setter Property="Delay"
-                                            Value="0" />-->
-                                                    <Setter Property="Interval"
-                                            Value="1" />
-                                                    <Style.Resources>
-                                                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MenuText}">
-                                                            <Setter Property="Margin"
-                                                    Value="0,0,0,16" />
-                                                            <Setter Property="VerticalAlignment"
-                                                    Value="Center" />
-                                                        </Style>
-                                                    </Style.Resources>
-                                                </Style>
-
-                                                <Style TargetType="{x:Type RepeatButton}"
-                                       BasedOn="{StaticResource BaseButtonStyle}"
-                                       x:Key="downChevronButton">
-                                                    <!--<Setter Property="Delay"
-                                            Value="0" />-->
-                                                    <Setter Property="Interval"
-                                            Value="1" />
-                                                    <Style.Resources>
-                                                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MenuText}">
-                                                            <Setter Property="Margin"
-                                                    Value="0,-24,0,0" />
-                                                            <Setter Property="VerticalAlignment"
-                                                    Value="Center" />
-                                                            <!--<Setter Property="Foreground"
-                                                    Value="{StaticResource whiteColorBrush}" />-->
-                                                        </Style>
-                                                    </Style.Resources>
-                                                </Style>
-
-                                                <system:String x:Key="upChevron">🞁</system:String>
-                                                <system:String x:Key="downChevron">🞃</system:String>
-
-                                                <Style TargetType="{x:Type UniformGrid}"
-                                       x:Key="chevronButtonsGrid">
-                                                    <!-- Grid.Column="2" Rows="2" Columns="1" Width="24" Height="24" Margin="0,0,8,0"-->
-                                                    <Setter Property="Grid.Column"
-                                            Value="3" />
-                                                    <Setter Property="UniformGrid.Rows"
-                                            Value="2" />
-                                                    <Setter Property="Columns"
-                                            Value="1" />
-                                                    <Setter Property="Width"
-                                            Value="24" />
-                                                    <Setter Property="Height"
-                                            Value="24" />
-                                                    <Setter Property="Margin"
-                                            Value="0,0,8,0" />
-                                                </Style>
-
-                                            </Grid.Resources>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition />
-                                                <RowDefinition />
-                                                <RowDefinition />
-                                                <RowDefinition />
-                                                <RowDefinition />
-                                                <RowDefinition />
-                                                <RowDefinition />
-                                            </Grid.RowDefinitions>
 
                                             <Grid Grid.Row="0" Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=AlphaComponentVisible, Mode=OneWay, Converter={StaticResource b2v}}">
                                                 <Grid.ColumnDefinitions>
@@ -2272,7 +2325,9 @@
                                                     </RepeatButton>
                                                 </UniformGrid>
                                             </Grid>
+                                        </StackPanel>
 
+                                        <StackPanel>
                                             <Grid Grid.Row="1" Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=RgbComponentVisible, Mode=OneWay, Converter={StaticResource b2v}}">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="Auto" />
@@ -2347,6 +2402,11 @@
                                                     </RepeatButton>
                                                 </UniformGrid>
                                             </Grid>
+                                        </StackPanel>
+
+
+                                        <StackPanel Margin="0,0,0,0">
+                                            
 
                                             <Grid Grid.Row="4" Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=HslvComponentVisible, Mode=OneWay, Converter={StaticResource b2v}}">
                                                 <Grid.ColumnDefinitions>
@@ -2438,76 +2498,74 @@
                                                     </RepeatButton>
                                                 </UniformGrid>
                                             </Grid>
-                                        </Grid>
+                                        </StackPanel>
                                     </StackPanel>
 
                                     
-                                    <Grid Margin="0,8,0,0">
-                                        <Grid.ColumnDefinitions>
+                                    <WrapPanel Margin="0,8,0,0">
+                                        <WrapPanel.Style>
+                                            <Style TargetType="{x:Type WrapPanel}">
+                                                <Setter Property="Orientation" Value="Horizontal"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=ApplicationOrientation, Mode=OneWay}" Value="true">
+                                                        <Setter Property="Orientation" Value="Vertical"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </WrapPanel.Style>
+                                        <!--<Grid.ColumnDefinitions>
                                             <ColumnDefinition />
                                             <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <UniformGrid 
-                                     Margin="4,0,0,0">
-                                            <UniformGrid.Style>
-                                                <Style TargetType="{x:Type UniformGrid}">
-                                                    <Setter Property="Columns" Value="2"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=ColorPreviewVisible, Mode=OneWay}" Value="False">
-                                                            <Setter Property="Columns" Value="1"/>
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=CustomColorsVisible, Mode=OneWay}" Value="False">
-                                                            <Setter Property="Columns" Value="1"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </UniformGrid.Style>
-                                            <Border BorderThickness="0"
+                                        </Grid.ColumnDefinitions>-->
+
+                                        <Border BorderThickness="0"
                                                 Height="32"
+                                                MinWidth="96"
                                                 SnapsToDevicePixels="True"
-                                                Margin="4,0,4,0"
+                                                Margin="8,4"
                                                 Background="{StaticResource checkeredBrush}"
                                                 Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=ColorPreviewVisible, Mode=OneWay, Converter={StaticResource b2v}}">
-                                                <Button Style="{StaticResource ColorSelectorButtonStyle}"
+                                            <Button Style="{StaticResource ColorSelectorButtonStyle}"
                                                     x:Name="PART_selectCustomColorButtonBase"
                                                     Width="Auto"
                                                     IsTabStop="True" >
-                                                    <Button.Resources>
-                                                        <SolidColorBrush x:Key="BackgroundBrush"
+                                                <Button.Resources>
+                                                    <SolidColorBrush x:Key="BackgroundBrush"
                                                          Color="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=CurrentMediaColor, Mode=OneWay}" />
-                                                    </Button.Resources>
-                                                    <Button.Background>
-                                                        <StaticResource ResourceKey="BackgroundBrush" />
-                                                    </Button.Background>
-                                                    <Button.Tag>
-                                                        <CornerRadius>0</CornerRadius>
-                                                    </Button.Tag>
-                                                    <Button.ToolTip>
-                                                        <TextBlock Foreground="Black" Text="{Binding Source={StaticResource BackgroundBrush}, Mode=OneWay, StringFormat='{}{0}'}" />
-                                                    </Button.ToolTip>
-                                                </Button>
-                                            </Border>
+                                                </Button.Resources>
+                                                <Button.Background>
+                                                    <StaticResource ResourceKey="BackgroundBrush" />
+                                                </Button.Background>
+                                                <Button.Tag>
+                                                    <CornerRadius>0</CornerRadius>
+                                                </Button.Tag>
+                                                <Button.ToolTip>
+                                                    <TextBlock Foreground="Black" Text="{Binding Source={StaticResource BackgroundBrush}, Mode=OneWay, StringFormat='{}{0}'}" />
+                                                </Button.ToolTip>
+                                            </Button>
+                                        </Border>
 
-                                            <Button Style="{StaticResource ButtonStyle1}"
+                                        <Button Style="{StaticResource ButtonStyle1}"
                                                 x:Name="PART_saveCustomColorButtonBase"
-                                                Margin="4,0,4,0"
+                                                Margin="8,4"
                                                 IsTabStop="True"
                                                 Height="32"
                                                 Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=CustomColorsVisible, Mode=OneWay, Converter={StaticResource b2v}}">
-                                                <TextBlock Text="Add +" TextWrapping="Wrap"
-                                           TextAlignment="Center"
-                                           Style="{StaticResource buttonText}" />
-                                            </Button>
-                                        </UniformGrid>
+                                            <TextBlock Text="Add +" TextWrapping="Wrap"
+                                                   TextAlignment="Center"
+                                                           Padding="8,0"
+                                                   Style="{StaticResource buttonText}" />
+                                        </Button>
+
                                         <Button Background="{StaticResource redColorBrush}" 
                                                         Style="{StaticResource ButtonStyle1}" 
-                                                    Margin="4,0,8,0"
+                                                    Margin="8,4"
                                                     Grid.Column="1" 
                                                         ToolTip="Delete Saved Colors"
                                                         x:Name="PART_deleteCustomColorsButtonBase">
                                             <TextBlock Text="🗑" FontWeight="Normal" />
                                         </Button>
-                                    </Grid>
+                                    </WrapPanel>
 
 
                                     <ListBox ItemsSource="{Binding Path=CustomColors, Mode=OneWay}"
@@ -2517,9 +2575,11 @@
                                          BorderThickness="0"
                                          IsTabStop="False"
                                          KeyboardNavigation.TabNavigation="Continue"
-                                         Margin="4,8,4,0"
+                                         Margin="4,8"
                                          HorizontalAlignment="Stretch"
                                          HorizontalContentAlignment="Stretch"
+                                         VerticalAlignment="Stretch"
+                                         VerticalContentAlignment="Stretch"
                                          Background="Transparent"
                                          ItemTemplate="{StaticResource ColorListItemDataTemplateAnimated}"
                                          ItemContainerStyle="{StaticResource ColorSelectorListItemStyle}"
@@ -2709,7 +2769,7 @@
                                                             <ColumnDefinition Width="Auto"/>
                                                         </Grid.ColumnDefinitions>
                                                         <TextBlock Style="{StaticResource MenuSectionHeader}">
-                                                            <Run Text="🎛️ " FontWeight="Normal" FontSize="16" BaselineAlignment="Center"/><Run Text="App Options"/>
+                                                            <Run Text="🎛️ " FontWeight="Normal" FontSize="16" BaselineAlignment="Center"/><Run Text="Appearance"/>
                                                         </TextBlock>
                                                         <TextBlock Grid.Column="1">
                                                             <TextBlock.Style>
@@ -2746,122 +2806,44 @@
                                                         </Grid.ColumnDefinitions>
                                                         <TextBlock Text="Scale" Grid.Column="0" Width="Auto" />
                                                         <WrapPanel Grid.Column="1" Margin="8">
-                                                            <Button Style="{StaticResource ButtonStyle1}" Margin="0,0,8,0" ToolTip="Reset Scale" 
+                                                            <Button Style="{StaticResource MenuButtonStyle1}" Margin="0,0,8,0" ToolTip="Reset Scale" 
                                                                     x:Name="PART_resetAppScaleButtonBase">
                                                                 <TextBlock Text="Reset" Style="{StaticResource buttonText}" Padding="8,0"/>
                                                             </Button>
                                                             <WrapPanel>
 
-                                                                <Button Style="{StaticResource ButtonStyle1}" Grid.Column="1" ToolTip="Decrease Scale" Background="{StaticResource redColorBrush}" MinWidth="32"
+                                                                <Button Style="{StaticResource MenuButtonStyle1}" Grid.Column="1" ToolTip="Decrease Interface Scale" Background="{StaticResource redColorBrush}" MinWidth="32"
                                                                     x:Name="PART_decreaseAppScaleButtonBase">
                                                                     <TextBlock Text="-" Style="{StaticResource buttonTextIcon}" TextBlock.LineHeight="24" TextBlock.LineStackingStrategy="BlockLineHeight"/>
+                                                                    <Button.Tag>
+                                                                        <CornerRadius>4,0,0,4</CornerRadius>
+                                                                    </Button.Tag>
                                                                 </Button>
-                                                                <Button Style="{StaticResource ButtonStyle1}" Grid.Column="2" ToolTip="Increase Scale" Background="{StaticResource greenColorBrush}" MinWidth="32"
+                                                                <Button Style="{StaticResource ButtonStyle1}" Grid.Column="2" ToolTip="Increase Interface Scale" Background="{StaticResource greenColorBrush}" MinWidth="32"
                                                                     x:Name="PART_increaseAppScaleButtonBase">
                                                                     <TextBlock Text="+" Style="{StaticResource buttonTextIcon}" TextBlock.LineHeight="24"  TextBlock.LineStackingStrategy="BlockLineHeight"/>
+                                                                    <Button.Tag>
+                                                                        <CornerRadius>0,4,4,0</CornerRadius>
+                                                                    </Button.Tag>
                                                                 </Button>
                                                             </WrapPanel>
                                                         </WrapPanel>
                                                     </Grid>
                                                     <WrapPanel Grid.Row="1">
-                                                        <TextBlock Text="Orientation" />
-                                                        <ToggleButton IsChecked="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=HexadecimalComponentVisible, Mode=OneWay}"/>
+                                                        <TextBlock Text="Orientation:&#10;Vertical" />
+                                                        <ToggleButton ToolTip="Toggle vertical (default) or horizontal interface layout (checked)" x:Name="PART_appOrientationToggleButton">
+                                                            <ToggleButton.Style>
+                                                                <Style TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource MenuSettingToggleButton}">
+                                                                    <Setter Property="IsChecked" Value="False"/>
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=ApplicationOrientation, Mode=OneWay}" Value="true">
+                                                                            <Setter Property="IsChecked" Value="True"/>
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </ToggleButton.Style>
+                                                        </ToggleButton>
                                                     </WrapPanel>
-                                                </Grid>
-                                            </Expander>
-                                            
-                                            <Expander Style="{StaticResource ExpanderStyle1}" IsExpanded="False">
-                                                <Expander.Header>
-                                                    <Grid Style="{StaticResource menuItemGrid}">
-                                                        <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition />
-                                                            <ColumnDefinition Width="Auto"/>
-                                                        </Grid.ColumnDefinitions>
-                                                        <TextBlock Style="{StaticResource MenuSectionHeader}">
-                                                            <Run Text="🖳 " FontWeight="Normal" FontSize="24" BaselineAlignment="Center"/><Run Text="Import Options"/>
-                                                        </TextBlock>
-                                                        <TextBlock Grid.Column="1">
-                                                            <TextBlock.Style>
-                                                                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MenuSectionHeaderExpanderText}">
-                                                                    <Setter Property="Text"
-                                                                                Value=" +" />
-                                                                    <Style.Triggers>
-                                                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Expander}}, Path=IsExpanded, Mode=OneWay}" Value="True">
-                                                                            <Setter Property="Text"
-                                                                                        Value=" −" />
-                                                                        </DataTrigger>
-                                                                    </Style.Triggers>
-                                                                </Style>
-                                                            </TextBlock.Style>
-                                                        </TextBlock>
-                                                    </Grid>
-                                                </Expander.Header>
-                                                <Grid>
-                                                    <Grid.RowDefinitions>
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                    </Grid.RowDefinitions>
-                                                    <Border Grid.Row="1" />
-
-                                                    <Button Style="{StaticResource ButtonStyle1}" Margin="8,8,8,0" Padding="8" Height="Auto" x:Name="PART_importPresetColorsButtonBase">
-                                                        <TextBlock Text="Presets from .JSON ..." Style="{StaticResource buttonText}" TextWrapping="Wrap"/>
-                                                    </Button>
-                                                    <Button Style="{StaticResource ButtonStyle1}" Margin="8" Padding="8" Height="Auto" Grid.Row="1" x:Name="PART_importCustomColorsButtonBase">
-                                                        <TextBlock Text="Custom from .JSON ..." Style="{StaticResource buttonText}" TextWrapping="Wrap"/>
-                                                    </Button>
-                                                </Grid>
-                                            </Expander>
-                                            <Expander Style="{StaticResource ExpanderStyle1}" IsExpanded="False">
-                                                <Expander.Header>
-                                                    <Grid Style="{StaticResource menuItemGrid}">
-                                                        <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition />
-                                                            <ColumnDefinition Width="Auto"/>
-                                                        </Grid.ColumnDefinitions>
-                                                        <TextBlock Style="{StaticResource MenuSectionHeader}">
-                                                            <Run Text="🖫 " FontWeight="Normal" FontSize="24" BaselineAlignment="Center"/><Run Text="Export Options"/>
-                                                        </TextBlock>
-                                                        <TextBlock Grid.Column="1">
-                                                            <TextBlock.Style>
-                                                                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MenuSectionHeaderExpanderText}">
-                                                                    <Setter Property="Text"
-                                                                                Value=" +" />
-                                                                    <Style.Triggers>
-                                                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Expander}}, Path=IsExpanded, Mode=OneWay}" Value="True">
-                                                                            <Setter Property="Text"
-                                                                                        Value=" −" />
-                                                                        </DataTrigger>
-                                                                    </Style.Triggers>
-                                                                </Style>
-                                                            </TextBlock.Style>
-                                                        </TextBlock>
-                                                    </Grid>
-                                                </Expander.Header>
-                                                <Grid>
-                                                    <Grid.RowDefinitions>
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                    </Grid.RowDefinitions>
-                                                    <!--<Border Grid.Row="1" />
-
-                                                    <Button Style="{StaticResource ButtonStyle1}" Margin="8" Padding="8" Height="Auto">
-                                                        <TextBlock Text="Presets from File..." Style="{StaticResource buttonText}" TextWrapping="Wrap"/>
-                                                    </Button>-->
-                                                    <Button x:Name="PART_exportCustomColorsButtonBase" Style="{StaticResource ButtonStyle1}" Margin="8" Padding="8" Height="Auto" Grid.Row="1">
-                                                        <TextBlock Text="Custom to .JSON ..." Style="{StaticResource buttonText}" TextWrapping="Wrap"/>
-                                                    </Button>
                                                 </Grid>
                                             </Expander>
                                             <Expander Style="{StaticResource ExpanderStyle1}" IsExpanded="False" >
@@ -2990,6 +2972,96 @@
                                                         <TextBlock Text="HSLV Channels"/>
                                                         <ToggleButton x:Name="PART_hslvComponentVisibilityToggleButton" IsChecked="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=HslvComponentVisible, Mode=OneWay}"/>
                                                     </WrapPanel>
+                                                </Grid>
+                                            </Expander>
+
+                                            <Expander Style="{StaticResource ExpanderStyle1}" IsExpanded="False">
+                                                <Expander.Header>
+                                                    <Grid Style="{StaticResource menuItemGrid}">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition />
+                                                            <ColumnDefinition Width="Auto"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBlock Style="{StaticResource MenuSectionHeader}">
+                                                            <Run Text="🖳 " FontWeight="Normal" FontSize="24" BaselineAlignment="Center"/><Run Text="Import Options"/>
+                                                        </TextBlock>
+                                                        <TextBlock Grid.Column="1">
+                                                            <TextBlock.Style>
+                                                                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MenuSectionHeaderExpanderText}">
+                                                                    <Setter Property="Text"
+                                                                                Value=" +" />
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Expander}}, Path=IsExpanded, Mode=OneWay}" Value="True">
+                                                                            <Setter Property="Text"
+                                                                                        Value=" −" />
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </TextBlock.Style>
+                                                        </TextBlock>
+                                                    </Grid>
+                                                </Expander.Header>
+                                                <Grid>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition />
+                                                        <RowDefinition />
+                                                        <RowDefinition />
+                                                        <RowDefinition />
+                                                        <RowDefinition />
+                                                        <RowDefinition />
+                                                        <RowDefinition />
+                                                        <RowDefinition />
+                                                    </Grid.RowDefinitions>
+                                                    <Border Grid.Row="1" />
+
+                                                    <Button Style="{StaticResource MenuButtonStyle1}" Margin="8,8,8,0" Padding="8" Height="Auto" x:Name="PART_importPresetColorsButtonBase" ToolTip="Import color presets from a .JSON file">
+                                                        <TextBlock Text="Presets from .JSON ..." Style="{StaticResource buttonText}" TextWrapping="Wrap"/>
+                                                    </Button>
+                                                    <Button Style="{StaticResource MenuButtonStyle1}" Margin="8" Padding="8" Height="Auto" Grid.Row="1" x:Name="PART_importCustomColorsButtonBase" ToolTip="Import custom colors from a .JSON file">
+                                                        <TextBlock Text="Custom from .JSON ..." Style="{StaticResource buttonText}" TextWrapping="Wrap"/>
+                                                    </Button>
+                                                </Grid>
+                                            </Expander>
+                                            <Expander Style="{StaticResource ExpanderStyle1}" IsExpanded="False">
+                                                <Expander.Header>
+                                                    <Grid Style="{StaticResource menuItemGrid}">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition />
+                                                            <ColumnDefinition Width="Auto"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBlock Style="{StaticResource MenuSectionHeader}">
+                                                            <Run Text="🖫 " FontWeight="Normal" FontSize="24" BaselineAlignment="Center"/><Run Text="Export Options"/>
+                                                        </TextBlock>
+                                                        <TextBlock Grid.Column="1">
+                                                            <TextBlock.Style>
+                                                                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MenuSectionHeaderExpanderText}">
+                                                                    <Setter Property="Text"
+                                                                                Value=" +" />
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Expander}}, Path=IsExpanded, Mode=OneWay}" Value="True">
+                                                                            <Setter Property="Text"
+                                                                                        Value=" −" />
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </TextBlock.Style>
+                                                        </TextBlock>
+                                                    </Grid>
+                                                </Expander.Header>
+                                                <Grid>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition />
+                                                        <RowDefinition />
+                                                        <RowDefinition />
+                                                        <RowDefinition />
+                                                        <RowDefinition />
+                                                        <RowDefinition />
+                                                        <RowDefinition />
+                                                        <RowDefinition />
+                                                    </Grid.RowDefinitions>
+                                                    <Button x:Name="PART_exportCustomColorsButtonBase" Style="{StaticResource MenuButtonStyle1}" Margin="8" Padding="8" Height="Auto" Grid.Row="1" ToolTip="Export custom colors to a .JSON file">
+                                                        <TextBlock Text="Custom to .JSON ..." Style="{StaticResource buttonText}" TextWrapping="Wrap"/>
+                                                    </Button>
                                                 </Grid>
                                             </Expander>
                                         </StackPanel>

@@ -535,6 +535,7 @@ namespace ColorSelector
         PART_alphaComponentVisibilityToggleButton,
         PART_rgbComponentVisibilityToggleButton,
         PART_hslvComponentVisibilityToggleButton,
+        PART_appOrientationToggleButton
     }
 
     [TemplatePart(Name = nameof(TemplatePart.PART_hexTextBox), Type = typeof(TextBox))]
@@ -596,6 +597,7 @@ namespace ColorSelector
     [TemplatePart(Name = nameof(TemplatePart.PART_alphaComponentVisibilityToggleButton), Type = typeof(ToggleButton))]
     [TemplatePart(Name = nameof(TemplatePart.PART_rgbComponentVisibilityToggleButton), Type = typeof(ToggleButton))]
     [TemplatePart(Name = nameof(TemplatePart.PART_hslvComponentVisibilityToggleButton), Type = typeof(ToggleButton))]
+    [TemplatePart(Name = nameof(TemplatePart.PART_appOrientationToggleButton), Type = typeof(ToggleButton))]
 
     public class ColorSelector : Control
     {
@@ -1547,6 +1549,38 @@ namespace ColorSelector
                     hslvComponentVisibilityToggleButton.Click += new RoutedEventHandler(HslvComponentVisibilityToggleButton_Click);
                 }
             }
+        }
+
+        private ToggleButton? appOrientationToggleButton;
+        private ToggleButton? AppOrientationToggleButton
+        {
+            get { return appOrientationToggleButton; }
+
+            set
+            {
+                if (appOrientationToggleButton != null)
+                {
+                    appOrientationToggleButton.Checked -= new RoutedEventHandler(AppOrientationToggleButton_Checked);
+                    appOrientationToggleButton.Unchecked -= new RoutedEventHandler(AppOrientationToggleButton_Unchecked);
+                }
+                appOrientationToggleButton = value;
+
+                if (appOrientationToggleButton != null)
+                {
+                    appOrientationToggleButton.Checked += new RoutedEventHandler(AppOrientationToggleButton_Checked);
+                    appOrientationToggleButton.Unchecked += new RoutedEventHandler(AppOrientationToggleButton_Unchecked);
+                }
+            }
+        }
+
+        private void AppOrientationToggleButton_Checked(object sender, RoutedEventArgs e)
+        {
+            ApplicationOrientation = !ApplicationOrientation;
+        }
+
+        private void AppOrientationToggleButton_Unchecked(object sender, RoutedEventArgs e)
+        {
+            ApplicationOrientation = !ApplicationOrientation;
         }
 
         private void HslvComponentVisibilityToggleButton_Click(object sender, RoutedEventArgs e)
@@ -3736,6 +3770,7 @@ namespace ColorSelector
             AlphaComponentVisibilityToggleButton = GetTemplateChild(nameof(TemplatePart.PART_alphaComponentVisibilityToggleButton)) as ToggleButton;
             RgbComponentVisibilityToggleButton = GetTemplateChild(nameof(TemplatePart.PART_rgbComponentVisibilityToggleButton)) as ToggleButton;
             HslvComponentVisibilityToggleButton = GetTemplateChild(nameof(TemplatePart.PART_hslvComponentVisibilityToggleButton)) as ToggleButton;
+            AppOrientationToggleButton = GetTemplateChild(nameof(TemplatePart.PART_appOrientationToggleButton)) as ToggleButton;
 
             HslComponentList = new ObservableCollection<HslComponent>((HslComponent[])Enum.GetValues(typeof(HslComponent)));
             RebuildColorModelList();
@@ -5366,12 +5401,14 @@ namespace ColorSelector
         }
 
         public static readonly DependencyProperty ApplicationOrientationProperty =
-            DependencyProperty.Register(nameof(ApplicationOrientation), typeof(Orientation), typeof(ColorSelector), new PropertyMetadata(Orientation.Vertical));
+            DependencyProperty.Register(nameof(ApplicationOrientation), typeof(bool), typeof(ColorSelector), new PropertyMetadata(false));
 
-        public Orientation ApplicationOrientation
+        public bool ApplicationOrientation
         {
-            get { return (Orientation)GetValue(ApplicationOrientationProperty); }
+            get { return (bool)GetValue(ApplicationOrientationProperty); }
             set { SetValue(ApplicationOrientationProperty, value); }
         }
+
+
     }
 }
