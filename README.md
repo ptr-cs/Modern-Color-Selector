@@ -8,8 +8,11 @@
 ![Zeno Color Selector - Menu demo](/media/zeno_color_selector_menu.gif "Zeno Color Selector - Menu demo")
 
 # Features
+- .JSON file import and export support for loading and saving colors
+- Drag-and-drop support for loading .JSON files when drag-dropping over the Presets and Custom color selectors
+- Dynamic application scale controls, allowing the user to increase the scale of the entire interface if needed.
 - Versatile color selector with modern user interface (UI) and emphasis on user experience (UX)
-- 3D interactive RGB cube and HSV cone color models with click-drag and mouse-wheel support for edit actions.
+- 3D interactive RGB cube and HSV cone color models with click-drag and mouse-wheel support for edit actions
 - Menu with options to control visibility of individual color editor components
 - Clipboard paste support for hexadecimal color strings - paste directly into the Control at any location
 - Ability to define a custom set of preset colors and save custom colors at runtime
