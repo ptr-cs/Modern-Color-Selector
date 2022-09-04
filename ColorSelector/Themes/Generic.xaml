@@ -2748,9 +2748,30 @@
                                             <TextBlock Text="?" FontWeight="Bold" FontSize="18" Style="{StaticResource buttonText}"/>
                                         </Button>
                                     </Grid>
-                                    <ScrollViewer Grid.Row="1"
-                                HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                                    <ScrollViewer Grid.Row="1">
+                                        <ScrollViewer.Style>
+                                            <Style TargetType="{x:Type ScrollViewer}">
+                                                <Setter Property="HorizontalScrollBarVisibility" Value="Disabled"/>
+                                                <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
+                                                <!--<Style.Triggers>
+                                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=ApplicationOrientation, Mode=OneWay}" Value="true">
+                                                        <Setter Property="HorizontalScrollBarVisibility" Value="Auto"/>
+                                                        <Setter Property="VerticalScrollBarVisibility" Value="Disabled"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>-->
+                                            </Style>
+                                        </ScrollViewer.Style>
                                         <StackPanel>
+                                            <StackPanel.Style>
+                                                <Style TargetType="{x:Type StackPanel}">
+                                                    <Setter Property="Orientation" Value="Vertical"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=ApplicationOrientation, Mode=OneWay}" Value="true">
+                                                            <Setter Property="Orientation" Value="Horizontal"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </StackPanel.Style>
                                             <StackPanel.Resources>
                                                 <Style TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource MenuSettingToggleButton}">
                                                     <Setter Property="Grid.Column" Value="1"/>
@@ -3070,17 +3091,7 @@
                                                     </Grid>
                                                 </Expander.Header>
                                                 <Grid>
-                                                    <Grid.RowDefinitions>
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                    </Grid.RowDefinitions>
-                                                    <Button x:Name="PART_exportCustomColorsButtonBase" Style="{StaticResource MenuButtonStyle1}" Margin="8" Padding="8" Height="Auto" Grid.Row="1" ToolTip="Export custom colors to a .JSON file">
+                                                    <Button x:Name="PART_exportCustomColorsButtonBase" Style="{StaticResource MenuButtonStyle1}" Margin="8" Padding="8" Height="Auto" Grid.Row="1" ToolTip="Export custom colors to a .JSON file" VerticalAlignment="Top">
                                                         <TextBlock Text="Custom to .JSON ..." Style="{StaticResource buttonText}" TextWrapping="Wrap"/>
                                                     </Button>
                                                 </Grid>

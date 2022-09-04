@@ -6,7 +6,9 @@
         xmlns:local="clr-namespace:ColorSelectorTestApp"
         xmlns:colorSelector="clr-namespace:ColorSelector;assembly=ColorSelector"
         mc:Ignorable="d"
-        Title="Divide By Zeno" Height="830" Width="300">
+        Width="300"
+        Height="830"
+        Title="Divide By Zeno">
     <Grid>
         <colorSelector:ColorSelector 
             x:Name="colorSelector"

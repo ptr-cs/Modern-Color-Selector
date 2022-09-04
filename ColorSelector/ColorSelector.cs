@@ -4363,6 +4363,33 @@ namespace ColorSelector
             RaiseEvent(routedEventArgs);
         }
 
+
+
+
+
+        public static readonly RoutedEvent OrientationChangedEvent = EventManager.RegisterRoutedEvent(
+        name: nameof(OrientationChanged),
+        routingStrategy: RoutingStrategy.Direct,
+        handlerType: typeof(RoutedEventHandler),
+        ownerType: typeof(ColorSelector));
+
+        public event RoutedEventHandler OrientationChanged
+        {
+            add { AddHandler(OrientationChangedEvent, value); }
+            remove { RemoveHandler(OrientationChangedEvent, value); }
+        }
+
+        void RaiseOrientationChangedEvent()
+        {
+            RoutedEventArgs routedEventArgs = new(routedEvent: OrientationChangedEvent);
+            RaiseEvent(routedEventArgs);
+        }
+
+
+
+
+
+
         public static readonly DependencyProperty HslComponentSelectionProperty =
             DependencyProperty.Register(nameof(HslComponentSelection), typeof(HslComponent), typeof(ColorSelector), new PropertyMetadata(HslComponent.Hue, new PropertyChangedCallback(HslComponentSelectionChangedCallback)));
 
@@ -5401,7 +5428,7 @@ namespace ColorSelector
         }
 
         public static readonly DependencyProperty ApplicationOrientationProperty =
-            DependencyProperty.Register(nameof(ApplicationOrientation), typeof(bool), typeof(ColorSelector), new PropertyMetadata(false));
+            DependencyProperty.Register(nameof(ApplicationOrientation), typeof(bool), typeof(ColorSelector), new PropertyMetadata(false, new PropertyChangedCallback(ApplicationOrientationChanged)));
 
         public bool ApplicationOrientation
         {
@@ -5409,6 +5436,16 @@ namespace ColorSelector
             set { SetValue(ApplicationOrientationProperty, value); }
         }
 
-
+        /// <summary>
+        /// If the color selector's orientation is changed, raise an event in order
+        /// to allow any parent/container objects to respond (resizing, etc.)
+        /// </summary>
+        /// <param name="d"></param>
+        /// <param name="e"></param>
+        private static void ApplicationOrientationChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ColorSelector selector = (ColorSelector)d;
+            selector.RaiseOrientationChangedEvent();
+        }
     }
 }

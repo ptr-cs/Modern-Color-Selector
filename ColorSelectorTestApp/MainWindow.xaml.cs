@@ -48,6 +48,23 @@ namespace ColorSelectorTestApp
                 (Color)ColorConverter.ConvertFromString("#131313")
             };
             presetColors.ForEach(x => colorSelector.PresetColors.Add(x));
+
+            colorSelector.OrientationChanged += ColorSelector_OrientationChanged;
+        }
+
+        private void ColorSelector_OrientationChanged(object sender, RoutedEventArgs e)
+        {
+            switch (colorSelector.ApplicationOrientation)
+            {
+                case false:
+                    this.Width = 300;
+                    this.Height = 830;
+                    break;
+                case true:
+                    this.Width = 1620;
+                    this.Height = 230;
+                    break;
+            }
         }
 
         private void ColorSelector_ColorSelected(object sender, RoutedEventArgs e)
