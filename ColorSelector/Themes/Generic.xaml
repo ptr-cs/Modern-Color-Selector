@@ -2600,6 +2600,51 @@
                                 </Border.Background>
                             </Border>
                         </Grid>
+                        <Border Grid.RowSpan="2" IsHitTestVisible="True" IsEnabled="True" x:Name="PART_closeMenuDecorator">
+                            <Border.BitmapEffect>
+                                <BlurBitmapEffect Radius="10" />
+                            </Border.BitmapEffect>
+                            <Border.Background>
+                                <VisualBrush Visual="{Binding ElementName=mainInterface, Mode=OneWay}" Stretch="None" AutoLayoutContent="False" AlignmentX="Left" AlignmentY="Top"/>
+                            </Border.Background>
+                            <Border.Style>
+                                <Style TargetType="{x:Type Border}">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=IsMenuOpen, Mode=OneWay}" Value="true">
+                                            <DataTrigger.EnterActions>
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.Visibility)">
+                                                            <DiscreteObjectKeyFrame KeyTime="0:0:0" Value="{x:Static Visibility.Visible}"/>
+                                                        </ObjectAnimationUsingKeyFrames>
+                                                        <DoubleAnimation Storyboard.TargetProperty="(Border.BitmapEffect).(BlurBitmapEffect.Radius)" From="0" To="10" Duration="0:0:0.3">
+                                                            <DoubleAnimation.EasingFunction>
+                                                                <SineEase EasingMode="EaseOut"/>
+                                                            </DoubleAnimation.EasingFunction>
+                                                        </DoubleAnimation>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </DataTrigger.EnterActions>
+                                            <DataTrigger.ExitActions>
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation Storyboard.TargetProperty="(Border.BitmapEffect).(BlurBitmapEffect.Radius)" To="0" Duration="0:0:0.3">
+                                                            <DoubleAnimation.EasingFunction>
+                                                                <SineEase EasingMode="EaseIn"/>
+                                                            </DoubleAnimation.EasingFunction>
+                                                        </DoubleAnimation>
+                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.Visibility)">
+                                                            <DiscreteObjectKeyFrame KeyTime="0:0:0.3" Value="{x:Static Visibility.Collapsed}"/>
+                                                        </ObjectAnimationUsingKeyFrames>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </DataTrigger.ExitActions>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                        </Border>
                         <Grid HorizontalAlignment="Stretch" >
                             <Grid.Style>
                                 <Style TargetType="{x:Type Grid}">
@@ -2630,44 +2675,7 @@
                                     </Style.Triggers>
                                 </Style>
                             </Grid.Style>
-                            <Border Grid.ColumnSpan="2" IsHitTestVisible="True" IsEnabled="True" x:Name="PART_closeMenuDecorator">
-                                <Border.BitmapEffect>
-                                    <BlurBitmapEffect Radius="10" />
-                                </Border.BitmapEffect>
-                                <Border.Background>
-                                    <VisualBrush Visual="{Binding ElementName=mainInterface, Mode=OneWay}" />
-                                </Border.Background>
-                                <Border.Style>
-                                    <Style TargetType="{x:Type Border}">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=IsMenuOpen, Mode=OneWay}" Value="true">
-                                                <DataTrigger.EnterActions>
-                                                    <BeginStoryboard>
-                                                        <Storyboard>
-                                                            <DoubleAnimation Storyboard.TargetProperty="(Border.BitmapEffect).(BlurBitmapEffect.Radius)" From="0" To="10" Duration="0:0:0.3">
-                                                                <DoubleAnimation.EasingFunction>
-                                                                    <SineEase EasingMode="EaseOut"/>
-                                                                </DoubleAnimation.EasingFunction>
-                                                            </DoubleAnimation>
-                                                        </Storyboard>
-                                                    </BeginStoryboard>
-                                                </DataTrigger.EnterActions>
-                                                <DataTrigger.ExitActions>
-                                                    <BeginStoryboard>
-                                                        <Storyboard>
-                                                            <DoubleAnimation Storyboard.TargetProperty="(Border.BitmapEffect).(BlurBitmapEffect.Radius)" To="0" Duration="0:0:0.3">
-                                                                <DoubleAnimation.EasingFunction>
-                                                                    <SineEase EasingMode="EaseIn"/>
-                                                                </DoubleAnimation.EasingFunction>
-                                                            </DoubleAnimation>
-                                                        </Storyboard>
-                                                    </BeginStoryboard>
-                                                </DataTrigger.ExitActions>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Border.Style>
-                            </Border>
+                            
                             <Grid HorizontalAlignment="Left" x:Name="menuPanel">
                                 <Grid.Style>
                                     <Style TargetType="{x:Type Grid}">
@@ -2830,7 +2838,20 @@
                                                         </WrapPanel>
                                                     </Grid>
                                                     <WrapPanel Grid.Row="1">
-                                                        <TextBlock Text="Orientation:&#10;Vertical" />
+                                                        <TextBlock>
+                                                            <Run  Text="Orientation:&#10;"/><Run>
+                                                                <Run.Style>
+                                                                    <Style TargetType="{x:Type Run}">
+                                                                        <Setter Property="Text" Value="Vertical"/>
+                                                                        <Style.Triggers>
+                                                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=ApplicationOrientation, Mode=OneWay}" Value="true">
+                                                                            <Setter Property="Text" Value="Horizontal"/>
+                                                                        </DataTrigger>
+                                                                        </Style.Triggers>
+                                                                    </Style>
+                                                                </Run.Style>
+                                                            </Run>
+                                                        </TextBlock>
                                                         <ToggleButton ToolTip="Toggle vertical (default) or horizontal interface layout (checked)" x:Name="PART_appOrientationToggleButton">
                                                             <ToggleButton.Style>
                                                                 <Style TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource MenuSettingToggleButton}">
