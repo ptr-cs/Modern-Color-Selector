@@ -34,10 +34,11 @@ For a more detailed explanation of the code, [a blog post about the project is a
 
 # Screenshots
 
-![Zeno Color Selector - HSL color mode](/media/zeno_color_selector_HSL.png "Zeno Color Selector - HSL color mode")
-![Zeno Color Selector - Wide Window](/media/zeno_color_selector_large_window.png "Zeno Color Selector - Wide Window")
-![Zeno Color Selector - Condensed Window](/media/zeno_color_selector_condensed.png "Zeno Color Selector - Condensed Window")
-![Zeno Color Selector - Menu](/media/zeno_color_selector_menu.png "Zeno Color Selector - Menu")
+![Zeno Color Selector - HSL color mode](/media/zeno_color_selector (5).png "Zeno Color Selector - HSL color mode")
+![Zeno Color Selector - Wide Window](/media/zeno_color_selector (3).png "Zeno Color Selector - Wide Window")
+![Zeno Color Selector - Condensed Window](/media/zeno_color_selector (2).png "Zeno Color Selector - Condensed Window")
+![Zeno Color Selector - Menu](/media/zeno_color_selector (4).png "Zeno Color Selector - Menu")
+![Zeno Color Selector - Horizontal layout mode](/media/zeno_color_selector (1).png "Zeno Color Selector - Horizontal layout mode")
 
 # Adobe XD Prototype
 
