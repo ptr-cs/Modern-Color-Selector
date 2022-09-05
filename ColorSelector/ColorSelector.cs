@@ -44,6 +44,33 @@ namespace ColorSelector
         HSV = 1
     };
 
+    public class DelegateCommand : ICommand
+    {
+        private readonly Action<object?>? _executeAction;
+        private readonly Func<object?, bool>? _canExecuteAction;
+
+        public DelegateCommand(Action<object?>? executeAction, Func<object?, bool>? canExecuteAction)
+        {
+            _executeAction = executeAction;
+            _canExecuteAction = canExecuteAction;
+        }
+
+        public void Execute(object? parameter)
+        {
+            if (_executeAction is not null)
+                if (parameter is not null)
+                    _executeAction(parameter);
+                else
+                    _executeAction(null);
+        }
+
+        public bool CanExecute(object? parameter) => _canExecuteAction?.Invoke(parameter) ?? true;
+
+        public event EventHandler? CanExecuteChanged;
+
+        public void InvokeCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+    }
+
     public class RawColor : IFormattable
     {
         public double A { get; set; } = 0;
@@ -523,7 +550,7 @@ namespace ColorSelector
         PART_hsl3dDisplayDecorator,
         PART_menuOpenButton,
         PART_menuCloseButton,
-        PART_closeMenuDecorator,
+        PART_closeMenuAppAreaButton,
         PART_colorModelsVisibilityToggleButton,
         PART_presetColorsVisibilityToggleButton,
         PART_display2dVisibilityToggleButton,
@@ -585,7 +612,7 @@ namespace ColorSelector
     [TemplatePart(Name = nameof(TemplatePart.PART_hsl3dDisplayDecorator), Type = typeof(Decorator))]
     [TemplatePart(Name = nameof(TemplatePart.PART_menuOpenButton), Type = typeof(ButtonBase))]
     [TemplatePart(Name = nameof(TemplatePart.PART_menuCloseButton), Type = typeof(ButtonBase))]
-    [TemplatePart(Name = nameof(TemplatePart.PART_closeMenuDecorator), Type = typeof(Decorator))]
+    [TemplatePart(Name = nameof(TemplatePart.PART_closeMenuAppAreaButton), Type = typeof(ButtonBase))]
     [TemplatePart(Name = nameof(TemplatePart.PART_colorModelsVisibilityToggleButton), Type = typeof(ToggleButton))]
     [TemplatePart(Name = nameof(TemplatePart.PART_presetColorsVisibilityToggleButton), Type = typeof(ToggleButton))]
     [TemplatePart(Name = nameof(TemplatePart.PART_display2dVisibilityToggleButton), Type = typeof(ToggleButton))]
@@ -601,6 +628,178 @@ namespace ColorSelector
 
     public class ColorSelector : Control
     {
+        public ICommand ToggleMenuCommand { get; set; }
+        public ICommand ToggleColorModelsVisibilityCommand { get; set; }
+        public ICommand TogglePresetColorsVisibilityCommand { get; set; }
+        public ICommand ToggleDisplay2dVisibilityCommand { get; set; }
+        public ICommand ToggleDisplay3dVisibilityCommand { get; set; }
+        public ICommand ToggleComponentsVisibilityCommand { get; set; }
+        public ICommand ToggleColorPreviewVisibilityCommand { get; set; }
+        public ICommand ToggleCustomColorsVisibilityCommand { get; set; }
+        public ICommand ToggleHexadecimalComponentVisibilityCommand { get; set; }
+        public ICommand ToggleAlphaComponentVisibilityCommand { get; set; }
+        public ICommand ToggleRgbComponentVisibilityCommand { get; set; }
+        public ICommand ToggleHslvComponentVisibilityCommand { get; set; }
+        public ICommand ToggleApplicationOrientationCommand { get; set; }
+        public ICommand DeleteCustomColorsCommand { get; set; }
+        public ICommand SaveCustomColorCommand { get; set; }
+        public ICommand SelectCustomColorCommand { get; set; }
+        public ICommand ImportPresetColorsCommand { get; set; }
+        public ICommand ImportCustomColorsCommand { get; set; }
+        public ICommand ExportCustomColorsCommand { get; set; }
+        public ICommand ResetAppScaleCommand { get; set; }
+        public ICommand DecreaseAppScaleCommand { get; set; }
+        public ICommand IncreaseAppScaleCommand { get; set; }
+        public ICommand ADecrementCommand { get; set; }
+        public ICommand RDecrementCommand { get; set; }
+        public ICommand GDecrementCommand { get; set; }
+        public ICommand BDecrementCommand { get; set; }
+        public ICommand HDecrementCommand { get; set; }
+        public ICommand SDecrementCommand { get; set; }
+        public ICommand VDecrementCommand { get; set; }
+        public ICommand AIncrementCommand { get; set; }
+        public ICommand RIncrementCommand { get; set; }
+        public ICommand GIncrementCommand { get; set; }
+        public ICommand BIncrementCommand { get; set; }
+        public ICommand HIncrementCommand { get; set; }
+        public ICommand SIncrementCommand { get; set; }
+        public ICommand VIncrementCommand { get; set; }
+
+        public ColorSelector()
+        {
+            ToggleMenuCommand = new DelegateCommand(ToggleMenu, null);
+            ToggleColorModelsVisibilityCommand = new DelegateCommand(ToggleColorModelsVisibility, null);
+            TogglePresetColorsVisibilityCommand = new DelegateCommand(TogglePresetColorsVisibility, null);
+            ToggleDisplay2dVisibilityCommand = new DelegateCommand(ToggleDisplay2dVisibility, null);
+            ToggleDisplay3dVisibilityCommand = new DelegateCommand(ToggleDisplay3dVisibility, null);
+            ToggleComponentsVisibilityCommand = new DelegateCommand(ToggleComponentsVisibility, null);
+            ToggleColorPreviewVisibilityCommand = new DelegateCommand(ToggleColorPreviewVisibility, null);
+            ToggleCustomColorsVisibilityCommand = new DelegateCommand(ToggleCustomColorsVisibility, null);
+            ToggleHexadecimalComponentVisibilityCommand = new DelegateCommand(ToggleHexadecimalComponentVisibility, null);
+            ToggleAlphaComponentVisibilityCommand = new DelegateCommand(ToggleAlphaComponentVisibility, null);
+            ToggleRgbComponentVisibilityCommand = new DelegateCommand(ToggleRgbComponentVisibility, null);
+            ToggleHslvComponentVisibilityCommand = new DelegateCommand(ToggleHslvComponentVisibility, null);
+            ToggleApplicationOrientationCommand = new DelegateCommand(ToggleApplicationOrientation, null);
+            DeleteCustomColorsCommand = new DelegateCommand(DeleteCustomColors, null);
+            SaveCustomColorCommand = new DelegateCommand(SaveCustomColor, null);
+            SelectCustomColorCommand = new DelegateCommand(SelectCustomColor, null);
+            ImportPresetColorsCommand = new DelegateCommand(ImportPresetColors, null);
+            ImportCustomColorsCommand = new DelegateCommand(ImportCustomColors, null);
+            ExportCustomColorsCommand = new DelegateCommand(ExportCustomColors, null);
+            ResetAppScaleCommand = new DelegateCommand(ResetAppScale, null);
+            DecreaseAppScaleCommand = new DelegateCommand(DecreaseAppScale, null);
+            IncreaseAppScaleCommand = new DelegateCommand(IncreaseAppScale, null);
+            ADecrementCommand = new DelegateCommand(ADecrement, null);
+            RDecrementCommand = new DelegateCommand(RDecrement, null);
+            GDecrementCommand = new DelegateCommand(GDecrement, null);
+            BDecrementCommand = new DelegateCommand(BDecrement, null);
+            HDecrementCommand = new DelegateCommand(HDecrement, null);
+            SDecrementCommand = new DelegateCommand(SDecrement, null);
+            VDecrementCommand = new DelegateCommand(VDecrement, null);
+            AIncrementCommand = new DelegateCommand(AIncrement, null);
+            RIncrementCommand = new DelegateCommand(RIncrement, null);
+            GIncrementCommand = new DelegateCommand(GIncrement, null);
+            BIncrementCommand = new DelegateCommand(BIncrement, null);
+            HIncrementCommand = new DelegateCommand(HIncrement, null);
+            SIncrementCommand = new DelegateCommand(SIncrement, null);
+            VIncrementCommand = new DelegateCommand(VIncrement, null);
+        }
+
+        static ColorSelector()
+        {
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(ColorSelector), new FrameworkPropertyMetadata(typeof(ColorSelector)));
+        }
+
+        public override void OnApplyTemplate()
+        {
+            SelectCustomColorButtonBase = GetTemplateChild(nameof(TemplatePart.PART_selectCustomColorButtonBase)) as ButtonBase;
+            SaveCustomColorButtonBase = GetTemplateChild(nameof(TemplatePart.PART_saveCustomColorButtonBase)) as ButtonBase;
+            DeleteCustomColorsButtonBase = GetTemplateChild(nameof(TemplatePart.PART_deleteCustomColorsButtonBase)) as ButtonBase;
+
+            AIncrementButtonBase = GetTemplateChild(nameof(TemplatePart.PART_aIncrementButtonBase)) as ButtonBase;
+            RIncrementButtonBase = GetTemplateChild(nameof(TemplatePart.PART_rIncrementButtonBase)) as ButtonBase;
+            GIncrementButtonBase = GetTemplateChild(nameof(TemplatePart.PART_gIncrementButtonBase)) as ButtonBase;
+            BIncrementButtonBase = GetTemplateChild(nameof(TemplatePart.PART_bIncrementButtonBase)) as ButtonBase;
+            HIncrementButtonBase = GetTemplateChild(nameof(TemplatePart.PART_hIncrementButtonBase)) as ButtonBase;
+            SIncrementButtonBase = GetTemplateChild(nameof(TemplatePart.PART_sIncrementButtonBase)) as ButtonBase;
+            VIncrementButtonBase = GetTemplateChild(nameof(TemplatePart.PART_vIncrementButtonBase)) as ButtonBase;
+
+            ADecrementButtonBase = GetTemplateChild(nameof(TemplatePart.PART_aDecrementButtonBase)) as ButtonBase;
+            RDecrementButtonBase = GetTemplateChild(nameof(TemplatePart.PART_rDecrementButtonBase)) as ButtonBase;
+            GDecrementButtonBase = GetTemplateChild(nameof(TemplatePart.PART_gDecrementButtonBase)) as ButtonBase;
+            BDecrementButtonBase = GetTemplateChild(nameof(TemplatePart.PART_bDecrementButtonBase)) as ButtonBase;
+            HDecrementButtonBase = GetTemplateChild(nameof(TemplatePart.PART_hDecrementButtonBase)) as ButtonBase;
+            SDecrementButtonBase = GetTemplateChild(nameof(TemplatePart.PART_sDecrementButtonBase)) as ButtonBase;
+            VDecrementButtonBase = GetTemplateChild(nameof(TemplatePart.PART_vDecrementButtonBase)) as ButtonBase;
+
+            ImportPresetColorsButtonBase = GetTemplateChild(nameof(TemplatePart.PART_importPresetColorsButtonBase)) as ButtonBase;
+            ImportCustomColorsButtonBase = GetTemplateChild(nameof(TemplatePart.PART_importCustomColorsButtonBase)) as ButtonBase;
+            ExportCustomColorsButtonBase = GetTemplateChild(nameof(TemplatePart.PART_exportCustomColorsButtonBase)) as ButtonBase;
+
+            ResetAppScaleButtonBase = GetTemplateChild(nameof(TemplatePart.PART_resetAppScaleButtonBase)) as ButtonBase;
+            DecreaseAppScaleButtonBase = GetTemplateChild(nameof(TemplatePart.PART_decreaseAppScaleButtonBase)) as ButtonBase;
+            IncreaseAppScaleButtonBase = GetTemplateChild(nameof(TemplatePart.PART_increaseAppScaleButtonBase)) as ButtonBase;
+
+            HexTextBox = GetTemplateChild(nameof(TemplatePart.PART_hexTextBox)) as TextBox;
+            ATextBox = GetTemplateChild(nameof(TemplatePart.PART_aTextBox)) as TextBox;
+            RTextBox = GetTemplateChild(nameof(TemplatePart.PART_rTextBox)) as TextBox;
+            GTextBox = GetTemplateChild(nameof(TemplatePart.PART_gTextBox)) as TextBox;
+            BTextBox = GetTemplateChild(nameof(TemplatePart.PART_bTextBox)) as TextBox;
+            HTextBox = GetTemplateChild(nameof(TemplatePart.PART_hTextBox)) as TextBox;
+            STextBox = GetTemplateChild(nameof(TemplatePart.PART_sTextBox)) as TextBox;
+            VTextBox = GetTemplateChild(nameof(TemplatePart.PART_vTextBox)) as TextBox;
+
+            ARangeBase = GetTemplateChild(nameof(TemplatePart.PART_aRangeBase)) as RangeBase;
+            RRangeBase = GetTemplateChild(nameof(TemplatePart.PART_rRangeBase)) as RangeBase;
+            GRangeBase = GetTemplateChild(nameof(TemplatePart.PART_gRangeBase)) as RangeBase;
+            BRangeBase = GetTemplateChild(nameof(TemplatePart.PART_bRangeBase)) as RangeBase;
+            HRangeBase = GetTemplateChild(nameof(TemplatePart.PART_hRangeBase)) as RangeBase;
+            SRangeBase = GetTemplateChild(nameof(TemplatePart.PART_sRangeBase)) as RangeBase;
+            VRangeBase = GetTemplateChild(nameof(TemplatePart.PART_vRangeBase)) as RangeBase;
+            HslRangeBase = GetTemplateChild(nameof(TemplatePart.PART_hslRangeBase)) as RangeBase;
+
+            PresetColorsSelector = GetTemplateChild(nameof(TemplatePart.PART_presetColorsSelector)) as Selector;
+            CustomColorsSelector = GetTemplateChild(nameof(TemplatePart.PART_customColorsSelector)) as Selector;
+            HslComponentSelector = GetTemplateChild(nameof(TemplatePart.PART_hslComponentSelector)) as Selector;
+            ColorModelSelector = GetTemplateChild(nameof(TemplatePart.PART_colorModelSelector)) as Selector;
+
+            HslComponentArea = GetTemplateChild(nameof(TemplatePart.PART_hslComponentAreaPanel)) as Panel;
+
+            Hsl3dDisplayDecorator = GetTemplateChild(nameof(TemplatePart.PART_hsl3dDisplayDecorator)) as Decorator;
+
+            MenuOpenButtonBase = GetTemplateChild(nameof(TemplatePart.PART_menuOpenButton)) as ButtonBase;
+            MenuCloseButtonBase = GetTemplateChild(nameof(TemplatePart.PART_menuCloseButton)) as ButtonBase;
+            CloseMenuDecorator = GetTemplateChild(nameof(TemplatePart.PART_closeMenuAppAreaButton)) as ButtonBase;
+
+            ColorModelsVisibilityToggleButton = GetTemplateChild(nameof(TemplatePart.PART_colorModelsVisibilityToggleButton)) as ToggleButton;
+            PresetColorsVisibilityToggleButton = GetTemplateChild(nameof(TemplatePart.PART_presetColorsVisibilityToggleButton)) as ToggleButton;
+            Display2dVisibilityToggleButton = GetTemplateChild(nameof(TemplatePart.PART_display2dVisibilityToggleButton)) as ToggleButton;
+            Display3dVisibilityToggleButton = GetTemplateChild(nameof(TemplatePart.PART_display3dVisibilityToggleButton)) as ToggleButton;
+            ComponentsVisibilityToggleButton = GetTemplateChild(nameof(TemplatePart.PART_componentsVisibilityToggleButton)) as ToggleButton;
+            ColorPreviewVisibilityToggleButton = GetTemplateChild(nameof(TemplatePart.PART_colorPreviewVisibilityToggleButton)) as ToggleButton;
+            CustomColorsVisibilityToggleButton = GetTemplateChild(nameof(TemplatePart.PART_customColorsVisibilityToggleButton)) as ToggleButton;
+
+            HexadecimalComponentVisibilityToggleButton = GetTemplateChild(nameof(TemplatePart.PART_hexadecimalComponentVisibilityToggleButton)) as ToggleButton;
+            AlphaComponentVisibilityToggleButton = GetTemplateChild(nameof(TemplatePart.PART_alphaComponentVisibilityToggleButton)) as ToggleButton;
+            RgbComponentVisibilityToggleButton = GetTemplateChild(nameof(TemplatePart.PART_rgbComponentVisibilityToggleButton)) as ToggleButton;
+            HslvComponentVisibilityToggleButton = GetTemplateChild(nameof(TemplatePart.PART_hslvComponentVisibilityToggleButton)) as ToggleButton;
+            AppOrientationToggleButton = GetTemplateChild(nameof(TemplatePart.PART_appOrientationToggleButton)) as ToggleButton;
+
+            HslComponentList = new ObservableCollection<HslComponent>((HslComponent[])Enum.GetValues(typeof(HslComponent)));
+            RebuildColorModelList();
+            RefreshRangeBaseVisuals();
+            ProcessHslComponentSelection(HslComponentSelection);
+
+            this.CommandBindings.Remove(new CommandBinding(ApplicationCommands.Paste, new ExecutedRoutedEventHandler(PasteHandler)));
+            this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Paste, new ExecutedRoutedEventHandler(PasteHandler)));
+            this.InputBindings.Add(new KeyBinding(ToggleMenuCommand, new KeyGesture(Key.M, ModifierKeys.Control)));
+            this.InputBindings.Add(new KeyBinding(SaveCustomColorCommand, new KeyGesture(Key.E, ModifierKeys.Control)));
+            this.InputBindings.Add(new KeyBinding(ImportCustomColorsCommand, new KeyGesture(Key.I, ModifierKeys.Control)));
+            this.InputBindings.Add(new KeyBinding(IncreaseAppScaleCommand, new KeyGesture(Key.OemPlus, ModifierKeys.Control)));
+            this.InputBindings.Add(new KeyBinding(DecreaseAppScaleCommand, new KeyGesture(Key.OemMinus, ModifierKeys.Control)));
+            this.InputBindings.Add(new KeyBinding(ResetAppScaleCommand, new KeyGesture(Key.R, ModifierKeys.Control)));
+        }
+
         // Rates of change and limits for different color components:
         public const int ARGB_ROC = 1;
         public const int ARGB_MIN = Byte.MinValue;
@@ -612,9 +811,145 @@ namespace ColorSelector
         public const int H_MAX = 360;
         public const int SL_MAX = 1;
 
-        static ColorSelector()
+        public void ToggleMenu(object? obj)
         {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(ColorSelector), new FrameworkPropertyMetadata(typeof(ColorSelector)));
+            IsMenuOpen = !IsMenuOpen;
+        }
+
+        private void ToggleColorModelsVisibility(object? obj)
+        {
+            ColorModelsVisible = !ColorModelsVisible;
+        }
+
+        private void TogglePresetColorsVisibility(object? obj)
+        {
+            PresetColorsVisible = !PresetColorsVisible;
+        }
+
+        private void ToggleApplicationOrientation(object? obj)
+        {
+            ApplicationOrientation = !ApplicationOrientation;
+        }
+
+        private void DeleteCustomColors(object? obj)
+        {
+            CustomColors.Clear();
+        }
+
+        private void SaveCustomColor(object? obj)
+        {
+            if (CustomColors.Count >= 10)
+                CustomColors.RemoveAt(CustomColors.Count - 1);
+
+            CustomColors.Insert(0, GetColorFromRawColor());
+
+            RaiseCustomColorSavedEvent();
+        }
+
+        private void SelectCustomColor(object? obj)
+        {
+            SelectedColor = GetColorFromRawColor();
+            RaiseColorSelectedEvent();
+        }
+
+        private void ImportPresetColors(object? obj)
+        {
+            ImportFromFile(ImportType.PresetColors);
+        }
+
+        private void ImportCustomColors(object? obj)
+        {
+            ImportFromFile(ImportType.CustomColors);
+        }
+
+        private void ExportCustomColors(object? obj)
+        {
+            OnExportToFile();
+        }
+
+        private void ResetAppScale(object? obj)
+        {
+            ApplicationScale = 1.0;
+        }
+
+        private void DecreaseAppScale(object? obj)
+        {
+            ApplicationScale = Math.Clamp(ApplicationScale -= 0.1, 1.0, 2.0);
+        }
+
+        private void IncreaseAppScale(object? obj)
+        {
+            ApplicationScale = Math.Clamp(ApplicationScale += 0.1, 1.0, 2.0);
+        }
+
+        private void ADecrement(object? obj)
+        {
+            A = Math.Clamp(A - ARGB_ROC, Byte.MinValue, Byte.MaxValue);
+        }
+
+        private void RDecrement(object? obj)
+        {
+            R = Math.Clamp(R - ARGB_ROC, Byte.MinValue, Byte.MaxValue);
+        }
+
+        private void GDecrement(object? obj)
+        {
+            G = Math.Clamp(G - ARGB_ROC, Byte.MinValue, Byte.MaxValue);
+        }
+
+        private void BDecrement(object? obj)
+        {
+            B = Math.Clamp(B - ARGB_ROC, Byte.MinValue, Byte.MaxValue);
+        }
+
+        private void HDecrement(object? obj)
+        {
+            H = Math.Clamp(Math.Round(H - H_ROC), HSL_MIN, H_MAX);
+        }
+
+        private void SDecrement(object? obj)
+        {
+            S = Math.Clamp(Math.Round(S - SL_ROC, 2), HSL_MIN, SL_MAX);
+        }
+
+        private void VDecrement(object? obj)
+        {
+            V = Math.Clamp(Math.Round(V - SL_ROC, 2), HSL_MIN, SL_MAX);
+        }
+
+        private void AIncrement(object? obj)
+        {
+            A = Math.Clamp(A + ARGB_ROC, Byte.MinValue, Byte.MaxValue);
+        }
+
+        private void RIncrement(object? obj)
+        {
+            R = Math.Clamp(R + ARGB_ROC, Byte.MinValue, Byte.MaxValue);
+        }
+
+        private void GIncrement(object? obj)
+        {
+            G = Math.Clamp(G + ARGB_ROC, Byte.MinValue, Byte.MaxValue);
+        }
+
+        private void BIncrement(object? obj)
+        {
+            B = Math.Clamp(B + ARGB_ROC, Byte.MinValue, Byte.MaxValue);
+        }
+
+        private void HIncrement(object? obj)
+        {
+            H = Math.Clamp(Math.Round(H + H_ROC), HSL_MIN, H_MAX);
+        }
+
+        private void SIncrement(object? obj)
+        {
+            S = Math.Clamp(Math.Round(S + SL_ROC, 2), HSL_MIN, SL_MAX);
+        }
+
+        private void VIncrement(object? obj)
+        {
+            V = Math.Clamp(Math.Round(V + SL_ROC, 2), HSL_MIN, SL_MAX);
         }
 
         public static Color InterpolateColor(Color color1, Color color2, double fraction)
@@ -1230,13 +1565,14 @@ namespace ColorSelector
             {
                 if (menuOpenButtonBase != null)
                 {
-                    menuOpenButtonBase.Click -= new RoutedEventHandler(MenuButtonBase_Click);
+                    BindingOperations.ClearBinding(menuOpenButtonBase, ButtonBase.CommandProperty);
                 }
                 menuOpenButtonBase = value;
 
                 if (menuOpenButtonBase != null)
                 {
-                    menuOpenButtonBase.Click += new RoutedEventHandler(MenuButtonBase_Click);
+                    BindingOperations.SetBinding(menuOpenButtonBase, ButtonBase.CommandProperty,
+                        new Binding(nameof(ToggleMenuCommand)) { Mode = BindingMode.OneWay, Source = this });
                 }
             }
         }
@@ -1250,19 +1586,20 @@ namespace ColorSelector
             {
                 if (menuCloseButtonBase != null)
                 {
-                    menuCloseButtonBase.Click -= new RoutedEventHandler(MenuButtonBase_Click);
+                    BindingOperations.ClearBinding(menuCloseButtonBase, ButtonBase.CommandProperty);
                 }
                 menuCloseButtonBase = value;
 
                 if (menuCloseButtonBase != null)
                 {
-                    menuCloseButtonBase.Click += new RoutedEventHandler(MenuButtonBase_Click);
+                    BindingOperations.SetBinding(menuCloseButtonBase, ButtonBase.CommandProperty, 
+                        new Binding(nameof(ToggleMenuCommand)) { Mode = BindingMode.OneWay, Source = this });
                 }
             }
         }
 
-        private Decorator? closeMenuDecorator;
-        private Decorator? CloseMenuDecorator
+        private ButtonBase? closeMenuDecorator;
+        private ButtonBase? CloseMenuDecorator
         {
             get { return closeMenuDecorator; }
 
@@ -1270,13 +1607,14 @@ namespace ColorSelector
             {
                 if (closeMenuDecorator != null)
                 {
-                    closeMenuDecorator.PreviewMouseUp -= new MouseButtonEventHandler(CloseMenuDecorator_PreviewMouseUp);
+                    BindingOperations.ClearBinding(closeMenuDecorator, ButtonBase.CommandProperty);
                 }
                 closeMenuDecorator = value;
 
                 if (closeMenuDecorator != null)
                 {
-                    closeMenuDecorator.PreviewMouseUp += new MouseButtonEventHandler(CloseMenuDecorator_PreviewMouseUp);
+                    BindingOperations.SetBinding(closeMenuDecorator, ButtonBase.CommandProperty,
+                        new Binding(nameof(ToggleMenuCommand)) { Mode = BindingMode.OneWay, Source = this });
                 }
             }
         }
@@ -1290,20 +1628,16 @@ namespace ColorSelector
             {
                 if (colorModelsVisibilityToggleButton != null)
                 {
-                    colorModelsVisibilityToggleButton.Click -= new RoutedEventHandler(ColorModelsVisibilityToggleButton_Click);
+                    BindingOperations.ClearBinding(colorModelsVisibilityToggleButton, ButtonBase.CommandProperty);
                 }
                 colorModelsVisibilityToggleButton = value;
 
                 if (colorModelsVisibilityToggleButton != null)
                 {
-                    colorModelsVisibilityToggleButton.Click += new RoutedEventHandler(ColorModelsVisibilityToggleButton_Click);
+                    BindingOperations.SetBinding(colorModelsVisibilityToggleButton, ButtonBase.CommandProperty,
+                        new Binding(nameof(ToggleColorModelsVisibilityCommand)) { Mode = BindingMode.OneWay, Source = this });
                 }
             }
-        }
-
-        private void ColorModelsVisibilityToggleButton_Click(object sender, RoutedEventArgs e)
-        {
-            ColorModelsVisible = !ColorModelsVisible;
         }
 
         private ToggleButton? presetColorsVisibilityToggleButton;
@@ -1315,20 +1649,16 @@ namespace ColorSelector
             {
                 if (presetColorsVisibilityToggleButton != null)
                 {
-                    presetColorsVisibilityToggleButton.Click -= new RoutedEventHandler(PresetColorsVisibilityToggleButton_Click);
+                    BindingOperations.ClearBinding(presetColorsVisibilityToggleButton, ButtonBase.CommandProperty);
                 }
                 presetColorsVisibilityToggleButton = value;
 
                 if (presetColorsVisibilityToggleButton != null)
                 {
-                    presetColorsVisibilityToggleButton.Click += new RoutedEventHandler(PresetColorsVisibilityToggleButton_Click);
+                    BindingOperations.SetBinding(presetColorsVisibilityToggleButton, ButtonBase.CommandProperty,
+                        new Binding(nameof(TogglePresetColorsVisibilityCommand)) { Mode = BindingMode.OneWay, Source = this});
                 }
             }
-        }
-
-        private void PresetColorsVisibilityToggleButton_Click(object sender, RoutedEventArgs e)
-        {
-            PresetColorsVisible = !PresetColorsVisible;
         }
 
         private ToggleButton? display2dVisibilityToggleButton;
@@ -1340,18 +1670,18 @@ namespace ColorSelector
             {
                 if (display2dVisibilityToggleButton != null)
                 {
-                    display2dVisibilityToggleButton.Click -= new RoutedEventHandler(Display2dVisibilityToggleButton_Click);
+                    BindingOperations.ClearBinding(display2dVisibilityToggleButton, ButtonBase.CommandProperty);
                 }
                 display2dVisibilityToggleButton = value;
 
                 if (display2dVisibilityToggleButton != null)
                 {
-                    display2dVisibilityToggleButton.Click += new RoutedEventHandler(Display2dVisibilityToggleButton_Click);
+                    BindingOperations.SetBinding(display2dVisibilityToggleButton, ButtonBase.CommandProperty, new Binding(nameof(ToggleDisplay2dVisibilityCommand)) { Mode = BindingMode.OneWay, Source = this });
                 }
             }
         }
 
-        private void Display2dVisibilityToggleButton_Click(object sender, RoutedEventArgs e)
+        private void ToggleDisplay2dVisibility(object? obj)
         {
             Display2dVisible = !Display2dVisible;
         }
@@ -1365,18 +1695,18 @@ namespace ColorSelector
             {
                 if (display3dVisibilityToggleButton != null)
                 {
-                    display3dVisibilityToggleButton.Click -= new RoutedEventHandler(Display3dVisibilityToggleButton_Click);
+                    BindingOperations.ClearBinding(display3dVisibilityToggleButton, ButtonBase.CommandProperty);
                 }
                 display3dVisibilityToggleButton = value;
 
                 if (display3dVisibilityToggleButton != null)
                 {
-                    display3dVisibilityToggleButton.Click += new RoutedEventHandler(Display3dVisibilityToggleButton_Click);
+                    BindingOperations.SetBinding(display3dVisibilityToggleButton, ButtonBase.CommandProperty, new Binding(nameof(ToggleDisplay3dVisibilityCommand)) { Mode = BindingMode.OneWay, Source = this });
                 }
             }
         }
 
-        private void Display3dVisibilityToggleButton_Click(object sender, RoutedEventArgs e)
+        private void ToggleDisplay3dVisibility(object? obj)
         {
             Display3dVisible = !Display3dVisible;
         }
@@ -1390,18 +1720,18 @@ namespace ColorSelector
             {
                 if (componentsVisibilityToggleButton != null)
                 {
-                    componentsVisibilityToggleButton.Click -= new RoutedEventHandler(ComponentsVisibilityToggleButton_Click);
+                    BindingOperations.ClearBinding(componentsVisibilityToggleButton, ButtonBase.CommandProperty);
                 }
                 componentsVisibilityToggleButton = value;
 
                 if (componentsVisibilityToggleButton != null)
                 {
-                    componentsVisibilityToggleButton.Click += new RoutedEventHandler(ComponentsVisibilityToggleButton_Click);
+                    BindingOperations.SetBinding(componentsVisibilityToggleButton, ButtonBase.CommandProperty, new Binding(nameof(ToggleComponentsVisibilityCommand)) { Mode = BindingMode.OneWay, Source = this });
                 }
             }
         }
 
-        private void ComponentsVisibilityToggleButton_Click(object sender, RoutedEventArgs e)
+        private void ToggleComponentsVisibility(object? obj)
         {
             ComponentsVisible = !ComponentsVisible;
         }
@@ -1415,18 +1745,18 @@ namespace ColorSelector
             {
                 if (colorPreviewVisibilityToggleButton != null)
                 {
-                    colorPreviewVisibilityToggleButton.Click -= new RoutedEventHandler(ColorPreviewVisibilityToggleButton_Click);
+                    BindingOperations.ClearBinding(colorPreviewVisibilityToggleButton, ButtonBase.CommandProperty);
                 }
                 colorPreviewVisibilityToggleButton = value;
 
                 if (colorPreviewVisibilityToggleButton != null)
                 {
-                    colorPreviewVisibilityToggleButton.Click += new RoutedEventHandler(ColorPreviewVisibilityToggleButton_Click);
+                    BindingOperations.SetBinding(colorPreviewVisibilityToggleButton, ButtonBase.CommandProperty, new Binding(nameof(ToggleColorPreviewVisibilityCommand)) { Mode = BindingMode.OneWay, Source = this });
                 }
             }
         }
 
-        private void ColorPreviewVisibilityToggleButton_Click(object sender, RoutedEventArgs e)
+        private void ToggleColorPreviewVisibility(object? obj)
         {
             ColorPreviewVisible = !ColorPreviewVisible;
         }
@@ -1440,18 +1770,18 @@ namespace ColorSelector
             {
                 if (customColorsVisibilityToggleButton != null)
                 {
-                    customColorsVisibilityToggleButton.Click -= new RoutedEventHandler(CustomColorsVisibilityToggleButton_Click);
+                    BindingOperations.ClearBinding(customColorsVisibilityToggleButton, ButtonBase.CommandProperty);
                 }
                 customColorsVisibilityToggleButton = value;
 
                 if (customColorsVisibilityToggleButton != null)
                 {
-                    customColorsVisibilityToggleButton.Click += new RoutedEventHandler(CustomColorsVisibilityToggleButton_Click);
+                    BindingOperations.SetBinding(customColorsVisibilityToggleButton, ButtonBase.CommandProperty, new Binding(nameof(ToggleCustomColorsVisibilityCommand)) { Mode = BindingMode.OneWay, Source = this });
                 }
             }
         }
 
-        private void CustomColorsVisibilityToggleButton_Click(object sender, RoutedEventArgs e)
+        private void ToggleCustomColorsVisibility(object? obj)
         {
             CustomColorsVisible = !CustomColorsVisible;
         }
@@ -1465,18 +1795,18 @@ namespace ColorSelector
             {
                 if (hexadecimalComponentVisibilityToggleButton != null)
                 {
-                    hexadecimalComponentVisibilityToggleButton.Click -= new RoutedEventHandler(HexadecimalComponentVisibilityToggleButton_Click);
+                    BindingOperations.ClearBinding(hexadecimalComponentVisibilityToggleButton, ButtonBase.CommandProperty);
                 }
                 hexadecimalComponentVisibilityToggleButton = value;
 
                 if (hexadecimalComponentVisibilityToggleButton != null)
                 {
-                    hexadecimalComponentVisibilityToggleButton.Click += new RoutedEventHandler(HexadecimalComponentVisibilityToggleButton_Click);
+                    BindingOperations.SetBinding(hexadecimalComponentVisibilityToggleButton, ButtonBase.CommandProperty, new Binding(nameof(ToggleHexadecimalComponentVisibilityCommand)) { Mode = BindingMode.OneWay, Source = this });
                 }
             }
         }
 
-        private void HexadecimalComponentVisibilityToggleButton_Click(object sender, RoutedEventArgs e)
+        private void ToggleHexadecimalComponentVisibility(object? obj)
         {
             HexadecimalComponentVisible = !HexadecimalComponentVisible;
         }
@@ -1490,18 +1820,18 @@ namespace ColorSelector
             {
                 if (alphaComponentVisibilityToggleButton != null)
                 {
-                    alphaComponentVisibilityToggleButton.Click -= new RoutedEventHandler(AlphaComponentVisibilityToggleButton_Click);
+                    BindingOperations.ClearBinding(alphaComponentVisibilityToggleButton, ButtonBase.CommandProperty);
                 }
                 alphaComponentVisibilityToggleButton = value;
 
                 if (alphaComponentVisibilityToggleButton != null)
                 {
-                    alphaComponentVisibilityToggleButton.Click += new RoutedEventHandler(AlphaComponentVisibilityToggleButton_Click);
+                    BindingOperations.SetBinding(alphaComponentVisibilityToggleButton, ButtonBase.CommandProperty, new Binding(nameof(ToggleAlphaComponentVisibilityCommand)) { Mode = BindingMode.OneWay, Source = this });
                 }
             }
         }
 
-        private void AlphaComponentVisibilityToggleButton_Click(object sender, RoutedEventArgs e)
+        private void ToggleAlphaComponentVisibility(object? obj)
         {
             AlphaComponentVisible = !AlphaComponentVisible;
         }
@@ -1515,18 +1845,18 @@ namespace ColorSelector
             {
                 if (rgbComponentVisibilityToggleButton != null)
                 {
-                    rgbComponentVisibilityToggleButton.Click -= new RoutedEventHandler(RgbComponentVisibilityToggleButton_Click);
+                    BindingOperations.ClearBinding(rgbComponentVisibilityToggleButton, ButtonBase.CommandProperty);
                 }
                 rgbComponentVisibilityToggleButton = value;
 
                 if (rgbComponentVisibilityToggleButton != null)
                 {
-                    rgbComponentVisibilityToggleButton.Click += new RoutedEventHandler(RgbComponentVisibilityToggleButton_Click);
+                    BindingOperations.SetBinding(rgbComponentVisibilityToggleButton, ButtonBase.CommandProperty, new Binding(nameof(ToggleRgbComponentVisibilityCommand)) { Mode = BindingMode.OneWay, Source = this });
                 }
             }
         }
 
-        private void RgbComponentVisibilityToggleButton_Click(object sender, RoutedEventArgs e)
+        private void ToggleRgbComponentVisibility(object? obj)
         {
             RgbComponentVisible = !RgbComponentVisible;
         }
@@ -1540,15 +1870,20 @@ namespace ColorSelector
             {
                 if (hslvComponentVisibilityToggleButton != null)
                 {
-                    hslvComponentVisibilityToggleButton.Click -= new RoutedEventHandler(HslvComponentVisibilityToggleButton_Click);
+                    BindingOperations.ClearBinding(hslvComponentVisibilityToggleButton, ButtonBase.CommandProperty);
                 }
                 hslvComponentVisibilityToggleButton = value;
 
                 if (hslvComponentVisibilityToggleButton != null)
                 {
-                    hslvComponentVisibilityToggleButton.Click += new RoutedEventHandler(HslvComponentVisibilityToggleButton_Click);
+                    BindingOperations.SetBinding(hslvComponentVisibilityToggleButton, ButtonBase.CommandProperty, new Binding(nameof(ToggleHslvComponentVisibilityCommand)) { Mode = BindingMode.OneWay, Source = this });
                 }
             }
+        }
+
+        private void ToggleHslvComponentVisibility(object? obj)
+        {
+            HslvComponentVisible = !HslvComponentVisible;
         }
 
         private ToggleButton? appOrientationToggleButton;
@@ -1560,42 +1895,15 @@ namespace ColorSelector
             {
                 if (appOrientationToggleButton != null)
                 {
-                    appOrientationToggleButton.Checked -= new RoutedEventHandler(AppOrientationToggleButton_Checked);
-                    appOrientationToggleButton.Unchecked -= new RoutedEventHandler(AppOrientationToggleButton_Unchecked);
+                    BindingOperations.ClearBinding(appOrientationToggleButton, ButtonBase.CommandProperty);
                 }
                 appOrientationToggleButton = value;
 
                 if (appOrientationToggleButton != null)
                 {
-                    appOrientationToggleButton.Checked += new RoutedEventHandler(AppOrientationToggleButton_Checked);
-                    appOrientationToggleButton.Unchecked += new RoutedEventHandler(AppOrientationToggleButton_Unchecked);
+                    BindingOperations.SetBinding(appOrientationToggleButton, ButtonBase.CommandProperty, new Binding(nameof(ToggleApplicationOrientationCommand)) { Mode = BindingMode.OneWay, Source = this });
                 }
             }
-        }
-
-        private void AppOrientationToggleButton_Checked(object sender, RoutedEventArgs e)
-        {
-            ApplicationOrientation = !ApplicationOrientation;
-        }
-
-        private void AppOrientationToggleButton_Unchecked(object sender, RoutedEventArgs e)
-        {
-            ApplicationOrientation = !ApplicationOrientation;
-        }
-
-        private void HslvComponentVisibilityToggleButton_Click(object sender, RoutedEventArgs e)
-        {
-            HslvComponentVisible = !HslvComponentVisible;
-        }
-
-        private void CloseMenuDecorator_PreviewMouseUp(object sender, MouseButtonEventArgs e)
-        {
-            IsMenuOpen = false;
-        }
-
-        private void MenuButtonBase_Click(object sender, RoutedEventArgs e)
-        {
-            IsMenuOpen = !IsMenuOpen;
         }
 
         private ButtonBase? selectCustomColorButtonBase;
@@ -1607,13 +1915,13 @@ namespace ColorSelector
             {
                 if (selectCustomColorButtonBase != null)
                 {
-                    selectCustomColorButtonBase.Click -= new RoutedEventHandler(SelectCustomColorButtonBase_Click);
+                    BindingOperations.ClearBinding(selectCustomColorButtonBase, ButtonBase.CommandProperty);
                 }
                 selectCustomColorButtonBase = value;
 
                 if (selectCustomColorButtonBase != null)
                 {
-                    selectCustomColorButtonBase.Click += new RoutedEventHandler(SelectCustomColorButtonBase_Click);
+                    BindingOperations.SetBinding(selectCustomColorButtonBase, ButtonBase.CommandProperty, new Binding(nameof(SelectCustomColorCommand)) { Mode = BindingMode.OneWay, Source = this });
                 }
             }
         }
@@ -1627,13 +1935,13 @@ namespace ColorSelector
             {
                 if (saveCustomColorButtonBase != null)
                 {
-                    saveCustomColorButtonBase.Click -= new RoutedEventHandler(SaveCustomColorButtonBase_Click);
+                    BindingOperations.ClearBinding(saveCustomColorButtonBase, ButtonBase.CommandProperty);
                 }
                 saveCustomColorButtonBase = value;
 
                 if (saveCustomColorButtonBase != null)
                 {
-                    saveCustomColorButtonBase.Click += new RoutedEventHandler(SaveCustomColorButtonBase_Click);
+                    BindingOperations.SetBinding(saveCustomColorButtonBase, ButtonBase.CommandProperty, new Binding(nameof(SaveCustomColorCommand)) { Mode = BindingMode.OneWay, Source = this });
                 }
             }
         }
@@ -1647,20 +1955,15 @@ namespace ColorSelector
             {
                 if (deleteCustomColorsButtonBase != null)
                 {
-                    deleteCustomColorsButtonBase.Click -= new RoutedEventHandler(DeleteCustomColorsButtonBase_Click);
+                    BindingOperations.ClearBinding(deleteCustomColorsButtonBase, ButtonBase.CommandProperty);
                 }
                 deleteCustomColorsButtonBase = value;
 
                 if (deleteCustomColorsButtonBase != null)
                 {
-                    deleteCustomColorsButtonBase.Click += new RoutedEventHandler(DeleteCustomColorsButtonBase_Click);
+                    BindingOperations.SetBinding(deleteCustomColorsButtonBase, ButtonBase.CommandProperty, new Binding(nameof(DeleteCustomColorsCommand)) { Mode = BindingMode.OneWay, Source = this });
                 }
             }
-        }
-
-        private void DeleteCustomColorsButtonBase_Click(object sender, RoutedEventArgs e)
-        {
-            CustomColors.Clear();
         }
 
         private ButtonBase? aIncrementButtonBase;
@@ -1672,13 +1975,13 @@ namespace ColorSelector
             {
                 if (aIncrementButtonBase != null)
                 {
-                    aIncrementButtonBase.Click -= new RoutedEventHandler(AIncrementButtonBase_Click);
+                    BindingOperations.ClearBinding(aIncrementButtonBase, ButtonBase.CommandProperty);
                 }
                 aIncrementButtonBase = value;
 
                 if (aIncrementButtonBase != null)
                 {
-                    aIncrementButtonBase.Click += new RoutedEventHandler(AIncrementButtonBase_Click);
+                    BindingOperations.SetBinding(aIncrementButtonBase, ButtonBase.CommandProperty, new Binding(nameof(AIncrementCommand)) { Mode = BindingMode.OneWay, Source = this });
                 }
             }
         }
@@ -1692,13 +1995,13 @@ namespace ColorSelector
             {
                 if (rIncrementButtonBase != null)
                 {
-                    rIncrementButtonBase.Click -= new RoutedEventHandler(RIncrementButtonBase_Click);
+                    BindingOperations.ClearBinding(rIncrementButtonBase, ButtonBase.CommandProperty);
                 }
                 rIncrementButtonBase = value;
 
                 if (rIncrementButtonBase != null)
                 {
-                    rIncrementButtonBase.Click += new RoutedEventHandler(RIncrementButtonBase_Click);
+                    BindingOperations.SetBinding(rIncrementButtonBase, ButtonBase.CommandProperty, new Binding(nameof(RIncrementCommand)) { Mode = BindingMode.OneWay, Source = this });
                 }
             }
         }
@@ -1712,13 +2015,13 @@ namespace ColorSelector
             {
                 if (gIncrementButtonBase != null)
                 {
-                    gIncrementButtonBase.Click -= new RoutedEventHandler(GIncrementButtonBase_Click);
+                    BindingOperations.ClearBinding(gIncrementButtonBase, ButtonBase.CommandProperty);
                 }
                 gIncrementButtonBase = value;
 
                 if (gIncrementButtonBase != null)
                 {
-                    gIncrementButtonBase.Click += new RoutedEventHandler(GIncrementButtonBase_Click);
+                    BindingOperations.SetBinding(gIncrementButtonBase, ButtonBase.CommandProperty, new Binding(nameof(GIncrementCommand)) { Mode = BindingMode.OneWay, Source = this });
                 }
             }
         }
@@ -1732,13 +2035,13 @@ namespace ColorSelector
             {
                 if (bIncrementButtonBase != null)
                 {
-                    bIncrementButtonBase.Click -= new RoutedEventHandler(BIncrementButtonBase_Click);
+                    BindingOperations.ClearBinding(bIncrementButtonBase, ButtonBase.CommandProperty);
                 }
                 bIncrementButtonBase = value;
 
                 if (bIncrementButtonBase != null)
                 {
-                    bIncrementButtonBase.Click += new RoutedEventHandler(BIncrementButtonBase_Click);
+                    BindingOperations.SetBinding(bIncrementButtonBase, ButtonBase.CommandProperty, new Binding(nameof(BIncrementCommand)) { Mode = BindingMode.OneWay, Source = this });
                 }
             }
         }
@@ -1752,13 +2055,13 @@ namespace ColorSelector
             {
                 if (hIncrementButtonBase != null)
                 {
-                    hIncrementButtonBase.Click -= new RoutedEventHandler(HIncrementButtonBase_Click);
+                    BindingOperations.ClearBinding(hIncrementButtonBase, ButtonBase.CommandProperty);
                 }
                 hIncrementButtonBase = value;
 
                 if (hIncrementButtonBase != null)
                 {
-                    hIncrementButtonBase.Click += new RoutedEventHandler(HIncrementButtonBase_Click);
+                    BindingOperations.SetBinding(hIncrementButtonBase, ButtonBase.CommandProperty, new Binding(nameof(HIncrementCommand)) { Mode = BindingMode.OneWay, Source = this });
                 }
             }
         }
@@ -1772,13 +2075,13 @@ namespace ColorSelector
             {
                 if (sIncrementButtonBase != null)
                 {
-                    sIncrementButtonBase.Click -= new RoutedEventHandler(SIncrementButtonBase_Click);
+                    BindingOperations.ClearBinding(sIncrementButtonBase, ButtonBase.CommandProperty);
                 }
                 sIncrementButtonBase = value;
 
                 if (sIncrementButtonBase != null)
                 {
-                    sIncrementButtonBase.Click += new RoutedEventHandler(SIncrementButtonBase_Click);
+                    BindingOperations.SetBinding(sIncrementButtonBase, ButtonBase.CommandProperty, new Binding(nameof(SIncrementCommand)) { Mode = BindingMode.OneWay, Source = this });
                 }
             }
         }
@@ -1792,13 +2095,13 @@ namespace ColorSelector
             {
                 if (vIncrementButtonBase != null)
                 {
-                    vIncrementButtonBase.Click -= new RoutedEventHandler(VIncrementButtonBase_Click);
+                    BindingOperations.ClearBinding(vIncrementButtonBase, ButtonBase.CommandProperty);
                 }
                 vIncrementButtonBase = value;
 
                 if (vIncrementButtonBase != null)
                 {
-                    vIncrementButtonBase.Click += new RoutedEventHandler(VIncrementButtonBase_Click);
+                    BindingOperations.SetBinding(vIncrementButtonBase, ButtonBase.CommandProperty, new Binding(nameof(VIncrementCommand)) { Mode = BindingMode.OneWay, Source = this });
                 }
             }
         }
@@ -1812,13 +2115,13 @@ namespace ColorSelector
             {
                 if (aDecrementButtonBase != null)
                 {
-                    aDecrementButtonBase.Click -= new RoutedEventHandler(ADecrementButtonBase_Click);
+                    BindingOperations.ClearBinding(aDecrementButtonBase, ButtonBase.CommandProperty);
                 }
                 aDecrementButtonBase = value;
 
                 if (aDecrementButtonBase != null)
                 {
-                    aDecrementButtonBase.Click += new RoutedEventHandler(ADecrementButtonBase_Click);
+                    BindingOperations.SetBinding(aDecrementButtonBase, ButtonBase.CommandProperty, new Binding(nameof(ADecrementCommand)) { Mode = BindingMode.OneWay, Source = this });
                 }
             }
         }
@@ -1832,13 +2135,13 @@ namespace ColorSelector
             {
                 if (rDecrementButtonBase != null)
                 {
-                    rDecrementButtonBase.Click -= new RoutedEventHandler(RDecrementButtonBase_Click);
+                    BindingOperations.ClearBinding(rDecrementButtonBase, ButtonBase.CommandProperty);
                 }
                 rDecrementButtonBase = value;
 
                 if (rDecrementButtonBase != null)
                 {
-                    rDecrementButtonBase.Click += new RoutedEventHandler(RDecrementButtonBase_Click);
+                    BindingOperations.SetBinding(rDecrementButtonBase, ButtonBase.CommandProperty, new Binding(nameof(RDecrementCommand)) { Mode = BindingMode.OneWay, Source = this });
                 }
             }
         }
@@ -1852,13 +2155,13 @@ namespace ColorSelector
             {
                 if (gDecrementButtonBase != null)
                 {
-                    gDecrementButtonBase.Click -= new RoutedEventHandler(GDecrementButtonBase_Click);
+                    BindingOperations.ClearBinding(gDecrementButtonBase, ButtonBase.CommandProperty);
                 }
                 gDecrementButtonBase = value;
 
                 if (gDecrementButtonBase != null)
                 {
-                    gDecrementButtonBase.Click += new RoutedEventHandler(GDecrementButtonBase_Click);
+                    BindingOperations.SetBinding(gDecrementButtonBase, ButtonBase.CommandProperty, new Binding(nameof(GDecrementCommand)) { Mode = BindingMode.OneWay, Source = this });
                 }
             }
         }
@@ -1872,13 +2175,13 @@ namespace ColorSelector
             {
                 if (bDecrementButtonBase != null)
                 {
-                    bDecrementButtonBase.Click -= new RoutedEventHandler(BDecrementButtonBase_Click);
+                    BindingOperations.ClearBinding(bDecrementButtonBase, ButtonBase.CommandProperty);
                 }
                 bDecrementButtonBase = value;
 
                 if (bDecrementButtonBase != null)
                 {
-                    bDecrementButtonBase.Click += new RoutedEventHandler(BDecrementButtonBase_Click);
+                    BindingOperations.SetBinding(bDecrementButtonBase, ButtonBase.CommandProperty, new Binding(nameof(BDecrementCommand)) { Mode = BindingMode.OneWay, Source = this });
                 }
             }
         }
@@ -1892,13 +2195,13 @@ namespace ColorSelector
             {
                 if (hDecrementButtonBase != null)
                 {
-                    hDecrementButtonBase.Click -= new RoutedEventHandler(HDecrementButtonBase_Click);
+                    BindingOperations.ClearBinding(hDecrementButtonBase, ButtonBase.CommandProperty);
                 }
                 hDecrementButtonBase = value;
 
                 if (hDecrementButtonBase != null)
                 {
-                    hDecrementButtonBase.Click += new RoutedEventHandler(HDecrementButtonBase_Click);
+                    BindingOperations.SetBinding(hDecrementButtonBase, ButtonBase.CommandProperty, new Binding(nameof(HDecrementCommand)) { Mode = BindingMode.OneWay, Source = this });
                 }
             }
         }
@@ -1912,13 +2215,13 @@ namespace ColorSelector
             {
                 if (sDecrementButtonBase != null)
                 {
-                    sDecrementButtonBase.Click -= new RoutedEventHandler(SDecrementButtonBase_Click);
+                    BindingOperations.ClearBinding(sDecrementButtonBase, ButtonBase.CommandProperty);
                 }
                 sDecrementButtonBase = value;
 
                 if (sDecrementButtonBase != null)
                 {
-                    sDecrementButtonBase.Click += new RoutedEventHandler(SDecrementButtonBase_Click);
+                    BindingOperations.SetBinding(sDecrementButtonBase, ButtonBase.CommandProperty, new Binding(nameof(SDecrementCommand)) { Mode = BindingMode.OneWay, Source = this });
                 }
             }
         }
@@ -1932,13 +2235,13 @@ namespace ColorSelector
             {
                 if (vDecrementButtonBase != null)
                 {
-                    vDecrementButtonBase.Click -= new RoutedEventHandler(VDecrementButtonBase_Click);
+                    BindingOperations.ClearBinding(vDecrementButtonBase, ButtonBase.CommandProperty);
                 }
                 vDecrementButtonBase = value;
 
                 if (vDecrementButtonBase != null)
                 {
-                    vDecrementButtonBase.Click += new RoutedEventHandler(VDecrementButtonBase_Click);
+                    BindingOperations.SetBinding(vDecrementButtonBase, ButtonBase.CommandProperty, new Binding(nameof(VDecrementCommand)) { Mode = BindingMode.OneWay, Source = this });
                 }
             }
         }
@@ -1952,20 +2255,15 @@ namespace ColorSelector
             {
                 if (importPresetColorsButtonBase != null)
                 {
-                    importPresetColorsButtonBase.Click -= new RoutedEventHandler(ImportPresetColorsButtonBase_Click);
+                    BindingOperations.ClearBinding(importPresetColorsButtonBase, ButtonBase.CommandProperty);
                 }
                 importPresetColorsButtonBase = value;
 
                 if (importPresetColorsButtonBase != null)
                 {
-                    importPresetColorsButtonBase.Click += new RoutedEventHandler(ImportPresetColorsButtonBase_Click);
+                    BindingOperations.SetBinding(importPresetColorsButtonBase, ButtonBase.CommandProperty, new Binding(nameof(ImportPresetColorsCommand)) { Mode = BindingMode.OneWay, Source = this });
                 }
             }
-        }
-
-        private void ImportPresetColorsButtonBase_Click(object sender, RoutedEventArgs e)
-        {
-            ImportFromFile(ImportType.PresetColors);
         }
 
         private ButtonBase? importCustomColorsButtonBase;
@@ -1977,20 +2275,15 @@ namespace ColorSelector
             {
                 if (importCustomColorsButtonBase != null)
                 {
-                    importCustomColorsButtonBase.Click -= new RoutedEventHandler(ImportCustomColorsButtonBase_Click);
+                    BindingOperations.ClearBinding(importCustomColorsButtonBase, ButtonBase.CommandProperty);
                 }
                 importCustomColorsButtonBase = value;
 
                 if (importCustomColorsButtonBase != null)
                 {
-                    importCustomColorsButtonBase.Click += new RoutedEventHandler(ImportCustomColorsButtonBase_Click);
+                    BindingOperations.SetBinding(importCustomColorsButtonBase, ButtonBase.CommandProperty, new Binding(nameof(ImportCustomColorsCommand)) { Mode = BindingMode.OneWay, Source = this });
                 }
             }
-        }
-
-        private void ImportCustomColorsButtonBase_Click(object sender, RoutedEventArgs e)
-        {
-            ImportFromFile(ImportType.CustomColors);
         }
 
         private ButtonBase? exportCustomColorsButtonBase;
@@ -2002,20 +2295,15 @@ namespace ColorSelector
             {
                 if (exportCustomColorsButtonBase != null)
                 {
-                    exportCustomColorsButtonBase.Click -= new RoutedEventHandler(ExportCustomColorsButtonBase_Click);
+                    BindingOperations.ClearBinding(exportCustomColorsButtonBase, ButtonBase.CommandProperty);
                 }
                 exportCustomColorsButtonBase = value;
 
                 if (exportCustomColorsButtonBase != null)
                 {
-                    exportCustomColorsButtonBase.Click += new RoutedEventHandler(ExportCustomColorsButtonBase_Click);
+                    BindingOperations.SetBinding(exportCustomColorsButtonBase, ButtonBase.CommandProperty, new Binding(nameof(ExportCustomColorsCommand)) { Mode = BindingMode.OneWay, Source = this });
                 }
             }
-        }
-
-        private void ExportCustomColorsButtonBase_Click(object sender, RoutedEventArgs e)
-        {
-            OnExportToFile();
         }
 
         private ButtonBase? resetAppScaleButtonBase;
@@ -2027,20 +2315,15 @@ namespace ColorSelector
             {
                 if (resetAppScaleButtonBase != null)
                 {
-                    resetAppScaleButtonBase.Click -= new RoutedEventHandler(ResetAppScaleButtonBase_Click);
+                    BindingOperations.ClearBinding(resetAppScaleButtonBase, ButtonBase.CommandProperty);
                 }
                 resetAppScaleButtonBase = value;
 
                 if (resetAppScaleButtonBase != null)
                 {
-                    resetAppScaleButtonBase.Click += new RoutedEventHandler(ResetAppScaleButtonBase_Click);
+                    BindingOperations.SetBinding(resetAppScaleButtonBase, ButtonBase.CommandProperty, new Binding(nameof(ResetAppScaleCommand)) { Mode = BindingMode.OneWay, Source = this });
                 }
             }
-        }
-
-        private void ResetAppScaleButtonBase_Click(object sender, RoutedEventArgs e)
-        {
-            ApplicationScale = 1.0;
         }
 
         private ButtonBase? decreaseAppScaleButtonBase;
@@ -2052,20 +2335,15 @@ namespace ColorSelector
             {
                 if (decreaseAppScaleButtonBase != null)
                 {
-                    decreaseAppScaleButtonBase.Click -= new RoutedEventHandler(DecreaseAppScaleButtonBase_Click);
+                    BindingOperations.ClearBinding(decreaseAppScaleButtonBase, ButtonBase.CommandProperty);
                 }
                 decreaseAppScaleButtonBase = value;
 
                 if (decreaseAppScaleButtonBase != null)
                 {
-                    decreaseAppScaleButtonBase.Click += new RoutedEventHandler(DecreaseAppScaleButtonBase_Click);
+                    BindingOperations.SetBinding(decreaseAppScaleButtonBase, ButtonBase.CommandProperty, new Binding(nameof(DecreaseAppScaleCommand)) { Mode = BindingMode.OneWay, Source = this });
                 }
             }
-        }
-
-        private void DecreaseAppScaleButtonBase_Click(object sender, RoutedEventArgs e)
-        {
-            ApplicationScale = Math.Clamp(ApplicationScale -= 0.1, 1.0, 2.0);
         }
 
         private ButtonBase? increaseAppScaleButtonBase;
@@ -2077,20 +2355,15 @@ namespace ColorSelector
             {
                 if (increaseAppScaleButtonBase != null)
                 {
-                    increaseAppScaleButtonBase.Click -= new RoutedEventHandler(IncreaseAppScaleButtonBase_Click);
+                    BindingOperations.ClearBinding(increaseAppScaleButtonBase, ButtonBase.CommandProperty);
                 }
                 increaseAppScaleButtonBase = value;
 
                 if (increaseAppScaleButtonBase != null)
                 {
-                    increaseAppScaleButtonBase.Click += new RoutedEventHandler(IncreaseAppScaleButtonBase_Click);
+                    BindingOperations.SetBinding(increaseAppScaleButtonBase, ButtonBase.CommandProperty, new Binding(nameof(IncreaseAppScaleCommand)) { Mode = BindingMode.OneWay, Source = this });
                 }
             }
-        }
-
-        private void IncreaseAppScaleButtonBase_Click(object sender, RoutedEventArgs e)
-        {
-            ApplicationScale = Math.Clamp(ApplicationScale += 0.1, 1.0, 2.0);
         }
 
         private void OnExportToFile()
@@ -2895,75 +3168,6 @@ namespace ColorSelector
             }
         }
 
-        private void ADecrementButtonBase_Click(object sender, RoutedEventArgs e)
-        {
-            A = Math.Clamp(A - ARGB_ROC, Byte.MinValue, Byte.MaxValue);
-        }
-
-        private void RDecrementButtonBase_Click(object sender, RoutedEventArgs e)
-        {
-            R = Math.Clamp(R - ARGB_ROC, Byte.MinValue, Byte.MaxValue);
-        }
-
-        private void GDecrementButtonBase_Click(object sender, RoutedEventArgs e)
-        {
-            G = Math.Clamp(G - ARGB_ROC, Byte.MinValue, Byte.MaxValue);
-        }
-
-        private void BDecrementButtonBase_Click(object sender, RoutedEventArgs e)
-        {
-            B = Math.Clamp(B - ARGB_ROC, Byte.MinValue, Byte.MaxValue);
-        }
-
-        private void HDecrementButtonBase_Click(object sender, RoutedEventArgs e)
-        {
-            H = Math.Clamp(Math.Round(H - H_ROC), HSL_MIN, H_MAX);
-        }
-
-        private void SDecrementButtonBase_Click(object sender, RoutedEventArgs e)
-        {
-            S = Math.Clamp(Math.Round(S - SL_ROC, 2), HSL_MIN, SL_MAX);
-        }
-
-        private void VDecrementButtonBase_Click(object sender, RoutedEventArgs e)
-        {
-            V = Math.Clamp(Math.Round(V - SL_ROC, 2), HSL_MIN, SL_MAX);
-        }
-
-        private void AIncrementButtonBase_Click(object sender, RoutedEventArgs e)
-        {
-            A = Math.Clamp(A + ARGB_ROC, Byte.MinValue, Byte.MaxValue);
-        }
-
-        private void RIncrementButtonBase_Click(object sender, RoutedEventArgs e)
-        {
-            R = Math.Clamp(R + ARGB_ROC, Byte.MinValue, Byte.MaxValue);
-        }
-
-        private void GIncrementButtonBase_Click(object sender, RoutedEventArgs e)
-        {
-            G = Math.Clamp(G + ARGB_ROC, Byte.MinValue, Byte.MaxValue);
-        }
-
-        private void BIncrementButtonBase_Click(object sender, RoutedEventArgs e)
-        {
-            B = Math.Clamp(B + ARGB_ROC, Byte.MinValue, Byte.MaxValue);
-        }
-
-        private void HIncrementButtonBase_Click(object sender, RoutedEventArgs e)
-        {
-            H = Math.Clamp(Math.Round(H + H_ROC), HSL_MIN, H_MAX);        }
-
-        private void SIncrementButtonBase_Click(object sender, RoutedEventArgs e)
-        {
-            S = Math.Clamp(Math.Round(S + SL_ROC, 2), HSL_MIN, SL_MAX);
-        }
-
-        private void VIncrementButtonBase_Click(object sender, RoutedEventArgs e)
-        {
-            V = Math.Clamp(Math.Round(V + SL_ROC, 2), HSL_MIN, SL_MAX);
-        }
-
         private Selector? presetColorsSelector;
         protected Selector? PresetColorsSelector
         {
@@ -3669,117 +3873,6 @@ namespace ColorSelector
                 SelectedColor = color;
                 RaiseColorSelectedEvent();
             }
-        }
-
-        /// <summary>
-        /// Saves the current color as a new custom color.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void SaveCustomColorButtonBase_Click(object sender, RoutedEventArgs e)
-        {
-            if (CustomColors.Count >= 10)
-                CustomColors.RemoveAt(CustomColors.Count - 1);
-
-            CustomColors.Insert(0, GetColorFromRawColor());
-
-            RaiseCustomColorSavedEvent();
-        }
-
-        /// <summary>
-        /// Sets the current color as the currently selected color.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void SelectCustomColorButtonBase_Click(object sender, RoutedEventArgs e)
-        {
-            SelectedColor = GetColorFromRawColor();
-            RaiseColorSelectedEvent();
-        }
-
-        public override void OnApplyTemplate()
-        {
-            SelectCustomColorButtonBase = GetTemplateChild(nameof(TemplatePart.PART_selectCustomColorButtonBase)) as ButtonBase;
-            SaveCustomColorButtonBase = GetTemplateChild(nameof(TemplatePart.PART_saveCustomColorButtonBase)) as ButtonBase;
-            DeleteCustomColorsButtonBase = GetTemplateChild(nameof(TemplatePart.PART_deleteCustomColorsButtonBase)) as ButtonBase;
-
-            AIncrementButtonBase = GetTemplateChild(nameof(TemplatePart.PART_aIncrementButtonBase)) as ButtonBase;
-            RIncrementButtonBase = GetTemplateChild(nameof(TemplatePart.PART_rIncrementButtonBase)) as ButtonBase;
-            GIncrementButtonBase = GetTemplateChild(nameof(TemplatePart.PART_gIncrementButtonBase)) as ButtonBase;
-            BIncrementButtonBase = GetTemplateChild(nameof(TemplatePart.PART_bIncrementButtonBase)) as ButtonBase;
-            HIncrementButtonBase = GetTemplateChild(nameof(TemplatePart.PART_hIncrementButtonBase)) as ButtonBase;
-            SIncrementButtonBase = GetTemplateChild(nameof(TemplatePart.PART_sIncrementButtonBase)) as ButtonBase;
-            VIncrementButtonBase = GetTemplateChild(nameof(TemplatePart.PART_vIncrementButtonBase)) as ButtonBase;
-
-            ADecrementButtonBase = GetTemplateChild(nameof(TemplatePart.PART_aDecrementButtonBase)) as ButtonBase;
-            RDecrementButtonBase = GetTemplateChild(nameof(TemplatePart.PART_rDecrementButtonBase)) as ButtonBase;
-            GDecrementButtonBase = GetTemplateChild(nameof(TemplatePart.PART_gDecrementButtonBase)) as ButtonBase;
-            BDecrementButtonBase = GetTemplateChild(nameof(TemplatePart.PART_bDecrementButtonBase)) as ButtonBase;
-            HDecrementButtonBase = GetTemplateChild(nameof(TemplatePart.PART_hDecrementButtonBase)) as ButtonBase;
-            SDecrementButtonBase = GetTemplateChild(nameof(TemplatePart.PART_sDecrementButtonBase)) as ButtonBase;
-            VDecrementButtonBase = GetTemplateChild(nameof(TemplatePart.PART_vDecrementButtonBase)) as ButtonBase;
-
-            ImportPresetColorsButtonBase = GetTemplateChild(nameof(TemplatePart.PART_importPresetColorsButtonBase)) as ButtonBase;
-            ImportCustomColorsButtonBase = GetTemplateChild(nameof(TemplatePart.PART_importCustomColorsButtonBase)) as ButtonBase;
-            ExportCustomColorsButtonBase = GetTemplateChild(nameof(TemplatePart.PART_exportCustomColorsButtonBase)) as ButtonBase;
-
-            ResetAppScaleButtonBase = GetTemplateChild(nameof(TemplatePart.PART_resetAppScaleButtonBase)) as ButtonBase;
-            DecreaseAppScaleButtonBase = GetTemplateChild(nameof(TemplatePart.PART_decreaseAppScaleButtonBase)) as ButtonBase;
-            IncreaseAppScaleButtonBase = GetTemplateChild(nameof(TemplatePart.PART_increaseAppScaleButtonBase)) as ButtonBase;
-
-            HexTextBox = GetTemplateChild(nameof(TemplatePart.PART_hexTextBox)) as TextBox;
-            ATextBox = GetTemplateChild(nameof(TemplatePart.PART_aTextBox)) as TextBox;
-            RTextBox = GetTemplateChild(nameof(TemplatePart.PART_rTextBox)) as TextBox;
-            GTextBox = GetTemplateChild(nameof(TemplatePart.PART_gTextBox)) as TextBox;
-            BTextBox = GetTemplateChild(nameof(TemplatePart.PART_bTextBox)) as TextBox;
-            HTextBox = GetTemplateChild(nameof(TemplatePart.PART_hTextBox)) as TextBox;
-            STextBox = GetTemplateChild(nameof(TemplatePart.PART_sTextBox)) as TextBox;
-            VTextBox = GetTemplateChild(nameof(TemplatePart.PART_vTextBox)) as TextBox;
-
-            ARangeBase = GetTemplateChild(nameof(TemplatePart.PART_aRangeBase)) as RangeBase;
-            RRangeBase = GetTemplateChild(nameof(TemplatePart.PART_rRangeBase)) as RangeBase;
-            GRangeBase = GetTemplateChild(nameof(TemplatePart.PART_gRangeBase)) as RangeBase;
-            BRangeBase = GetTemplateChild(nameof(TemplatePart.PART_bRangeBase)) as RangeBase;
-            HRangeBase = GetTemplateChild(nameof(TemplatePart.PART_hRangeBase)) as RangeBase;
-            SRangeBase = GetTemplateChild(nameof(TemplatePart.PART_sRangeBase)) as RangeBase;
-            VRangeBase = GetTemplateChild(nameof(TemplatePart.PART_vRangeBase)) as RangeBase;
-            HslRangeBase = GetTemplateChild(nameof(TemplatePart.PART_hslRangeBase)) as RangeBase;
-
-            PresetColorsSelector = GetTemplateChild(nameof(TemplatePart.PART_presetColorsSelector)) as Selector;
-            CustomColorsSelector = GetTemplateChild(nameof(TemplatePart.PART_customColorsSelector)) as Selector;
-            HslComponentSelector = GetTemplateChild(nameof(TemplatePart.PART_hslComponentSelector)) as Selector;
-            ColorModelSelector = GetTemplateChild(nameof(TemplatePart.PART_colorModelSelector)) as Selector;
-
-            HslComponentArea = GetTemplateChild(nameof(TemplatePart.PART_hslComponentAreaPanel)) as Panel;
-
-            Hsl3dDisplayDecorator = GetTemplateChild(nameof(TemplatePart.PART_hsl3dDisplayDecorator)) as Decorator;
-
-            MenuOpenButtonBase = GetTemplateChild(nameof(TemplatePart.PART_menuOpenButton)) as ButtonBase;
-            MenuCloseButtonBase = GetTemplateChild(nameof(TemplatePart.PART_menuCloseButton)) as ButtonBase;
-            CloseMenuDecorator = GetTemplateChild(nameof(TemplatePart.PART_closeMenuDecorator)) as Decorator;
-
-            ColorModelsVisibilityToggleButton = GetTemplateChild(nameof(TemplatePart.PART_colorModelsVisibilityToggleButton)) as ToggleButton;
-            PresetColorsVisibilityToggleButton = GetTemplateChild(nameof(TemplatePart.PART_presetColorsVisibilityToggleButton)) as ToggleButton;
-            Display2dVisibilityToggleButton = GetTemplateChild(nameof(TemplatePart.PART_display2dVisibilityToggleButton)) as ToggleButton;
-            Display3dVisibilityToggleButton = GetTemplateChild(nameof(TemplatePart.PART_display3dVisibilityToggleButton)) as ToggleButton;
-            ComponentsVisibilityToggleButton = GetTemplateChild(nameof(TemplatePart.PART_componentsVisibilityToggleButton)) as ToggleButton;
-            ColorPreviewVisibilityToggleButton = GetTemplateChild(nameof(TemplatePart.PART_colorPreviewVisibilityToggleButton)) as ToggleButton;
-            CustomColorsVisibilityToggleButton = GetTemplateChild(nameof(TemplatePart.PART_customColorsVisibilityToggleButton)) as ToggleButton;
-
-            HexadecimalComponentVisibilityToggleButton = GetTemplateChild(nameof(TemplatePart.PART_hexadecimalComponentVisibilityToggleButton)) as ToggleButton;
-            AlphaComponentVisibilityToggleButton = GetTemplateChild(nameof(TemplatePart.PART_alphaComponentVisibilityToggleButton)) as ToggleButton;
-            RgbComponentVisibilityToggleButton = GetTemplateChild(nameof(TemplatePart.PART_rgbComponentVisibilityToggleButton)) as ToggleButton;
-            HslvComponentVisibilityToggleButton = GetTemplateChild(nameof(TemplatePart.PART_hslvComponentVisibilityToggleButton)) as ToggleButton;
-            AppOrientationToggleButton = GetTemplateChild(nameof(TemplatePart.PART_appOrientationToggleButton)) as ToggleButton;
-
-            HslComponentList = new ObservableCollection<HslComponent>((HslComponent[])Enum.GetValues(typeof(HslComponent)));
-            RebuildColorModelList();
-            RefreshRangeBaseVisuals();
-            ProcessHslComponentSelection(HslComponentSelection);
-
-            // Setting ApplicationCommands.Paste on Control to enable Clipboard paste into the color selector:
-            this.CommandBindings.Remove(new CommandBinding(ApplicationCommands.Paste, new ExecutedRoutedEventHandler(PasteHandler)));
-            this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Paste, new ExecutedRoutedEventHandler(PasteHandler)));
         }
 
         /// <summary>
