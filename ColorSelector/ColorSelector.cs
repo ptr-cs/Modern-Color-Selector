@@ -793,11 +793,12 @@ namespace ColorSelector
             this.CommandBindings.Remove(new CommandBinding(ApplicationCommands.Paste, new ExecutedRoutedEventHandler(PasteHandler)));
             this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Paste, new ExecutedRoutedEventHandler(PasteHandler)));
             this.InputBindings.Add(new KeyBinding(ToggleMenuCommand, new KeyGesture(Key.M, ModifierKeys.Control)));
-            this.InputBindings.Add(new KeyBinding(SaveCustomColorCommand, new KeyGesture(Key.E, ModifierKeys.Control)));
+            this.InputBindings.Add(new KeyBinding(ExportCustomColorsCommand, new KeyGesture(Key.E, ModifierKeys.Control)));
             this.InputBindings.Add(new KeyBinding(ImportCustomColorsCommand, new KeyGesture(Key.I, ModifierKeys.Control)));
             this.InputBindings.Add(new KeyBinding(IncreaseAppScaleCommand, new KeyGesture(Key.OemPlus, ModifierKeys.Control)));
             this.InputBindings.Add(new KeyBinding(DecreaseAppScaleCommand, new KeyGesture(Key.OemMinus, ModifierKeys.Control)));
             this.InputBindings.Add(new KeyBinding(ResetAppScaleCommand, new KeyGesture(Key.R, ModifierKeys.Control)));
+            this.InputBindings.Add(new KeyBinding(SaveCustomColorCommand, new KeyGesture(Key.A, ModifierKeys.Control)));
         }
 
         // Rates of change and limits for different color components:
@@ -2378,6 +2379,7 @@ namespace ColorSelector
             using (System.Windows.Forms.SaveFileDialog saveFileDialog = new()
             {
                 Filter = "JSON files (*.json)|*.json",
+                Title = "Export colors",
                 InitialDirectory = initialDirectory,
                 RestoreDirectory = true,
                 FileName = fileName
@@ -2411,6 +2413,7 @@ namespace ColorSelector
                 using (System.Windows.Forms.OpenFileDialog openFileDialog = new()
                 {
                     Filter = "JSON files (*.json)|*.json",
+                    Title = "Import colors",
                     InitialDirectory = initialDirectory,
                     RestoreDirectory = true,
                     CheckFileExists = true
