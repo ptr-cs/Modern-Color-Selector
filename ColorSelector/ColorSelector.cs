@@ -126,8 +126,8 @@ namespace ColorSelector
         public override ValidationResult Validate(object value, System.Globalization.CultureInfo cultureInfo)
         {
             val = -1;
-            return new ValidationResult(Double.TryParse((string)value, out val) && 0.0 <= val && val <= 100.0,
-                String.Format("Value must be a number with an optional decimal space within the range [{0}, {1}]", 0.0, 100.0));
+            return new ValidationResult(Double.TryParse((string)value, out val) && 0.0 <= val && val <= 1.0,
+                String.Format("Value must be a number, with two optional significant digits, within the range [{0}, {1}]", 0.0, 1.0));
         }
     }
 
@@ -137,8 +137,8 @@ namespace ColorSelector
         public override ValidationResult Validate(object value, System.Globalization.CultureInfo cultureInfo)
         {
             val = -1;
-            return new ValidationResult(Double.TryParse((string)value, out val) && 0.0 <= val && val <= 100.0,
-                String.Format("Value must be a number with an optional decimal space within the range [{0}, {1}]", 0.0, 100.0));
+            return new ValidationResult(Double.TryParse((string)value, out val) && 0.0 <= val && val <= 1.0,
+                String.Format("Value must be a number, with two optional significant digits, within the range [{0}, {1}]", 0.0, 1.0));
         }
     }
 
