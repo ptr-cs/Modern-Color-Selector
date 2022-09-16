@@ -20,6 +20,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ColorSelector.Converters;
+using ColorSelector.Validators;
 
 namespace ColorSelector
 {
@@ -89,415 +91,6 @@ namespace ColorSelector
         public string ToString(string? format, IFormatProvider? formatProvider)
         {
             return Color.FromArgb((byte)A, (byte)R, (byte)G, (byte)B).ToString();
-        }
-    }
-
-    public class ArgbHexadecimalColorStringValidationRule : ValidationRule
-    {
-        public override ValidationResult Validate(object value, System.Globalization.CultureInfo cultureInfo)
-        {
-            return new ValidationResult(
-                Regex.Match((string)value, "^#?(?:[0-9a-fA-F]{8})$").Success || Regex.Match((string)value, "^#?(?:[0-9a-fA-F]{6})$").Success,
-                "String must match a valid RGB or ARGB Hexadecimal Color (ex. #FF001122)");
-        }
-    }
-
-    public class ColorByteStringValidationRule : ValidationRule
-    {
-        public override ValidationResult Validate(object value, System.Globalization.CultureInfo cultureInfo)
-        {
-            return new ValidationResult(Double.TryParse((string)value, out _),
-                String.Format("Value must be a number with an optional decimal space within the range [{0}, {1}]", Byte.MinValue, Byte.MaxValue));
-        }
-    }
-
-    public class HueStringValidationRule : ValidationRule
-    {
-        public override ValidationResult Validate(object value, System.Globalization.CultureInfo cultureInfo)
-        {
-            return new ValidationResult(Regex.Match((string)value, "^(?:36[0]|3[0-5][0-9]|[12][0-9][0-9]|[1-9][0-9]|[0-9])$").Success,
-                String.Format("Value must be an integer within the range [{0}, {1}]", 0, 360));
-        }
-    }
-
-    public class SaturationStringValidationRule : ValidationRule
-    {
-        double val = -1;
-        public override ValidationResult Validate(object value, System.Globalization.CultureInfo cultureInfo)
-        {
-            val = -1;
-            return new ValidationResult(Double.TryParse((string)value, out val) && 0.0 <= val && val <= 1.0,
-                String.Format("Value must be a number, with two optional significant digits, within the range [{0}, {1}]", 0.0, 1.0));
-        }
-    }
-
-    public class ValueStringValidationRule : ValidationRule
-    {
-        double val = -1;
-        public override ValidationResult Validate(object value, System.Globalization.CultureInfo cultureInfo)
-        {
-            val = -1;
-            return new ValidationResult(Double.TryParse((string)value, out val) && 0.0 <= val && val <= 1.0,
-                String.Format("Value must be a number, with two optional significant digits, within the range [{0}, {1}]", 0.0, 1.0));
-        }
-    }
-
-    /// <summary>
-    /// Scales and converts a double to a corresponding integral value (for display in UI Controls - 
-    /// prohibiting floating-point values can simplify the color selection UX).
-    /// </summary>
-    [ValueConversion(typeof(double), typeof(int))]
-    public class DoubleToScaledIntegerConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return System.Convert.ToInt32(System.Convert.ToDouble(value) * 100);
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return System.Convert.ToDouble(System.Convert.ToInt32(value) / 100.0);
-        }
-    }
-
-    /// <summary>
-    /// Converts a double to a corresponding integral value (for display in UI Controls - 
-    /// prohibiting floating-point values can simplify the color selection UX).
-    /// </summary>
-    [ValueConversion(typeof(double), typeof(int))]
-    public class DoubleToIntegerConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return System.Convert.ToInt32(System.Convert.ToDouble(value));
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return System.Convert.ToDouble(System.Convert.ToInt32(value));
-        }
-    }
-
-    /// <summary>
-    /// Converts a linear range into a Y-axis-symmetric range of absolute value transformed over the X-Axis 
-    /// (resulting linear range post-conversion is a pyramid shape).
-    /// </summary>
-    [ValueConversion(typeof(double), typeof(double))]
-    public class DoubleToReflectedAbsoluteValueDouble : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            double inputVal = ((double)value) * 2.0;
-            if (inputVal > 1)
-                return 2.0 - inputVal;
-            return inputVal;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return ((double)value);
-        }
-    }
-
-    /// <summary>
-    /// Converts a linear range into a boolean switch applied at 0.5, such that values less than the halfway
-    /// are transformed by Math.Floor() and all other values are transformed by Math.Ceiling()
-    /// </summary>
-    [ValueConversion(typeof(double), typeof(double))]
-    public class DoubleToBooleanSwitchDouble : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            double inputVal = (double)value;
-            if (inputVal < .5)
-                return Math.Floor(.5);
-            return Math.Ceiling(.5);
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return ((double)value);
-        }
-    }
-
-    /// <summary>
-    /// Converts a double representing a percentage (0.0 to 1.0) to a double representing the same percentage
-    /// of a given length value (such as a Control's ActualWidth or ActualHeight).
-    /// </summary>
-    [ValueConversion(typeof(double), typeof(double))]
-    public class DoubleToLengthMultipliedDouble : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            double inputVal = (double)value;
-            double lengthParameter = (double)parameter;
-            var result = lengthParameter * inputVal;
-            if (result >= lengthParameter - 3)
-                result = lengthParameter - 3;
-            if (result < 0)
-                result = 0;
-            return result;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return ((double)value);
-        }
-    }
-
-    /// <summary>
-    /// Converts a double representing a percentage (0.0 to 1.0) to an inverted double representing the same percentage
-    /// of a given length value (such as a Control's ActualWidth or ActualHeight).
-    /// </summary>
-    [ValueConversion(typeof(double), typeof(double))]
-    public class DoubleToLengthMultipliedInvertedDouble : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            double inputVal = (double)value;
-            double lengthParameter = (double)parameter;
-            var result = lengthParameter - (lengthParameter * inputVal);
-            if (result >= lengthParameter - 3)
-                result = lengthParameter - 3;
-            if (result < 0)
-                result = 0;
-            return result;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return ((double)value);
-        }
-    }
-
-    [ValueConversion(typeof(Point), typeof(Thickness))]
-    public class DoubleToHslGuideLeftMargin : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            double inputVal = (double)value;
-            double lengthParameter = (double)parameter;
-            var result = lengthParameter * inputVal;
-            if (result >= lengthParameter - 3)
-                result = lengthParameter - 3;
-            if (result < 0)
-                result = 0;
-            return new Thickness(result, 0, 0, 0);
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return ((Point)value);
-        }
-    }
-
-    [ValueConversion(typeof(Point), typeof(Thickness))]
-    public class DoubleToHslGuideTopMargin : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            double inputVal = (double)value;
-            double lengthParameter = (double)parameter;
-            var result = lengthParameter - (lengthParameter * inputVal);
-            if (result >= lengthParameter - 3)
-                result = lengthParameter - 3;
-            if (result < 0)
-                result = 0;
-            return new Thickness(0, result, 0, 0);
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return ((Point)value);
-        }
-    }
-
-    [ValueConversion(typeof(double), typeof(double))]
-    public class DoubleToLengthMultipliedDoubleHue : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            double inputVal = (double)value / 360.0;
-            double lengthParameter = (double)parameter;
-            var result = lengthParameter * inputVal;
-            if (result >= lengthParameter - 3)
-                result = lengthParameter - 3;
-            if (result < 0)
-                result = 0;
-            return result;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return ((double)value);
-        }
-    }
-
-    [ValueConversion(typeof(Point), typeof(Thickness))]
-    public class DoubleToHslGuideLeftMarginHue : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            double inputVal = (double)value / 360.0;
-            double lengthParameter = (double)parameter;
-            var result = lengthParameter * inputVal;
-            if (result >= lengthParameter - 3)
-                result = lengthParameter - 3;
-            if (result < 0)
-                result = 0;
-            return new Thickness(result, 0, 0, 0);
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return ((Point)value);
-        }
-    }
-
-    [ValueConversion(typeof(HslComponent), typeof(bool))]
-    public class HslComponentComparisonConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            HslComponent valueToConvert = (HslComponent)value;
-            HslComponent compareValue = (HslComponent)parameter;
-
-            return valueToConvert == compareValue;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return HslComponent.Hue; // Conversions back (not necessary) should default to Hue
-        }
-    }
-
-    [ValueConversion(typeof(HslComponent), typeof(string))]
-    public class HslComponentToAbbreviatedStringConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            HslComponent valueToConvert = (HslComponent)value;
-            return valueToConvert.ToString()[..1];
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            string valueToConvert = (string)value;
-            var match = ((HslComponent[])Enum.GetValues(typeof(HslComponent))).Where(s => s.ToString()[..1] == valueToConvert).FirstOrDefault();
-            return match;
-        }
-    }
-
-    /// <summary>
-    /// Converts full precision double into a rounded double (for UI display).
-    /// Parameter is an optional integer that specifies number of decimal places to round to.
-    /// </summary>
-    [ValueConversion(typeof(double), typeof(double))]
-    public class DoubleToTextBoxDouble : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            double valueToConvert = (double)value;
-            int decimalPlaces = (parameter == null) ? 1 : System.Convert.ToInt32(parameter);
-            return Math.Round(valueToConvert, decimalPlaces);
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            double valueToConvert = System.Convert.ToDouble(value);
-            return valueToConvert;
-        }
-    }
-
-    [ValueConversion(typeof(double), typeof(double))]
-    public class RotationAngleConverterY : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            int polarity = -1;
-            return polarity * 90;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return System.Convert.ToDouble(value);
-        }
-    }
-
-    [ValueConversion(typeof(double), typeof(double))]
-    public class RotationAngleConverterX : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            double angle = System.Convert.ToDouble(value);
-            int polarity = -1;
-            return polarity * angle;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return System.Convert.ToDouble(value);
-        }
-    }
-
-    [ValueConversion(typeof(double), typeof(double))]
-    public class RotationAngleConverterZ : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            double angle = System.Convert.ToDouble(value);
-            return (angle * 180) - 90.0;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return System.Convert.ToDouble(value);
-        }
-    }
-
-    [ValueConversion(typeof(double), typeof(double))]
-    public class RotationAngleConverterConeValue : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            double angle = System.Convert.ToDouble(value);
-            return (angle * -180.0) + 90.0;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return System.Convert.ToDouble(value);
-        }
-    }
-
-    [ValueConversion(typeof(double), typeof(double))]
-    public class RotationAngleConverterConeSaturation : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            double angle = System.Convert.ToDouble(value);
-            return (angle * 90.0);
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return System.Convert.ToDouble(value);
-        }
-    }
-
-    [ValueConversion(typeof(object[]), typeof(double))]
-    public class MultiAngleConverterConeSaturationValue : IMultiValueConverter
-    {
-        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
-        {
-            double value = System.Convert.ToDouble(values[0]);
-            double saturation = System.Convert.ToDouble(values[1]);
-            return (value * -(180 - (saturation * 90))) + 90.0;
-        }
-
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-        {
-            return new object[2] { 0, 0 };
         }
     }
 
@@ -815,7 +408,8 @@ namespace ColorSelector
         public const int H_MAX = 360;
         public const int SL_MAX = 1;
         public const double Display3dHeight_MAX = 200.0;
-        public const double Display3dHeight_MIN = 64.0;
+        public const double Display3dHeight_DEFAULT = 80.0;
+        public const double Display3dHeight_MIN = 60.0;
 
         public void ToggleMenu(object? obj)
         {
@@ -2521,7 +2115,7 @@ namespace ColorSelector
         public ModelVisual3D Hsl3dDisplayModelVisual3DCone = new();
         public ModelVisual3D Hsl3dDisplayModelVisual3DCube = new();
         public Viewport3D Hsl3dDisplayViewport3D = new() { Height = 100, Width = 200, ClipToBounds = false };
-        readonly Viewbox viewbox = new() { MaxHeight = 380 };
+        readonly Viewbox viewbox = new() { MaxHeight = Display3dHeight_MAX };
 
         /// <summary>
         /// The Hsl3dDisplayDecorator (AKA the 3D Display) is the container for displaying
@@ -2552,6 +2146,8 @@ namespace ColorSelector
                     BindingOperations.ClearBinding(faceBrushDiffuseMaterial4.Brush, Brush.OpacityProperty);
                     BindingOperations.ClearBinding(faceBrushDiffuseMaterial5.Brush, Brush.OpacityProperty);
                     BindingOperations.ClearBinding(faceBrushDiffuseMaterial6.Brush, Brush.OpacityProperty);
+
+                    BindingOperations.ClearBinding(viewbox, Viewbox.HeightProperty);
                 }
                 hsl3dDisplayDecorator = value;
 
@@ -2582,6 +2178,9 @@ namespace ColorSelector
                     BindingOperations.SetBinding(faceBrushDiffuseMaterial5.Brush, Brush.OpacityProperty, brushOpacityBinding5);
                     Binding brushOpacityBinding6 = new(nameof(S)) { Mode = BindingMode.OneWay, Source = this };
                     BindingOperations.SetBinding(faceBrushDiffuseMaterial6.Brush, Brush.OpacityProperty, brushOpacityBinding6);
+
+                    Binding display3dHeightBinding = new(nameof(Display3dHeight)) { Mode = BindingMode.OneWay, Source = this };
+                    BindingOperations.SetBinding(viewbox, Viewbox.HeightProperty, display3dHeightBinding);
 
                     Hsl3dDisplayViewport3D.Camera = new OrthographicCamera(new Point3D(0, 0, -1), new Vector3D(0, 0, 1), new Vector3D(0, 1, 0), 1.6)
                     {
@@ -2649,10 +2248,12 @@ namespace ColorSelector
         /// <param name="e"></param>
         private void Hsl3dDisplayDecoratorThumb_DragDelta(object sender, DragDeltaEventArgs e)
         {
-            if (e.VerticalChange == 0)
+            double rateOfChange = (ApplicationOrientation) ? e.HorizontalChange : e.VerticalChange;
+
+            if (rateOfChange == 0)
                 return;
 
-            Display3dHeight = Math.Clamp(Display3dHeight + e.VerticalChange, Display3dHeight_MIN, Display3dHeight_MAX);
+            Display3dHeight = Math.Clamp(Display3dHeight + rateOfChange, Display3dHeight_MIN, Display3dHeight_MAX);
         }
 
         /// <summary>
@@ -5648,10 +5249,10 @@ namespace ColorSelector
         }
 
         /// <summary>
-        /// Property to bind Height for the Display 3D (AKA PART_hsl3dDisplayDecorator)'s container. 
+        /// Property to bind Height for the Display 3D (AKA PART_hsl3dDisplayDecorator)'s viewbox. 
         /// </summary>
         public static readonly DependencyProperty Display3dHeightProperty =
-            DependencyProperty.Register(nameof(Display3dHeight), typeof(double), typeof(ColorSelector), new PropertyMetadata(Display3dHeight_MAX));
+            DependencyProperty.Register(nameof(Display3dHeight), typeof(double), typeof(ColorSelector), new PropertyMetadata(Display3dHeight_DEFAULT));
 
         public double Display3dHeight
         {

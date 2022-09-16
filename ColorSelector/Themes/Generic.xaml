@@ -2,9 +2,11 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
                     xmlns:local="clr-namespace:ColorSelector"
-                    xmlns:system="clr-namespace:System;assembly=netstandard">
+                    xmlns:system="clr-namespace:System;assembly=netstandard" 
+                    xmlns:converters="clr-namespace:ColorSelector.Converters">
 
     <BooleanToVisibilityConverter x:Key="b2v" />
+    <converters:HslComponentToAbbreviatedStringConverter x:Key="hslComponentToAbbreviatedStringConverter" />
 
     <SolidColorBrush x:Key="toggleButtonCheckedBrush"
                      Color="#0761A6"
@@ -91,8 +93,6 @@
 
         </DrawingBrush.Drawing>
     </DrawingBrush>
-
-    <local:HslComponentToAbbreviatedStringConverter x:Key="hslComponentToAbbreviatedStringConverter" />
 
     <Style x:Key="gridItemContrast" TargetType="{x:Type Border}">
         <Setter Property="Grid.ColumnSpan" Value="2"/>
@@ -1033,13 +1033,23 @@
                 Padding="0"
                     BorderBrush="{StaticResource blackColorBrush}"
                     BorderThickness="2" >
-                <TextBlock Foreground="{StaticResource whiteColorBrush}" 
-                           Margin="0,-1,0,0" 
+                <TextBlock Margin="0,-1,0,0" 
                            FontSize="20" 
                            FontWeight="Normal" 
                            VerticalAlignment="Center"
-                           HorizontalAlignment="Center"
-                           Text="🡙"/>
+                           HorizontalAlignment="Center">
+                    <TextBlock.Style>
+                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource buttonTextIcon}">
+                            <Setter Property="Text" Value="🡙"/>
+                            <Style.Triggers>
+                                <DataTrigger 
+                                                                                Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=ApplicationOrientation, Mode=OneWay}" Value="true">
+                                    <Setter Property="Text" Value="⭤ "/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
             </Border>
         </Border>
         <ControlTemplate.Triggers>
@@ -2167,9 +2177,8 @@
                                   x:Name="PART_hslComponentAreaPanel" />
                                     </Grid>
 
-                                    <Grid Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=Display3dVisible, Mode=OneWay, Converter={StaticResource b2v}}" 
-                                          Height="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=Display3dHeight, Mode=OneWay}">
-                                        <Border Margin="0,16,0,16" x:Name="PART_hsl3dDisplayDecorator" Background="#00000000"/>
+                                    <Grid Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=Display3dVisible, Mode=OneWay, Converter={StaticResource b2v}}" >
+                                        <Border Margin="0,16,0,16" x:Name="PART_hsl3dDisplayDecorator" Background="#00000000"  MaxHeight="350"/>
                                         <Border Margin="8" Background="{StaticResource Button.Static.Background1}" Height="24" Width="24" VerticalAlignment="Top" HorizontalAlignment="Left" Cursor="Help">
                                             <Border.Style>
                                                 <Style TargetType="{x:Type Border}">

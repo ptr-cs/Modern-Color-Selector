@@ -2,6 +2,7 @@ using NUnit.Framework;
 using ColorSelector;
 using System.Globalization;
 using System.Windows.Controls;
+using ColorSelector.Validators;
 
 namespace ColorSelectorUnitTests
 {
