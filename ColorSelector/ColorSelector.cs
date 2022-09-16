@@ -548,6 +548,7 @@ namespace ColorSelector
         PART_presetColorsSelector,
         PART_customColorsSelector,
         PART_hsl3dDisplayDecorator,
+        PART_hsl3dDisplayDecoratorThumb,
         PART_menuOpenButton,
         PART_menuCloseButton,
         PART_closeMenuAppAreaButton,
@@ -610,6 +611,7 @@ namespace ColorSelector
     [TemplatePart(Name = nameof(TemplatePart.PART_presetColorsSelector), Type = typeof(Selector))]
     [TemplatePart(Name = nameof(TemplatePart.PART_customColorsSelector), Type = typeof(Selector))]
     [TemplatePart(Name = nameof(TemplatePart.PART_hsl3dDisplayDecorator), Type = typeof(Decorator))]
+    [TemplatePart(Name = nameof(TemplatePart.PART_hsl3dDisplayDecoratorThumb), Type = typeof(Thumb))]
     [TemplatePart(Name = nameof(TemplatePart.PART_menuOpenButton), Type = typeof(ButtonBase))]
     [TemplatePart(Name = nameof(TemplatePart.PART_menuCloseButton), Type = typeof(ButtonBase))]
     [TemplatePart(Name = nameof(TemplatePart.PART_closeMenuAppAreaButton), Type = typeof(ButtonBase))]
@@ -766,6 +768,7 @@ namespace ColorSelector
             HslComponentArea = GetTemplateChild(nameof(TemplatePart.PART_hslComponentAreaPanel)) as Panel;
 
             Hsl3dDisplayDecorator = GetTemplateChild(nameof(TemplatePart.PART_hsl3dDisplayDecorator)) as Decorator;
+            Hsl3dDisplayDecoratorThumb = GetTemplateChild(nameof(TemplatePart.PART_hsl3dDisplayDecoratorThumb)) as Thumb;
 
             MenuOpenButtonBase = GetTemplateChild(nameof(TemplatePart.PART_menuOpenButton)) as ButtonBase;
             MenuCloseButtonBase = GetTemplateChild(nameof(TemplatePart.PART_menuCloseButton)) as ButtonBase;
@@ -811,6 +814,8 @@ namespace ColorSelector
         public const int HSL_MIN = 0;
         public const int H_MAX = 360;
         public const int SL_MAX = 1;
+        public const double Display3dHeight_MAX = 200.0;
+        public const double Display3dHeight_MIN = 64.0;
 
         public void ToggleMenu(object? obj)
         {
@@ -1034,7 +1039,7 @@ namespace ColorSelector
         private TextBox? hextTextBox;
         private TextBox? HexTextBox
         {
-            get { return hextTextBox;  }
+            get => hextTextBox;
 
             set
             {
@@ -1059,7 +1064,7 @@ namespace ColorSelector
         private TextBox? aTextBox;
         private TextBox? ATextBox
         {
-            get { return aTextBox; }
+            get => aTextBox;
 
             set
             {
@@ -1086,7 +1091,7 @@ namespace ColorSelector
         private TextBox? rTextBox;
         private TextBox? RTextBox
         {
-            get { return rTextBox; }
+            get => rTextBox;
 
             set
             {
@@ -1113,7 +1118,7 @@ namespace ColorSelector
         private TextBox? gTextBox;
         private TextBox? GTextBox
         {
-            get { return gTextBox; }
+            get => gTextBox;
 
             set
             {
@@ -1140,7 +1145,7 @@ namespace ColorSelector
         private TextBox? bTextBox;
         private TextBox? BTextBox
         {
-            get { return bTextBox; }
+            get => bTextBox;
 
             set
             {
@@ -1178,7 +1183,7 @@ namespace ColorSelector
         private TextBox? hTextBox;
         private TextBox? HTextBox
         {
-            get { return hTextBox; }
+            get => hTextBox;
 
             set
             {
@@ -1207,7 +1212,7 @@ namespace ColorSelector
         private TextBox? sTextBox;
         private TextBox? STextBox
         {
-            get { return sTextBox; }
+            get => sTextBox;
 
             set
             {
@@ -1235,7 +1240,7 @@ namespace ColorSelector
         private TextBox? vTextBox;
         private TextBox? VTextBox
         {
-            get { return vTextBox; }
+            get => vTextBox;
 
             set
             {
@@ -1263,7 +1268,7 @@ namespace ColorSelector
         private RangeBase? aRangeBase;
         private RangeBase? ARangeBase
         {
-            get { return aRangeBase; }
+            get => aRangeBase;
 
             set
             {
@@ -1280,7 +1285,7 @@ namespace ColorSelector
                     aRangeBase.SmallChange = ARGB_ROC;
                     aRangeBase.LargeChange = ARGB_ROC;
 
-                    Binding binding = new(nameof(ARangeBaseValue)) { Mode = BindingMode.TwoWay, Source = this};
+                    Binding binding = new(nameof(ARangeBaseValue)) { Mode = BindingMode.TwoWay, Source = this };
                     aRangeBase.SetBinding(RangeBase.ValueProperty, binding);
 
                     Color transparent = new() { A = 0, R = 0, G = 0, B = 0 };
@@ -1295,7 +1300,7 @@ namespace ColorSelector
         private RangeBase? rRangeBase;
         private RangeBase? RRangeBase
         {
-            get { return rRangeBase; }
+            get => rRangeBase;
 
             set
             {
@@ -1332,7 +1337,7 @@ namespace ColorSelector
         private RangeBase? gRangeBase;
         private RangeBase? GRangeBase
         {
-            get { return gRangeBase; }
+            get => gRangeBase;
 
             set
             {
@@ -1369,7 +1374,7 @@ namespace ColorSelector
         private RangeBase? bRangeBase;
         private RangeBase? BRangeBase
         {
-            get { return bRangeBase; }
+            get => bRangeBase;
 
             set
             {
@@ -1411,7 +1416,7 @@ namespace ColorSelector
         private RangeBase? hRangeBase;
         private RangeBase? HRangeBase
         {
-            get { return hRangeBase; }
+            get => hRangeBase;
 
             set
             {
@@ -1453,7 +1458,7 @@ namespace ColorSelector
                     Binding sector6Binding = new(nameof(HueSector0)) { Mode = BindingMode.OneWay, Source = this };
                     BindingOperations.SetBinding(hSector6GradientStop, GradientStop.ColorProperty, sector6Binding);
 
-                    LinearGradientBrush background = new() { GradientStops = new GradientStopCollection() { hSector0GradientStop, hSector1GradientStop, hSector2GradientStop, hSector3GradientStop, hSector4GradientStop, hSector5GradientStop, hSector6GradientStop }, EndPoint = new Point(1,0) };
+                    LinearGradientBrush background = new() { GradientStops = new GradientStopCollection() { hSector0GradientStop, hSector1GradientStop, hSector2GradientStop, hSector3GradientStop, hSector4GradientStop, hSector5GradientStop, hSector6GradientStop }, EndPoint = new Point(1, 0) };
                     hRangeBase.Background = background;
                 }
             }
@@ -1464,7 +1469,7 @@ namespace ColorSelector
         private RangeBase? sRangeBase;
         private RangeBase? SRangeBase
         {
-            get { return sRangeBase; }
+            get => sRangeBase;
 
             set
             {
@@ -1501,7 +1506,7 @@ namespace ColorSelector
         private RangeBase? vRangeBase;
         private RangeBase? VRangeBase
         {
-            get { return vRangeBase; }
+            get => vRangeBase;
 
             set
             {
@@ -1536,7 +1541,7 @@ namespace ColorSelector
         private RangeBase? hslRangeBase;
         private RangeBase? HslRangeBase
         {
-            get { return hslRangeBase; }
+            get => hslRangeBase;
 
             set
             {
@@ -1560,7 +1565,7 @@ namespace ColorSelector
         private ButtonBase? menuOpenButtonBase;
         private ButtonBase? MenuOpenButtonBase
         {
-            get { return menuOpenButtonBase; }
+            get => menuOpenButtonBase;
 
             set
             {
@@ -1581,7 +1586,7 @@ namespace ColorSelector
         private ButtonBase? menuCloseButtonBase;
         private ButtonBase? MenuCloseButtonBase
         {
-            get { return menuCloseButtonBase; }
+            get => menuCloseButtonBase;
 
             set
             {
@@ -1593,7 +1598,7 @@ namespace ColorSelector
 
                 if (menuCloseButtonBase != null)
                 {
-                    BindingOperations.SetBinding(menuCloseButtonBase, ButtonBase.CommandProperty, 
+                    BindingOperations.SetBinding(menuCloseButtonBase, ButtonBase.CommandProperty,
                         new Binding(nameof(ToggleMenuCommand)) { Mode = BindingMode.OneWay, Source = this });
                 }
             }
@@ -1602,7 +1607,7 @@ namespace ColorSelector
         private ButtonBase? closeMenuDecorator;
         private ButtonBase? CloseMenuDecorator
         {
-            get { return closeMenuDecorator; }
+            get => closeMenuDecorator;
 
             set
             {
@@ -1623,7 +1628,7 @@ namespace ColorSelector
         private ToggleButton? colorModelsVisibilityToggleButton;
         private ToggleButton? ColorModelsVisibilityToggleButton
         {
-            get { return colorModelsVisibilityToggleButton; }
+            get => colorModelsVisibilityToggleButton;
 
             set
             {
@@ -1644,7 +1649,7 @@ namespace ColorSelector
         private ToggleButton? presetColorsVisibilityToggleButton;
         private ToggleButton? PresetColorsVisibilityToggleButton
         {
-            get { return presetColorsVisibilityToggleButton; }
+            get => presetColorsVisibilityToggleButton;
 
             set
             {
@@ -1657,7 +1662,7 @@ namespace ColorSelector
                 if (presetColorsVisibilityToggleButton != null)
                 {
                     BindingOperations.SetBinding(presetColorsVisibilityToggleButton, ButtonBase.CommandProperty,
-                        new Binding(nameof(TogglePresetColorsVisibilityCommand)) { Mode = BindingMode.OneWay, Source = this});
+                        new Binding(nameof(TogglePresetColorsVisibilityCommand)) { Mode = BindingMode.OneWay, Source = this });
                 }
             }
         }
@@ -1665,7 +1670,7 @@ namespace ColorSelector
         private ToggleButton? display2dVisibilityToggleButton;
         private ToggleButton? Display2dVisibilityToggleButton
         {
-            get { return display2dVisibilityToggleButton; }
+            get => display2dVisibilityToggleButton;
 
             set
             {
@@ -1690,7 +1695,7 @@ namespace ColorSelector
         private ToggleButton? display3dVisibilityToggleButton;
         private ToggleButton? Display3dVisibilityToggleButton
         {
-            get { return display3dVisibilityToggleButton; }
+            get => display3dVisibilityToggleButton;
 
             set
             {
@@ -1715,7 +1720,7 @@ namespace ColorSelector
         private ToggleButton? componentsVisibilityToggleButton;
         private ToggleButton? ComponentsVisibilityToggleButton
         {
-            get { return componentsVisibilityToggleButton; }
+            get => componentsVisibilityToggleButton;
 
             set
             {
@@ -1740,7 +1745,7 @@ namespace ColorSelector
         private ToggleButton? colorPreviewVisibilityToggleButton;
         private ToggleButton? ColorPreviewVisibilityToggleButton
         {
-            get { return colorPreviewVisibilityToggleButton; }
+            get => colorPreviewVisibilityToggleButton;
 
             set
             {
@@ -1765,7 +1770,7 @@ namespace ColorSelector
         private ToggleButton? customColorsVisibilityToggleButton;
         private ToggleButton? CustomColorsVisibilityToggleButton
         {
-            get { return customColorsVisibilityToggleButton; }
+            get => customColorsVisibilityToggleButton;
 
             set
             {
@@ -1790,7 +1795,7 @@ namespace ColorSelector
         private ToggleButton? hexadecimalComponentVisibilityToggleButton;
         private ToggleButton? HexadecimalComponentVisibilityToggleButton
         {
-            get { return hexadecimalComponentVisibilityToggleButton; }
+            get => hexadecimalComponentVisibilityToggleButton;
 
             set
             {
@@ -1815,7 +1820,7 @@ namespace ColorSelector
         private ToggleButton? alphaComponentVisibilityToggleButton;
         private ToggleButton? AlphaComponentVisibilityToggleButton
         {
-            get { return alphaComponentVisibilityToggleButton; }
+            get => alphaComponentVisibilityToggleButton;
 
             set
             {
@@ -1840,7 +1845,7 @@ namespace ColorSelector
         private ToggleButton? rgbComponentVisibilityToggleButton;
         private ToggleButton? RgbComponentVisibilityToggleButton
         {
-            get { return rgbComponentVisibilityToggleButton; }
+            get => rgbComponentVisibilityToggleButton;
 
             set
             {
@@ -1865,7 +1870,7 @@ namespace ColorSelector
         private ToggleButton? hslvComponentVisibilityToggleButton;
         private ToggleButton? HslvComponentVisibilityToggleButton
         {
-            get { return hslvComponentVisibilityToggleButton; }
+            get => hslvComponentVisibilityToggleButton;
 
             set
             {
@@ -1890,7 +1895,7 @@ namespace ColorSelector
         private ToggleButton? appOrientationToggleButton;
         private ToggleButton? AppOrientationToggleButton
         {
-            get { return appOrientationToggleButton; }
+            get => appOrientationToggleButton;
 
             set
             {
@@ -1910,7 +1915,7 @@ namespace ColorSelector
         private ButtonBase? selectCustomColorButtonBase;
         private ButtonBase? SelectCustomColorButtonBase
         {
-            get { return selectCustomColorButtonBase; }
+            get => selectCustomColorButtonBase;
 
             set
             {
@@ -1930,7 +1935,7 @@ namespace ColorSelector
         private ButtonBase? saveCustomColorButtonBase;
         private ButtonBase? SaveCustomColorButtonBase
         {
-            get { return saveCustomColorButtonBase; }
+            get => saveCustomColorButtonBase;
 
             set
             {
@@ -1950,7 +1955,7 @@ namespace ColorSelector
         private ButtonBase? deleteCustomColorsButtonBase;
         private ButtonBase? DeleteCustomColorsButtonBase
         {
-            get { return deleteCustomColorsButtonBase; }
+            get => deleteCustomColorsButtonBase;
 
             set
             {
@@ -1970,7 +1975,7 @@ namespace ColorSelector
         private ButtonBase? aIncrementButtonBase;
         private ButtonBase? AIncrementButtonBase
         {
-            get { return aIncrementButtonBase; }
+            get => aIncrementButtonBase;
 
             set
             {
@@ -1990,7 +1995,7 @@ namespace ColorSelector
         private ButtonBase? rIncrementButtonBase;
         private ButtonBase? RIncrementButtonBase
         {
-            get { return rIncrementButtonBase; }
+            get => rIncrementButtonBase;
 
             set
             {
@@ -2010,7 +2015,7 @@ namespace ColorSelector
         private ButtonBase? gIncrementButtonBase;
         private ButtonBase? GIncrementButtonBase
         {
-            get { return gIncrementButtonBase; }
+            get => gIncrementButtonBase;
 
             set
             {
@@ -2030,7 +2035,7 @@ namespace ColorSelector
         private ButtonBase? bIncrementButtonBase;
         private ButtonBase? BIncrementButtonBase
         {
-            get { return bIncrementButtonBase; }
+            get => bIncrementButtonBase;
 
             set
             {
@@ -2050,7 +2055,7 @@ namespace ColorSelector
         private ButtonBase? hIncrementButtonBase;
         private ButtonBase? HIncrementButtonBase
         {
-            get { return hIncrementButtonBase; }
+            get => hIncrementButtonBase;
 
             set
             {
@@ -2070,7 +2075,7 @@ namespace ColorSelector
         private ButtonBase? sIncrementButtonBase;
         private ButtonBase? SIncrementButtonBase
         {
-            get { return sIncrementButtonBase; }
+            get => sIncrementButtonBase;
 
             set
             {
@@ -2090,7 +2095,7 @@ namespace ColorSelector
         private ButtonBase? vIncrementButtonBase;
         private ButtonBase? VIncrementButtonBase
         {
-            get { return vIncrementButtonBase; }
+            get => vIncrementButtonBase;
 
             set
             {
@@ -2110,7 +2115,7 @@ namespace ColorSelector
         private ButtonBase? aDecrementButtonBase;
         private ButtonBase? ADecrementButtonBase
         {
-            get { return aDecrementButtonBase; }
+            get => aDecrementButtonBase;
 
             set
             {
@@ -2130,7 +2135,7 @@ namespace ColorSelector
         private ButtonBase? rDecrementButtonBase;
         private ButtonBase? RDecrementButtonBase
         {
-            get { return rDecrementButtonBase; }
+            get => rDecrementButtonBase;
 
             set
             {
@@ -2150,7 +2155,7 @@ namespace ColorSelector
         private ButtonBase? gDecrementButtonBase;
         private ButtonBase? GDecrementButtonBase
         {
-            get { return gDecrementButtonBase; }
+            get => gDecrementButtonBase;
 
             set
             {
@@ -2170,7 +2175,7 @@ namespace ColorSelector
         private ButtonBase? bDecrementButtonBase;
         private ButtonBase? BDecrementButtonBase
         {
-            get { return bDecrementButtonBase; }
+            get => bDecrementButtonBase;
 
             set
             {
@@ -2190,7 +2195,7 @@ namespace ColorSelector
         private ButtonBase? hDecrementButtonBase;
         private ButtonBase? HDecrementButtonBase
         {
-            get { return hDecrementButtonBase; }
+            get => hDecrementButtonBase;
 
             set
             {
@@ -2210,7 +2215,7 @@ namespace ColorSelector
         private ButtonBase? sDecrementButtonBase;
         private ButtonBase? SDecrementButtonBase
         {
-            get { return sDecrementButtonBase; }
+            get => sDecrementButtonBase;
 
             set
             {
@@ -2230,7 +2235,7 @@ namespace ColorSelector
         private ButtonBase? vDecrementButtonBase;
         private ButtonBase? VDecrementButtonBase
         {
-            get { return vDecrementButtonBase; }
+            get => vDecrementButtonBase;
 
             set
             {
@@ -2250,7 +2255,7 @@ namespace ColorSelector
         private ButtonBase? importPresetColorsButtonBase;
         private ButtonBase? ImportPresetColorsButtonBase
         {
-            get { return importPresetColorsButtonBase; }
+            get => importPresetColorsButtonBase;
 
             set
             {
@@ -2270,7 +2275,7 @@ namespace ColorSelector
         private ButtonBase? importCustomColorsButtonBase;
         private ButtonBase? ImportCustomColorsButtonBase
         {
-            get { return importCustomColorsButtonBase; }
+            get => importCustomColorsButtonBase;
 
             set
             {
@@ -2290,7 +2295,7 @@ namespace ColorSelector
         private ButtonBase? exportCustomColorsButtonBase;
         private ButtonBase? ExportCustomColorsButtonBase
         {
-            get { return exportCustomColorsButtonBase; }
+            get => exportCustomColorsButtonBase;
 
             set
             {
@@ -2310,7 +2315,7 @@ namespace ColorSelector
         private ButtonBase? resetAppScaleButtonBase;
         private ButtonBase? ResetAppScaleButtonBase
         {
-            get { return resetAppScaleButtonBase; }
+            get => resetAppScaleButtonBase;
 
             set
             {
@@ -2330,7 +2335,7 @@ namespace ColorSelector
         private ButtonBase? decreaseAppScaleButtonBase;
         private ButtonBase? DecreaseAppScaleButtonBase
         {
-            get { return decreaseAppScaleButtonBase; }
+            get => decreaseAppScaleButtonBase;
 
             set
             {
@@ -2350,7 +2355,7 @@ namespace ColorSelector
         private ButtonBase? increaseAppScaleButtonBase;
         private ButtonBase? IncreaseAppScaleButtonBase
         {
-            get { return increaseAppScaleButtonBase; }
+            get => increaseAppScaleButtonBase;
 
             set
             {
@@ -2369,8 +2374,8 @@ namespace ColorSelector
 
         private void OnExportToFile()
         {
-            string fileName = $"{DateTime.Now:MM-dd-yy_H-mm-ss}_colors.json";
-            string jsonString = JsonSerializer.Serialize(CustomColors, new JsonSerializerOptions() { WriteIndented = true });
+            var fileName = $"{DateTime.Now:MM-dd-yy_H-mm-ss}_colors.json";
+            var jsonString = JsonSerializer.Serialize(CustomColors, new JsonSerializerOptions() { WriteIndented = true });
 
             var filePath = "";
             var myDocsDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
@@ -2430,7 +2435,7 @@ namespace ColorSelector
             }
 
 
-            string jsonString = File.ReadAllText(filePath);
+            var jsonString = File.ReadAllText(filePath);
 
             try
             {
@@ -2517,10 +2522,15 @@ namespace ColorSelector
         public ModelVisual3D Hsl3dDisplayModelVisual3DCube = new();
         public Viewport3D Hsl3dDisplayViewport3D = new() { Height = 100, Width = 200, ClipToBounds = false };
         readonly Viewbox viewbox = new() { MaxHeight = 380 };
+
+        /// <summary>
+        /// The Hsl3dDisplayDecorator (AKA the 3D Display) is the container for displaying
+        /// the procedurally generated 3D cube and cone objects.
+        /// </summary>
         private Decorator? hsl3dDisplayDecorator;
         private Decorator? Hsl3dDisplayDecorator
         {
-            get { return hsl3dDisplayDecorator; }
+            get => hsl3dDisplayDecorator;
 
             set
             {
@@ -2531,12 +2541,11 @@ namespace ColorSelector
                     hsl3dDisplayDecorator.PreviewMouseWheel -= new MouseWheelEventHandler(Hsl3dDisplayDecorator_PreviewMouseWheel);
                     hsl3dDisplayDecorator.PreviewMouseMove -= new MouseEventHandler(Hsl3dDisplayDecorator_PreviewMouseMove);
 
-                    // BindingOperations.ClearBinding(modelVisual3dRotationY, AxisAngleRotation3D.AngleProperty);
                     BindingOperations.ClearBinding(modelVisual3dRotationZ, AxisAngleRotation3D.AngleProperty);
                     BindingOperations.ClearBinding(modelVisual3dRotationX, AxisAngleRotation3D.AngleProperty);
                     BindingOperations.ClearBinding(modelVisual3dRotationYCone, AxisAngleRotation3D.AngleProperty);
                     BindingOperations.ClearBinding(modelVisual3dRotationXValueCone, AxisAngleRotation3D.AngleProperty);
-                    //BindingOperations.ClearBinding(modelVisual3dRotationXSaturationCone, AxisAngleRotation3D.AngleProperty);
+
                     BindingOperations.ClearBinding(faceBrushDiffuseMaterial1.Brush, Brush.OpacityProperty);
                     BindingOperations.ClearBinding(faceBrushDiffuseMaterial2.Brush, Brush.OpacityProperty);
                     BindingOperations.ClearBinding(faceBrushDiffuseMaterial3.Brush, Brush.OpacityProperty);
@@ -2548,8 +2557,6 @@ namespace ColorSelector
 
                 if (hsl3dDisplayDecorator != null)
                 {
-                    //Binding angleBindingY = new(nameof(H)) { Mode = BindingMode.OneWay, Source = this, Converter = new RotationAngleConverterY() };
-                    //BindingOperations.SetBinding(modelVisual3dRotationY, AxisAngleRotation3D.AngleProperty, angleBindingY);
                     Binding angleBindingX = new(nameof(H)) { Mode = BindingMode.OneWay, Source = this, Converter = new RotationAngleConverterX() };
                     BindingOperations.SetBinding(modelVisual3dRotationX, AxisAngleRotation3D.AngleProperty, angleBindingX);
                     Binding angleBindingZ = new(nameof(V)) { Mode = BindingMode.OneWay, Source = this, Converter = new RotationAngleConverterZ() };
@@ -2562,10 +2569,6 @@ namespace ColorSelector
                     multiBinding.Bindings.Add(new Binding(nameof(V)) { Mode = BindingMode.OneWay, Source = this });
                     multiBinding.Bindings.Add(new Binding(nameof(S)) { Mode = BindingMode.OneWay, Source = this });
                     BindingOperations.SetBinding(modelVisual3dRotationXValueCone, AxisAngleRotation3D.AngleProperty, multiBinding);
-                    //Binding angleBindingConeValue = new(nameof(V)) { Mode = BindingMode.OneWay, Source = this, Converter = new RotationAngleConverterConeValue() };
-                    //BindingOperations.SetBinding(modelVisual3dRotationXValueCone, AxisAngleRotation3D.AngleProperty, angleBindingConeValue);
-                    //Binding angleBindingConeSaturation = new(nameof(S)) { Mode = BindingMode.OneWay, Source = this, Converter = new RotationAngleConverterConeSaturation() };
-                    //BindingOperations.SetBinding(modelVisual3dRotationXSaturationCone, AxisAngleRotation3D.AngleProperty, angleBindingConeSaturation);
 
                     Binding brushOpacityBinding1 = new(nameof(S)) { Mode = BindingMode.OneWay, Source = this };
                     BindingOperations.SetBinding(faceBrushDiffuseMaterial1.Brush, Brush.OpacityProperty, brushOpacityBinding1);
@@ -2602,7 +2605,7 @@ namespace ColorSelector
                     coneTransform3DGroup.Children.Add(new TranslateTransform3D(new Vector3D(0, -0.1, 0)));
                     coneTransform3DGroup.Children.Add(new RotateTransform3D(modelVisual3dRotationYCone));
                     coneTransform3DGroup.Children.Add(coneValueSaturationTransform3DGroup);
-                    coneTransform3DGroup.Children.Add(new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(1,0,0), 0)));
+                    coneTransform3DGroup.Children.Add(new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(1, 0, 0), 0)));
                     Hsl3dDisplayModelVisual3DCone.Transform = coneTransform3DGroup;
 
                     Hsl3dDisplayViewport3D.Children.Add(Hsl3dDisplayModelVisual3DCube);
@@ -2618,9 +2621,52 @@ namespace ColorSelector
             }
         }
 
+        private Thumb? hsl3dDisplayDecoratorThumb;
+        public Thumb? Hsl3dDisplayDecoratorThumb
+        {
+            get => hsl3dDisplayDecoratorThumb;
+
+            set
+            {
+                if (hsl3dDisplayDecoratorThumb != null)
+                {
+                    hsl3dDisplayDecoratorThumb.DragDelta -= new DragDeltaEventHandler(Hsl3dDisplayDecoratorThumb_DragDelta);
+                }
+                hsl3dDisplayDecoratorThumb = value;
+
+                if (hsl3dDisplayDecoratorThumb != null)
+                {
+                    hsl3dDisplayDecoratorThumb.DragDelta += new DragDeltaEventHandler(Hsl3dDisplayDecoratorThumb_DragDelta);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Calculate the resize of the 3D display area based on mouse drag movement 
+        /// originating from the Thumb part.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Hsl3dDisplayDecoratorThumb_DragDelta(object sender, DragDeltaEventArgs e)
+        {
+            if (e.VerticalChange == 0)
+                return;
+
+            Display3dHeight = Math.Clamp(Display3dHeight + e.VerticalChange, Display3dHeight_MIN, Display3dHeight_MAX);
+        }
+
+        /// <summary>
+        /// Generates the necessary GeometryModel3Ds and MaterialGroups to visualize
+        /// a 3D cone with materials applied to convey current color state.
+        /// The cone is able to change its visual appearance via Materials and its orientation
+        /// via Transform3DGroups.
+        /// </summary>
+        /// <returns>The 3D cone as a Model3DGroup.</returns>
         public Model3DGroup GenerateRgbConeModel3DGroup()
         {
             Model3DGroup model3DGroup = new();
+            
+            // Position the cone in 3D-space:
             model3DGroup.Transform = new Transform3DGroup()
             {
                 Children = {
@@ -2633,44 +2679,62 @@ namespace ColorSelector
                 }
             };
 
+            // shaderBlack is the lower-most pole for minimum saturation display
             DiffuseMaterial shaderBlack = new(new LinearGradientBrush(new GradientStopCollection() 
             { 
                 new GradientStop((Color)ColorConverter.ConvertFromString("#00000000"), 0), 
                 new GradientStop(Colors.Black, 1) }) { EndPoint = new Point(1, 0) 
             });
+
+            // shaderWhite is the upper-most pole for minimum saturation display
             DiffuseMaterial shaderWhite = new(new LinearGradientBrush(new GradientStopCollection() 
             { 
                 new GradientStop(Colors.Transparent, 0), 
                 new GradientStop(Colors.White, 1) 
             }) { StartPoint = new Point(0,1), 
                  EndPoint = new Point(0, 0) });
+
+            // shaderGray is the average value for minimum saturation display
             DiffuseMaterial shaderGray = new(new SolidColorBrush(Colors.Gray));
 
             int faces = 128;
 
+            // generate the faces of the cone such that each cone face has a unique gradient
+            // depicting its fractional proportion of the RGB spectrum
             for (int i = 0; i < faces; ++i)
             {
 
-                DiffuseMaterial material = new(new SolidColorBrush(GetRgbColorFromModel((360.0 * i) / faces, 1, 1)));
+                DiffuseMaterial material = new(new SolidColorBrush(GetRgbColorFromModel((double)(H_MAX * i) / faces, 1, 1)));
                 Binding brushOpacity = new(nameof(S)) { Mode = BindingMode.OneWay, Source = this };
                 BindingOperations.SetBinding(material.Brush, Brush.OpacityProperty, brushOpacity);
 
-                MaterialGroup group = new();
+                // Each cone face is assigned three materials within a MaterialGroup:
+                // - a material to show the complete desaturation state (Gray with white/balck max/min poles),
+                // - a material to show the bilinear-interpolated RGB brush.
+                // - a material to overlay the minimum-maximum saturation values at the poles of the cone model.
+                // Depending on the relative saturation values, these three materials are blended,
+                // such that the RGB brush is faded in and out directly proportional to the current saturation value.
 
-                group.Children.Add(shaderGray);
-                group.Children.Add(material);
-                group.Children.Add(shaderBlack);
+                // cone "body" = the collection of individual faces surrounding and meeting at a center point
+                MaterialGroup bodyMaterials = new();
 
-                MaterialGroup group2 = new();
+                bodyMaterials.Children.Add(shaderGray);
+                bodyMaterials.Children.Add(material);
+                bodyMaterials.Children.Add(shaderBlack);
 
-                group2.Children.Add(shaderGray);
-                group2.Children.Add(material);
-                group2.Children.Add(shaderWhite);
+                // cone "base" = the flat bottom of the cone
+                MaterialGroup baseMaterials = new();
 
+                baseMaterials.Children.Add(shaderGray);
+                baseMaterials.Children.Add(material);
+                baseMaterials.Children.Add(shaderWhite);
+
+                // as the loop progresses, rotate the cone faces around the center point:
                 RotateTransform3D transform = new(new AxisAngleRotation3D(new Vector3D(0, 0, 1), i * (360.0 / faces) + 180.0));
+
                 GeometryModel3D body = new()
                 {
-                    Material = group,
+                    Material = bodyMaterials,
                     Transform = transform,
                     Geometry = new MeshGeometry3D()
                     {
@@ -2704,7 +2768,7 @@ namespace ColorSelector
 
                 GeometryModel3D head = new()
                 {
-                    Material = group2,
+                    Material = baseMaterials,
                     Transform = transform,
                     Geometry = new MeshGeometry3D()
                     {
@@ -2742,9 +2806,18 @@ namespace ColorSelector
             return model3DGroup;
         }
 
+        /// <summary>
+        /// Generates the necessary GeometryModel3Ds and MaterialGroups to visualize
+        /// a 3D cube with materials applied to convey current color state.
+        /// The cube is able to change its visual appearance via Materials and its orientation
+        /// via Transform3DGroups.
+        /// </summary>
+        /// <returns>The 3D cube as a Model3DGroup.</returns>
         public Model3DGroup GenerateRgbCubeModel3DGroup()
         {
             Model3DGroup model3DGroup = new();
+
+            // position the cube in 3D space:
             model3DGroup.Transform = new Transform3DGroup()
             {
                 Children = 
@@ -2756,6 +2829,12 @@ namespace ColorSelector
                     }
                 }
             };
+
+            // Each cube face is assigned two materials within a MaterialGroup:
+            // - a material to show the complete desaturation state (Gray with white/balck max/min poles),
+            // - a material to show the bilinear-interpolated RGB brush.
+            // Depending on the relative saturation values, these two materials are blended,
+            // such that the RGB brush is faded in and out directly proportional to the current saturation value.
 
             MaterialGroup materialGroup1 = new();
             materialGroup1.Children.Add(faceBrushDiffuseMaterialDesaturated1);
@@ -3003,6 +3082,12 @@ namespace ColorSelector
         Point hsl3dDisplayMousePoint = new();
         bool hsl3dMouseInteraction = false;
 
+        /// <summary>
+        /// If the mouse is released on the 3D display, reset the interaction flags
+        /// to allow normal handling of subsequent mouse interactions on UI components.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Hsl3dDisplayDecorator_PreviewMouseUp(object sender, MouseButtonEventArgs e)
         {
             if (e.LeftButton != MouseButtonState.Released)
@@ -3011,7 +3096,13 @@ namespace ColorSelector
             hsl3dMouseInteraction = false;
         }
 
-
+        /// <summary>
+        /// Capture the initial mouse event before dragging, in order to:
+        /// 1) process mouse movement relative to the 3D display, 
+        /// 2) Cancel further mouse movement interactions while moving the 3D display.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Hsl3dDisplayDecorator_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.LeftButton != MouseButtonState.Pressed || Hsl3dDisplayDecorator == null)
@@ -3023,18 +3114,33 @@ namespace ColorSelector
             hsl3dDisplayMousePoint = e.GetPosition(Hsl3dDisplayDecorator);
         }
 
+        /// <summary>
+        /// Scrolling the mouse wheel over the 3D display should change the saturation of
+        /// the current color. 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Hsl3dDisplayDecorator_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
             if (Hsl3dDisplayDecorator == null || e.Delta == 0)
                 return;
+
+            var rateOfChange = 50.0;
             var polarity = (e.Delta > 0) ? 1 : -1;
-            var change = Math.Clamp(S + (polarity * (e.Delta / e.Delta) / 50.0), HSL_MIN, SL_MAX);
+            var change = Math.Clamp(S + (polarity * (e.Delta / e.Delta) / rateOfChange), HSL_MIN, SL_MAX);
             if (S != change)
             {
                 S = change;
             }
         }
 
+        /// <summary>
+        /// After clicking and holding on the 3D display, moving the mouse results in changes to the current
+        /// color based on X-Y mouse coordinates.
+        /// Movement is handled differently based on the currently selected ColorModel.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Hsl3dDisplayDecorator_PreviewMouseMove(object sender, MouseEventArgs e)
         {
             if (e.LeftButton != MouseButtonState.Pressed || Hsl3dDisplayDecorator == null || hslComponentAreaInteraction == true)
@@ -3045,11 +3151,6 @@ namespace ColorSelector
             switch (ColorModel)
             {
                 case ColorModel.HSL:
-                    // Method 1: recalculate H and V values based solely on point coordinates, disregarding pre-existing values:
-                    //var calcH = Math.Clamp((H_MAX - (((newPoint.Y) / Hsl3dDisplayDecorator.ActualHeight) * H_MAX)), HSL_MIN, H_MAX);
-                    //var calcV = Math.Clamp((newPoint.X / Hsl3dDisplayDecorator.ActualWidth), HSL_MIN, SL_MAX);
-
-                    // Method 2: recalculate H and V values based on point coordinates and pre-existing values:
                     var xChange = (hsl3dDisplayMousePoint.X - newPoint.X) / Hsl3dDisplayDecorator.ActualWidth;
                     var yChange = hsl3dDisplayMousePoint.Y - newPoint.Y;
 
@@ -3079,9 +3180,11 @@ namespace ColorSelector
                     }
                     break;
                 case ColorModel.HSV:
-                    xChange = (hsl3dDisplayMousePoint.X - newPoint.X) * 360.0 / Hsl3dDisplayDecorator.ActualWidth;
+                    xChange = (hsl3dDisplayMousePoint.X - newPoint.X) * H_MAX / Hsl3dDisplayDecorator.ActualWidth;
                     yChange = (hsl3dDisplayMousePoint.Y - newPoint.Y) / 100.0;
+
                     hsl3dDisplayMousePoint = newPoint;
+
                     var calcH2 = Math.Clamp(H + xChange, HSL_MIN, H_MAX);
                     if (H != calcH2)
                         H = calcH2;
@@ -3098,7 +3201,7 @@ namespace ColorSelector
         private Selector? hslComponentSelector;
         protected Selector? HslComponentSelector
         {
-            get { return hslComponentSelector; }
+            get => hslComponentSelector;
 
             set
             {
@@ -3121,7 +3224,7 @@ namespace ColorSelector
         private Selector? colorModelSelector;
         protected Selector? ColorModelSelector
         {
-            get { return colorModelSelector; }
+            get => colorModelSelector;
 
             set
             {
@@ -3174,7 +3277,7 @@ namespace ColorSelector
         private Selector? presetColorsSelector;
         protected Selector? PresetColorsSelector
         {
-            get { return presetColorsSelector; }
+            get => presetColorsSelector;
 
             set
             {
@@ -3204,7 +3307,7 @@ namespace ColorSelector
         private Selector? customColorsSelector;
         protected Selector? CustomColorsSelector
         {
-            get { return customColorsSelector; }
+            get => customColorsSelector;
 
             set
             {
@@ -3318,7 +3421,7 @@ namespace ColorSelector
         private Panel? hslComponentArea;
         protected Panel? HslComponentArea
         {
-            get { return hslComponentArea; }
+            get => hslComponentArea;
 
             set
             {
@@ -4407,8 +4510,8 @@ namespace ColorSelector
 
         public event RoutedEventHandler ColorSelected
         {
-            add { AddHandler(ColorSelectedEvent, value); }
-            remove { RemoveHandler(ColorSelectedEvent, value); }
+            add => AddHandler(ColorSelectedEvent, value);
+            remove => RemoveHandler(ColorSelectedEvent, value);
         }
 
         void RaiseColorSelectedEvent()
@@ -4428,8 +4531,8 @@ namespace ColorSelector
 
         public event RoutedEventHandler CurrentColorChanged
         {
-            add { AddHandler(CurrentColorChangedEvent, value); }
-            remove { RemoveHandler(CurrentColorChangedEvent, value); }
+            add => AddHandler(CurrentColorChangedEvent, value);
+            remove => RemoveHandler(CurrentColorChangedEvent, value);
         }
 
         void RaiseCurrentColorChangedEvent()
@@ -4449,8 +4552,8 @@ namespace ColorSelector
 
         public event RoutedEventHandler CustomColorSaved
         {
-            add { AddHandler(CustomColorSavedEvent, value); }
-            remove { RemoveHandler(CustomColorSavedEvent, value); }
+            add => AddHandler(CustomColorSavedEvent, value);
+            remove => RemoveHandler(CustomColorSavedEvent, value);
         }
 
         void RaiseCustomColorSavedEvent()
@@ -4471,8 +4574,8 @@ namespace ColorSelector
 
         public event RoutedEventHandler OrientationChanged
         {
-            add { AddHandler(OrientationChangedEvent, value); }
-            remove { RemoveHandler(OrientationChangedEvent, value); }
+            add => AddHandler(OrientationChangedEvent, value);
+            remove => RemoveHandler(OrientationChangedEvent, value);
         }
 
         void RaiseOrientationChangedEvent()
@@ -4491,8 +4594,8 @@ namespace ColorSelector
 
         public HslComponent HslComponentSelection
         {
-            get { return (HslComponent)GetValue(HslComponentSelectionProperty); }
-            set { SetValue(HslComponentSelectionProperty, value); }
+            get => (HslComponent)GetValue(HslComponentSelectionProperty);
+            set => SetValue(HslComponentSelectionProperty, value);
         }
 
         private static void HslComponentSelectionChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -4600,8 +4703,8 @@ namespace ColorSelector
 
         public ObservableCollection<Color> CustomColors
         {
-            get { return (ObservableCollection<Color>)GetValue(CustomColorsProperty); }
-            set { SetValue(CustomColorsProperty, value); }
+            get => (ObservableCollection<Color>)GetValue(CustomColorsProperty);
+            set => SetValue(CustomColorsProperty, value);
         }
 
         public static readonly DependencyProperty PresetColorsProperty =
@@ -4609,8 +4712,8 @@ namespace ColorSelector
 
         public ObservableCollection<Color> PresetColors
         {
-            get { return (ObservableCollection<Color>)GetValue(PresetColorsProperty); }
-            set { SetValue(PresetColorsProperty, value); }
+            get => (ObservableCollection<Color>)GetValue(PresetColorsProperty);
+            set => SetValue(PresetColorsProperty, value);
         }
 
         public static readonly DependencyProperty SelectedColorProperty =
@@ -4618,8 +4721,8 @@ namespace ColorSelector
 
         public Color? SelectedColor
         {
-            get { return (Color?)GetValue(SelectedColorProperty); }
-            set { SetValue(SelectedColorProperty, value); }
+            get => (Color?)GetValue(SelectedColorProperty);
+            set => SetValue(SelectedColorProperty, value);
         }
 
         static Color DefaultColor = (Color)ColorConverter.ConvertFromString("#FFF20D0D");//Colors.Black;
@@ -4629,8 +4732,8 @@ namespace ColorSelector
 
         public RawColor CurrentColor
         {
-            get { return (RawColor)GetValue(CurrentColorProperty); }
-            set { SetValue(CurrentColorProperty, value); }
+            get => (RawColor)GetValue(CurrentColorProperty);
+            set => SetValue(CurrentColorProperty, value);
         }
 
         public static readonly DependencyProperty CurrentMediaColorProperty =
@@ -4638,8 +4741,8 @@ namespace ColorSelector
 
         public Color CurrentMediaColor
         {
-            get { return (Color)GetValue(CurrentMediaColorProperty); }
-            set { SetValue(CurrentMediaColorProperty, value); }
+            get => (Color)GetValue(CurrentMediaColorProperty);
+            set => SetValue(CurrentMediaColorProperty, value);
         }
 
         public static readonly DependencyProperty CurrentHueColorProperty =
@@ -4647,8 +4750,8 @@ namespace ColorSelector
 
         public Color CurrentHueColor
         {
-            get { return (Color)GetValue(CurrentHueColorProperty); }
-            set { SetValue(CurrentHueColorProperty, value); }
+            get => (Color)GetValue(CurrentHueColorProperty);
+            set => SetValue(CurrentHueColorProperty, value);
         }
 
         public static readonly DependencyProperty ColorModelProperty =
@@ -4656,8 +4759,8 @@ namespace ColorSelector
 
         public ColorModel ColorModel
         {
-            get { return (ColorModel)GetValue(ColorModelProperty); }
-            set { SetValue(ColorModelProperty, value); }
+            get => (ColorModel)GetValue(ColorModelProperty);
+            set => SetValue(ColorModelProperty, value);
         }
 
         public void RebuildColorModelList()
@@ -4708,8 +4811,8 @@ namespace ColorSelector
 
         public List<ColorModel> ColorModelList
         {
-            get { return (List<ColorModel>)GetValue(ColorModelListProperty); }
-            set { SetValue(ColorModelListProperty, value); }
+            get => (List<ColorModel>)GetValue(ColorModelListProperty);
+            set => SetValue(ColorModelListProperty, value);
         }
 
         public static readonly DependencyProperty HslComponentListProperty =
@@ -4718,8 +4821,8 @@ namespace ColorSelector
 
         public ObservableCollection<HslComponent> HslComponentList
         {
-            get { return (ObservableCollection<HslComponent>)GetValue(HslComponentListProperty); }
-            set { SetValue(HslComponentListProperty, value); }
+            get => (ObservableCollection<HslComponent>)GetValue(HslComponentListProperty);
+            set => SetValue(HslComponentListProperty, value);
         }
 
         private static void CurrentColorChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -4733,8 +4836,8 @@ namespace ColorSelector
 
         public Color RColorLowBound
         {
-            get { return (Color)GetValue(RColorLowBoundProperty); }
-            set { SetValue(RColorLowBoundProperty, value); }
+            get => (Color)GetValue(RColorLowBoundProperty);
+            set => SetValue(RColorLowBoundProperty, value);
         }
 
         public static readonly DependencyProperty RColorHighBoundProperty =
@@ -4742,8 +4845,8 @@ namespace ColorSelector
 
         public Color RColorHighBound
         {
-            get { return (Color)GetValue(RColorHighBoundProperty); }
-            set { SetValue(RColorHighBoundProperty, value); }
+            get => (Color)GetValue(RColorHighBoundProperty);
+            set => SetValue(RColorHighBoundProperty, value);
         }
 
         public static readonly DependencyProperty GColorLowBoundProperty =
@@ -4751,8 +4854,8 @@ namespace ColorSelector
 
         public Color GColorLowBound
         {
-            get { return (Color)GetValue(GColorLowBoundProperty); }
-            set { SetValue(GColorLowBoundProperty, value); }
+            get => (Color)GetValue(GColorLowBoundProperty);
+            set => SetValue(GColorLowBoundProperty, value);
         }
 
         public static readonly DependencyProperty GColorHighBoundProperty =
@@ -4760,8 +4863,8 @@ namespace ColorSelector
 
         public Color GColorHighBound
         {
-            get { return (Color)GetValue(GColorHighBoundProperty); }
-            set { SetValue(GColorHighBoundProperty, value); }
+            get => (Color)GetValue(GColorHighBoundProperty);
+            set => SetValue(GColorHighBoundProperty, value);
         }
 
         public static readonly DependencyProperty BColorLowBoundProperty =
@@ -4769,8 +4872,8 @@ namespace ColorSelector
 
         public Color BColorLowBound
         {
-            get { return (Color)GetValue(BColorLowBoundProperty); }
-            set { SetValue(BColorLowBoundProperty, value); }
+            get => (Color)GetValue(BColorLowBoundProperty);
+            set => SetValue(BColorLowBoundProperty, value);
         }
 
         public static readonly DependencyProperty BColorHighBoundProperty =
@@ -4778,8 +4881,8 @@ namespace ColorSelector
 
         public Color BColorHighBound
         {
-            get { return (Color)GetValue(BColorHighBoundProperty); }
-            set { SetValue(BColorHighBoundProperty, value); }
+            get => (Color)GetValue(BColorHighBoundProperty);
+            set => SetValue(BColorHighBoundProperty, value);
         }
 
         public static readonly DependencyProperty HueSector0Property =
@@ -4787,8 +4890,8 @@ namespace ColorSelector
 
         public Color HueSector0
         {
-            get { return (Color)GetValue(HueSector0Property); }
-            set { SetValue(HueSector0Property, value); }
+            get => (Color)GetValue(HueSector0Property);
+            set => SetValue(HueSector0Property, value);
         }
 
         public static readonly DependencyProperty HueSector1Property =
@@ -4796,8 +4899,8 @@ namespace ColorSelector
 
         public Color HueSector1
         {
-            get { return (Color)GetValue(HueSector1Property); }
-            set { SetValue(HueSector1Property, value); }
+            get => (Color)GetValue(HueSector1Property);
+            set => SetValue(HueSector1Property, value);
         }
 
         public static readonly DependencyProperty HueSector2Property =
@@ -4805,8 +4908,8 @@ namespace ColorSelector
 
         public Color HueSector2
         {
-            get { return (Color)GetValue(HueSector2Property); }
-            set { SetValue(HueSector2Property, value); }
+            get => (Color)GetValue(HueSector2Property);
+            set => SetValue(HueSector2Property, value);
         }
 
         public static readonly DependencyProperty HueSector3Property =
@@ -4814,8 +4917,8 @@ namespace ColorSelector
 
         public Color HueSector3
         {
-            get { return (Color)GetValue(HueSector3Property); }
-            set { SetValue(HueSector3Property, value); }
+            get => (Color)GetValue(HueSector3Property);
+            set => SetValue(HueSector3Property, value);
         }
 
         public static readonly DependencyProperty HueSector4Property =
@@ -4823,8 +4926,8 @@ namespace ColorSelector
 
         public Color HueSector4
         {
-            get { return (Color)GetValue(HueSector4Property); }
-            set { SetValue(HueSector4Property, value); }
+            get => (Color)GetValue(HueSector4Property);
+            set => SetValue(HueSector4Property, value);
         }
 
         public static readonly DependencyProperty HueSector5Property =
@@ -4832,8 +4935,8 @@ namespace ColorSelector
 
         public Color HueSector5
         {
-            get { return (Color)GetValue(HueSector5Property); }
-            set { SetValue(HueSector5Property, value); }
+            get => (Color)GetValue(HueSector5Property);
+            set => SetValue(HueSector5Property, value);
         }
 
         public static readonly DependencyProperty FaceBrush1Property =
@@ -4841,8 +4944,8 @@ namespace ColorSelector
 
         public ImageBrush FaceBrush1
         {
-            get { return (ImageBrush)GetValue(FaceBrush1Property); }
-            set { SetValue(FaceBrush1Property, value); }
+            get => (ImageBrush)GetValue(FaceBrush1Property);
+            set => SetValue(FaceBrush1Property, value);
         }
 
         public static readonly DependencyProperty FaceBrush2Property =
@@ -4850,8 +4953,8 @@ namespace ColorSelector
 
         public ImageBrush FaceBrush2
         {
-            get { return (ImageBrush)GetValue(FaceBrush2Property); }
-            set { SetValue(FaceBrush2Property, value); }
+            get => (ImageBrush)GetValue(FaceBrush2Property);
+            set => SetValue(FaceBrush2Property, value);
         }
 
         public static readonly DependencyProperty FaceBrush3Property =
@@ -4859,8 +4962,8 @@ namespace ColorSelector
 
         public ImageBrush FaceBrush3
         {
-            get { return (ImageBrush)GetValue(FaceBrush3Property); }
-            set { SetValue(FaceBrush3Property, value); }
+            get => (ImageBrush)GetValue(FaceBrush3Property);
+            set => SetValue(FaceBrush3Property, value);
         }
 
         public static readonly DependencyProperty FaceBrush4Property =
@@ -4868,8 +4971,8 @@ namespace ColorSelector
 
         public ImageBrush FaceBrush4
         {
-            get { return (ImageBrush)GetValue(FaceBrush4Property); }
-            set { SetValue(FaceBrush4Property, value); }
+            get => (ImageBrush)GetValue(FaceBrush4Property);
+            set => SetValue(FaceBrush4Property, value);
         }
 
         public static readonly DependencyProperty FaceBrush5Property =
@@ -4877,8 +4980,8 @@ namespace ColorSelector
 
         public ImageBrush FaceBrush5
         {
-            get { return (ImageBrush)GetValue(FaceBrush5Property); }
-            set { SetValue(FaceBrush5Property, value); }
+            get => (ImageBrush)GetValue(FaceBrush5Property);
+            set => SetValue(FaceBrush5Property, value);
         }
 
         public static readonly DependencyProperty FaceBrush6Property =
@@ -4886,8 +4989,8 @@ namespace ColorSelector
 
         public ImageBrush FaceBrush6
         {
-            get { return (ImageBrush)GetValue(FaceBrush6Property); }
-            set { SetValue(FaceBrush6Property, value); }
+            get => (ImageBrush)GetValue(FaceBrush6Property);
+            set => SetValue(FaceBrush6Property, value);
         }
 
 
@@ -4899,8 +5002,8 @@ namespace ColorSelector
 
         public Color SColorLowBound
         {
-            get { return (Color)GetValue(SColorLowBoundProperty); }
-            set { SetValue(SColorLowBoundProperty, value); }
+            get => (Color)GetValue(SColorLowBoundProperty);
+            set => SetValue(SColorLowBoundProperty, value);
         }
 
         public static readonly DependencyProperty SColorHighBoundProperty =
@@ -4908,8 +5011,8 @@ namespace ColorSelector
 
         public Color SColorHighBound
         {
-            get { return (Color)GetValue(SColorHighBoundProperty); }
-            set { SetValue(SColorHighBoundProperty, value); }
+            get => (Color)GetValue(SColorHighBoundProperty);
+            set => SetValue(SColorHighBoundProperty, value);
         }
 
         public static readonly DependencyProperty VColorLowBoundProperty =
@@ -4917,8 +5020,8 @@ namespace ColorSelector
 
         public Color VColorLowBound
         {
-            get { return (Color)GetValue(VColorLowBoundProperty); }
-            set { SetValue(VColorLowBoundProperty, value); }
+            get => (Color)GetValue(VColorLowBoundProperty);
+            set => SetValue(VColorLowBoundProperty, value);
         }
 
         public static readonly DependencyProperty VColorHighBoundProperty =
@@ -4926,8 +5029,8 @@ namespace ColorSelector
 
         public Color VColorHighBound
         {
-            get { return (Color)GetValue(VColorHighBoundProperty); }
-            set { SetValue(VColorHighBoundProperty, value); }
+            get => (Color)GetValue(VColorHighBoundProperty);
+            set => SetValue(VColorHighBoundProperty, value);
         }
 
         static readonly DependencyProperty HexValueStringProperty =
@@ -4952,8 +5055,8 @@ namespace ColorSelector
 
         public string HexValueString
         {
-            get { return (string)GetValue(HexValueStringProperty); }
-            set { SetValue(HexValueStringProperty, value); }
+            get => (string)GetValue(HexValueStringProperty);
+            set => SetValue(HexValueStringProperty, value);
         }
 
         public static readonly DependencyProperty AProperty =
@@ -4961,7 +5064,7 @@ namespace ColorSelector
 
         public double A
         {
-            get { return (double)GetValue(AProperty); }
+            get => (double)GetValue(AProperty);
             set
             {
                 SetValue(AProperty, value);
@@ -4983,7 +5086,7 @@ namespace ColorSelector
             }
         }
 
-        readonly static DependencyProperty ARangeBaseValueProperty =
+        static readonly DependencyProperty ARangeBaseValueProperty =
             DependencyProperty.Register(nameof(ARangeBaseValue), typeof(double), typeof(ColorSelector), new PropertyMetadata(Convert.ToDouble(DefaultColor.A), new PropertyChangedCallback(ARangeBaseValueChanged)));
 
         private static void ARangeBaseValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -4997,8 +5100,8 @@ namespace ColorSelector
 
         public double ARangeBaseValue
         {
-            get { return (double)GetValue(ARangeBaseValueProperty); }
-            set { SetValue(ARangeBaseValueProperty, value); }
+            get => (double)GetValue(ARangeBaseValueProperty);
+            set => SetValue(ARangeBaseValueProperty, value);
         }
 
         static readonly DependencyProperty ATextBoxValueProperty =
@@ -5015,8 +5118,8 @@ namespace ColorSelector
 
         public double ATextBoxValue
         {
-            get { return (double)GetValue(ATextBoxValueProperty); }
-            set { SetValue(ATextBoxValueProperty, value); }
+            get => (double)GetValue(ATextBoxValueProperty);
+            set => SetValue(ATextBoxValueProperty, value);
         }
 
         public static readonly DependencyProperty RProperty =
@@ -5024,7 +5127,7 @@ namespace ColorSelector
 
         public double R
         {
-            get { return (double)GetValue(RProperty); }
+            get => (double)GetValue(RProperty);
             set
             {
                 SetValue(RProperty, value);
@@ -5046,7 +5149,7 @@ namespace ColorSelector
             }
         }
 
-        readonly static DependencyProperty RRangeBaseValueProperty =
+        static readonly DependencyProperty RRangeBaseValueProperty =
             DependencyProperty.Register(nameof(RRangeBaseValue), typeof(double), typeof(ColorSelector), new PropertyMetadata(Convert.ToDouble(DefaultColor.R), new PropertyChangedCallback(RRangeBaseValueChanged)));
 
         private static void RRangeBaseValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -5060,8 +5163,8 @@ namespace ColorSelector
 
         public double RRangeBaseValue
         {
-            get { return (double)GetValue(RRangeBaseValueProperty); }
-            set { SetValue(RRangeBaseValueProperty, value); }
+            get => (double)GetValue(RRangeBaseValueProperty);
+            set => SetValue(RRangeBaseValueProperty, value);
         }
 
         static readonly DependencyProperty RTextBoxValueProperty =
@@ -5078,8 +5181,8 @@ namespace ColorSelector
 
         public double RTextBoxValue
         {
-            get { return (double)GetValue(RTextBoxValueProperty); }
-            set { SetValue(RTextBoxValueProperty, value); }
+            get => (double)GetValue(RTextBoxValueProperty);
+            set => SetValue(RTextBoxValueProperty, value);
         }
 
         public static readonly DependencyProperty GProperty =
@@ -5087,7 +5190,7 @@ namespace ColorSelector
 
         public double G
         {
-            get { return (double)GetValue(GProperty); }
+            get => (double)GetValue(GProperty);
             set
             {
                 SetValue(GProperty, value);
@@ -5109,7 +5212,7 @@ namespace ColorSelector
             }
         }
 
-        readonly static DependencyProperty GRangeBaseValueProperty =
+        static readonly DependencyProperty GRangeBaseValueProperty =
             DependencyProperty.Register(nameof(GRangeBaseValue), typeof(double), typeof(ColorSelector), new PropertyMetadata(Convert.ToDouble(DefaultColor.G), new PropertyChangedCallback(GRangeBaseValueChanged)));
 
         private static void GRangeBaseValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -5123,8 +5226,8 @@ namespace ColorSelector
 
         public double GRangeBaseValue
         {
-            get { return (double)GetValue(GRangeBaseValueProperty); }
-            set { SetValue(GRangeBaseValueProperty, value); }
+            get => (double)GetValue(GRangeBaseValueProperty);
+            set => SetValue(GRangeBaseValueProperty, value);
         }
 
         static readonly DependencyProperty GTextBoxValueProperty =
@@ -5141,8 +5244,8 @@ namespace ColorSelector
 
         public double GTextBoxValue
         {
-            get { return (double)GetValue(GTextBoxValueProperty); }
-            set { SetValue(GTextBoxValueProperty, value); }
+            get => (double)GetValue(GTextBoxValueProperty);
+            set => SetValue(GTextBoxValueProperty, value);
         }
 
         public static readonly DependencyProperty BProperty =
@@ -5150,7 +5253,7 @@ namespace ColorSelector
 
         public double B
         {
-            get { return (double)GetValue(BProperty); }
+            get => (double)GetValue(BProperty);
             set
             {
                 SetValue(BProperty, value);
@@ -5172,7 +5275,7 @@ namespace ColorSelector
             }
         }
 
-        readonly static DependencyProperty BRangeBaseValueProperty =
+        static readonly DependencyProperty BRangeBaseValueProperty =
             DependencyProperty.Register(nameof(BRangeBaseValue), typeof(double), typeof(ColorSelector), new PropertyMetadata(Convert.ToDouble(DefaultColor.B), new PropertyChangedCallback(BRangeBaseValueChanged)));
 
         private static void BRangeBaseValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -5186,8 +5289,8 @@ namespace ColorSelector
 
         public double BRangeBaseValue
         {
-            get { return (double)GetValue(BRangeBaseValueProperty); }
-            set { SetValue(BRangeBaseValueProperty, value); }
+            get => (double)GetValue(BRangeBaseValueProperty);
+            set => SetValue(BRangeBaseValueProperty, value);
         }
 
         static readonly DependencyProperty BTextBoxValueProperty =
@@ -5204,8 +5307,8 @@ namespace ColorSelector
 
         public double BTextBoxValue
         {
-            get { return (double)GetValue(BTextBoxValueProperty); }
-            set { SetValue(BTextBoxValueProperty, value); }
+            get => (double)GetValue(BTextBoxValueProperty);
+            set => SetValue(BTextBoxValueProperty, value);
         }
 
         public static readonly DependencyProperty HProperty =
@@ -5213,7 +5316,7 @@ namespace ColorSelector
 
         public double H
         {
-            get { return (double)GetValue(HProperty); }
+            get => (double)GetValue(HProperty);
             set
             {
                 SetValue(HProperty, value);
@@ -5238,7 +5341,7 @@ namespace ColorSelector
             }
         }
 
-        readonly static DependencyProperty HRangeBaseValueProperty =
+        static readonly DependencyProperty HRangeBaseValueProperty =
             DependencyProperty.Register(nameof(HRangeBaseValue), typeof(double), typeof(ColorSelector), new PropertyMetadata((double)System.Drawing.Color.FromArgb(DefaultColor.A, DefaultColor.R, DefaultColor.G, DefaultColor.B).GetHue(), new PropertyChangedCallback(HRangeBaseValueChanged)));
 
         private static void HRangeBaseValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -5252,8 +5355,8 @@ namespace ColorSelector
 
         public double HRangeBaseValue
         {
-            get { return (double)GetValue(HRangeBaseValueProperty); }
-            set { SetValue(HRangeBaseValueProperty, value); }
+            get => (double)GetValue(HRangeBaseValueProperty);
+            set => SetValue(HRangeBaseValueProperty, value);
         }
 
         static readonly DependencyProperty HTextBoxValueProperty =
@@ -5270,8 +5373,8 @@ namespace ColorSelector
 
         public double HTextBoxValue
         {
-            get { return (double)GetValue(HTextBoxValueProperty); }
-            set { SetValue(HTextBoxValueProperty, value); }
+            get => (double)GetValue(HTextBoxValueProperty);
+            set => SetValue(HTextBoxValueProperty, value);
         }
 
         public static readonly DependencyProperty SProperty =
@@ -5279,7 +5382,7 @@ namespace ColorSelector
 
         public double S
         {
-            get { return (double)GetValue(SProperty); }
+            get => (double)GetValue(SProperty);
             set
             {
                 SetValue(SProperty, value);
@@ -5304,7 +5407,7 @@ namespace ColorSelector
             }
         }
 
-        readonly static DependencyProperty SRangeBaseValueProperty =
+        static readonly DependencyProperty SRangeBaseValueProperty =
             DependencyProperty.Register(nameof(SRangeBaseValue), typeof(double), typeof(ColorSelector), new PropertyMetadata((double)System.Drawing.Color.FromArgb(DefaultColor.A, DefaultColor.R, DefaultColor.G, DefaultColor.B).GetSaturation(), new PropertyChangedCallback(SRangeBaseValueChanged)));
 
         private static void SRangeBaseValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -5318,8 +5421,8 @@ namespace ColorSelector
 
         public double SRangeBaseValue
         {
-            get { return (double)GetValue(SRangeBaseValueProperty); }
-            set { SetValue(SRangeBaseValueProperty, value); }
+            get => (double)GetValue(SRangeBaseValueProperty);
+            set => SetValue(SRangeBaseValueProperty, value);
         }
 
         static readonly DependencyProperty STextBoxValueProperty =
@@ -5336,8 +5439,8 @@ namespace ColorSelector
 
         public double STextBoxValue
         {
-            get { return (double)GetValue(STextBoxValueProperty); }
-            set { SetValue(STextBoxValueProperty, value); }
+            get => (double)GetValue(STextBoxValueProperty);
+            set => SetValue(STextBoxValueProperty, value);
         }
 
         public static readonly DependencyProperty VProperty =
@@ -5345,7 +5448,7 @@ namespace ColorSelector
 
         public double V
         {
-            get { return (double)GetValue(VProperty); }
+            get => (double)GetValue(VProperty);
             set
             {
                 SetValue(VProperty, value);
@@ -5370,7 +5473,7 @@ namespace ColorSelector
             }
         }
 
-        readonly static DependencyProperty VRangeBaseValueProperty =
+        static readonly DependencyProperty VRangeBaseValueProperty =
             DependencyProperty.Register(nameof(VRangeBaseValue), typeof(double), typeof(ColorSelector), new PropertyMetadata((double)System.Drawing.Color.FromArgb(DefaultColor.A, DefaultColor.R, DefaultColor.G, DefaultColor.B).GetBrightness(), new PropertyChangedCallback(VRangeBaseValueChanged)));
 
         private static void VRangeBaseValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -5384,8 +5487,8 @@ namespace ColorSelector
 
         public double VRangeBaseValue
         {
-            get { return (double)GetValue(VRangeBaseValueProperty); }
-            set { SetValue(VRangeBaseValueProperty, value); }
+            get => (double)GetValue(VRangeBaseValueProperty);
+            set => SetValue(VRangeBaseValueProperty, value);
         }
 
         static readonly DependencyProperty VTextBoxValueProperty =
@@ -5402,8 +5505,8 @@ namespace ColorSelector
 
         public double VTextBoxValue
         {
-            get { return (double)GetValue(VTextBoxValueProperty); }
-            set { SetValue(VTextBoxValueProperty, value); }
+            get => (double)GetValue(VTextBoxValueProperty);
+            set => SetValue(VTextBoxValueProperty, value);
         }
 
         public static readonly DependencyProperty IsMenuOpenProperty =
@@ -5411,8 +5514,8 @@ namespace ColorSelector
 
         public bool IsMenuOpen
         {
-            get { return (bool)GetValue(IsMenuOpenProperty); }
-            set { SetValue(IsMenuOpenProperty, value); }
+            get => (bool)GetValue(IsMenuOpenProperty);
+            set => SetValue(IsMenuOpenProperty, value);
         }
 
         public static readonly DependencyProperty ColorModelsVisibleProperty =
@@ -5420,8 +5523,8 @@ namespace ColorSelector
 
         public bool ColorModelsVisible
         {
-            get { return (bool)GetValue(ColorModelsVisibleProperty); }
-            set { SetValue(ColorModelsVisibleProperty, value); }
+            get => (bool)GetValue(ColorModelsVisibleProperty);
+            set => SetValue(ColorModelsVisibleProperty, value);
         }
 
         public static readonly DependencyProperty PresetColorsVisibleProperty =
@@ -5429,8 +5532,8 @@ namespace ColorSelector
 
         public bool PresetColorsVisible
         {
-            get { return (bool)GetValue(PresetColorsVisibleProperty); }
-            set { SetValue(PresetColorsVisibleProperty, value); }
+            get => (bool)GetValue(PresetColorsVisibleProperty);
+            set => SetValue(PresetColorsVisibleProperty, value);
         }
 
         public static readonly DependencyProperty Display2dVisibleProperty =
@@ -5438,8 +5541,8 @@ namespace ColorSelector
 
         public bool Display2dVisible
         {
-            get { return (bool)GetValue(Display2dVisibleProperty); }
-            set { SetValue(Display2dVisibleProperty, value); }
+            get => (bool)GetValue(Display2dVisibleProperty);
+            set => SetValue(Display2dVisibleProperty, value);
         }
 
         public static readonly DependencyProperty Display3dVisibleProperty =
@@ -5447,8 +5550,8 @@ namespace ColorSelector
 
         public bool Display3dVisible
         {
-            get { return (bool)GetValue(Display3dVisibleProperty); }
-            set { SetValue(Display3dVisibleProperty, value); }
+            get => (bool)GetValue(Display3dVisibleProperty);
+            set => SetValue(Display3dVisibleProperty, value);
         }
 
         public static readonly DependencyProperty ComponentsVisibleProperty =
@@ -5456,8 +5559,8 @@ namespace ColorSelector
 
         public bool ComponentsVisible
         {
-            get { return (bool)GetValue(ComponentsVisibleProperty); }
-            set { SetValue(ComponentsVisibleProperty, value); }
+            get => (bool)GetValue(ComponentsVisibleProperty);
+            set => SetValue(ComponentsVisibleProperty, value);
         }
 
         public static readonly DependencyProperty ColorPreviewVisibleProperty =
@@ -5465,8 +5568,8 @@ namespace ColorSelector
 
         public bool ColorPreviewVisible
         {
-            get { return (bool)GetValue(ColorPreviewVisibleProperty); }
-            set { SetValue(ColorPreviewVisibleProperty, value); }
+            get => (bool)GetValue(ColorPreviewVisibleProperty);
+            set => SetValue(ColorPreviewVisibleProperty, value);
         }
 
         public static readonly DependencyProperty CustomColorsVisibleProperty =
@@ -5474,8 +5577,8 @@ namespace ColorSelector
 
         public bool CustomColorsVisible
         {
-            get { return (bool)GetValue(CustomColorsVisibleProperty); }
-            set { SetValue(CustomColorsVisibleProperty, value); }
+            get => (bool)GetValue(CustomColorsVisibleProperty);
+            set => SetValue(CustomColorsVisibleProperty, value);
         }
 
         public static readonly DependencyProperty HexadecimalComponentVisibleProperty =
@@ -5483,8 +5586,8 @@ namespace ColorSelector
 
         public bool HexadecimalComponentVisible
         {
-            get { return (bool)GetValue(HexadecimalComponentVisibleProperty); }
-            set { SetValue(HexadecimalComponentVisibleProperty, value); }
+            get => (bool)GetValue(HexadecimalComponentVisibleProperty);
+            set => SetValue(HexadecimalComponentVisibleProperty, value);
         }
 
         public static readonly DependencyProperty AlphaComponentVisibleProperty =
@@ -5492,8 +5595,8 @@ namespace ColorSelector
 
         public bool AlphaComponentVisible
         {
-            get { return (bool)GetValue(AlphaComponentVisibleProperty); }
-            set { SetValue(AlphaComponentVisibleProperty, value); }
+            get => (bool)GetValue(AlphaComponentVisibleProperty);
+            set => SetValue(AlphaComponentVisibleProperty, value);
         }
 
         public static readonly DependencyProperty RgbComponentVisibleProperty =
@@ -5501,8 +5604,8 @@ namespace ColorSelector
 
         public bool RgbComponentVisible
         {
-            get { return (bool)GetValue(RgbComponentVisibleProperty); }
-            set { SetValue(RgbComponentVisibleProperty, value); }
+            get => (bool)GetValue(RgbComponentVisibleProperty);
+            set => SetValue(RgbComponentVisibleProperty, value);
         }
 
         public static readonly DependencyProperty HslvComponentVisibleProperty =
@@ -5510,8 +5613,8 @@ namespace ColorSelector
 
         public bool HslvComponentVisible
         {
-            get { return (bool)GetValue(HslvComponentVisibleProperty); }
-            set { SetValue(HslvComponentVisibleProperty, value); }
+            get => (bool)GetValue(HslvComponentVisibleProperty);
+            set => SetValue(HslvComponentVisibleProperty, value);
         }
 
         public static readonly DependencyProperty ApplicationScaleProperty =
@@ -5519,8 +5622,8 @@ namespace ColorSelector
 
         public double ApplicationScale
         {
-            get { return (double)GetValue(ApplicationScaleProperty); }
-            set { SetValue(ApplicationScaleProperty, value); }
+            get => (double)GetValue(ApplicationScaleProperty);
+            set => SetValue(ApplicationScaleProperty, value);
         }
 
         public static readonly DependencyProperty ApplicationOrientationProperty =
@@ -5528,8 +5631,8 @@ namespace ColorSelector
 
         public bool ApplicationOrientation
         {
-            get { return (bool)GetValue(ApplicationOrientationProperty); }
-            set { SetValue(ApplicationOrientationProperty, value); }
+            get => (bool)GetValue(ApplicationOrientationProperty);
+            set => SetValue(ApplicationOrientationProperty, value);
         }
 
         /// <summary>
@@ -5542,6 +5645,18 @@ namespace ColorSelector
         {
             ColorSelector selector = (ColorSelector)d;
             selector.RaiseOrientationChangedEvent();
+        }
+
+        /// <summary>
+        /// Property to bind Height for the Display 3D (AKA PART_hsl3dDisplayDecorator)'s container. 
+        /// </summary>
+        public static readonly DependencyProperty Display3dHeightProperty =
+            DependencyProperty.Register(nameof(Display3dHeight), typeof(double), typeof(ColorSelector), new PropertyMetadata(Display3dHeight_MAX));
+
+        public double Display3dHeight
+        {
+            get => (double)GetValue(Display3dHeightProperty);
+            set => SetValue(Display3dHeightProperty, value);
         }
     }
 }

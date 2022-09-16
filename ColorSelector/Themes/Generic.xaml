@@ -777,13 +777,13 @@
                 Background="Transparent"
                 BorderBrush="{StaticResource whiteColorBrush}"
                 SnapsToDevicePixels="True"
-                BorderThickness="1"
+                BorderThickness="2"
                 Cursor="Hand"
                 UseLayoutRounding="True"
                 VerticalAlignment="Stretch">
             <Border x:Name="innerGrip"
                     BorderBrush="{StaticResource blackColorBrush}"
-                    BorderThickness="1" />
+                    BorderThickness="2" />
         </Border>
         <ControlTemplate.Triggers>
             <Trigger Property="IsMouseOver"
@@ -1017,28 +1017,75 @@
             </Trigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
+
+    <ControlTemplate x:Key="DragThumb"
+                     TargetType="{x:Type Thumb}">
+        <Border x:Name="grip"
+                Cursor="Hand"
+                Background="{StaticResource Button.Static.Background1}"
+                BorderBrush="{StaticResource whiteColorBrush}"
+                SnapsToDevicePixels="True"
+                BorderThickness="2"
+                Padding="0"
+                UseLayoutRounding="True"
+                HorizontalAlignment="Stretch">
+            <Border x:Name="innerGrip"
+                Padding="0"
+                    BorderBrush="{StaticResource blackColorBrush}"
+                    BorderThickness="2" >
+                <TextBlock Foreground="{StaticResource whiteColorBrush}" 
+                           Margin="0,-1,0,0" 
+                           FontSize="20" 
+                           FontWeight="Normal" 
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Center"
+                           Text="🡙"/>
+            </Border>
+        </Border>
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver"
+                     Value="true">
+                <Setter Property="Background"
+                        TargetName="grip"
+                        Value="Transparent" />
+            </Trigger>
+            <Trigger Property="IsDragging"
+                     Value="true">
+                <Setter Property="Background"
+                        TargetName="grip"
+                        Value="Transparent" />
+                <Setter Property="CornerRadius"
+                        TargetName="grip"
+                        Value="6" />
+                <Setter Property="CornerRadius"
+                        TargetName="innerGrip"
+                        Value="4" />
+            </Trigger>
+            <Trigger Property="IsEnabled"
+                     Value="false">
+                <Setter Property="Background"
+                        TargetName="grip"
+                        Value="{StaticResource SliderThumb.Disabled.Background}" />
+                <Setter Property="BorderBrush"
+                        TargetName="grip"
+                        Value="{StaticResource SliderThumb.Disabled.Border}" />
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
     <ControlTemplate x:Key="SliderThumbVerticalDefault"
                      TargetType="{x:Type Thumb}">
-        <!--<Grid HorizontalAlignment="Center"
-              UseLayoutRounding="True"
-              VerticalAlignment="Center">
-            <Path x:Name="grip"
-                  Data="M0.5,0.5 L18.5,0.5 18.5,11.5 0.5,11.5z"
-                  Fill="{StaticResource SliderThumb.Static.Background}"
-                  Stroke="{StaticResource SliderThumb.Static.Border}"
-                  Stretch="Fill" />
-        </Grid>-->
         <Border x:Name="grip"
                 Cursor="Hand"
                 Background="Transparent"
                 BorderBrush="{StaticResource whiteColorBrush}"
                 SnapsToDevicePixels="True"
-                BorderThickness="1"
+                BorderThickness="2"
                 UseLayoutRounding="True"
                 HorizontalAlignment="Stretch">
             <Border x:Name="innerGrip"
                     BorderBrush="{StaticResource blackColorBrush}"
-                    BorderThickness="1" />
+                    BorderThickness="2" />
         </Border>
         <ControlTemplate.Triggers>
             <Trigger Property="IsMouseOver"
@@ -2120,8 +2167,9 @@
                                   x:Name="PART_hslComponentAreaPanel" />
                                     </Grid>
 
-                                    <Grid Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=Display3dVisible, Mode=OneWay, Converter={StaticResource b2v}}">
-                                        <Border Margin="0,16,0,16" MaxHeight="350" x:Name="PART_hsl3dDisplayDecorator" Background="#00000000"/>
+                                    <Grid Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=Display3dVisible, Mode=OneWay, Converter={StaticResource b2v}}" 
+                                          Height="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=Display3dHeight, Mode=OneWay}">
+                                        <Border Margin="0,16,0,16" x:Name="PART_hsl3dDisplayDecorator" Background="#00000000"/>
                                         <Border Margin="8" Background="{StaticResource Button.Static.Background1}" Height="24" Width="24" VerticalAlignment="Top" HorizontalAlignment="Left" Cursor="Help">
                                             <Border.Style>
                                                 <Style TargetType="{x:Type Border}">
@@ -2165,6 +2213,18 @@
                                             </Border.Style>
                                             <TextBlock Text="?" FontSize="18"/>
                                         </Border>
+
+                                        <Thumb 
+                                            x:Name="PART_hsl3dDisplayDecoratorThumb"
+                                            Focusable="False"
+                                            ToolTip="Resize the 3D Display vertically"
+                                            OverridesDefaultStyle="True"
+                                            Template="{StaticResource DragThumb}"
+                                            HorizontalAlignment="Right"
+                                            VerticalAlignment="Bottom"
+                                            Margin="8"
+                                            Height="24" 
+                                            Width="24"/>
                                     </Grid>
 
                                     <StackPanel Margin="0,8,0,0" Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=ComponentsVisible, Mode=OneWay, Converter={StaticResource b2v}}">
@@ -2792,12 +2852,13 @@
                                                     <Setter Property="Margin" Value="8,4,8,4"/>
                                                     <!--<Setter Property="Height" Value="24"/>-->
                                                 </Style>
-                                                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SettingLabelText}">
+                                                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SettingLabelText}" x:Key="menuSubSectionLabel">
                                                     <Setter Property="Margin" Value="8,0,0,0"/>
                                                     <Setter Property="TextWrapping" Value="Wrap"/>
                                                     <Setter Property="FontSize" Value="14"/>
                                                     <Setter Property="Width" Value="104"/>
                                                 </Style>
+                                                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource menuSubSectionLabel}"/>
 
                                                 <Style TargetType="{x:Type Border}" BasedOn="{StaticResource gridItemContrast}" />
                                                 <Style TargetType="{x:Type WrapPanel}">
@@ -2873,20 +2934,23 @@
                                                         </WrapPanel>
                                                     </Grid>
                                                     <WrapPanel Grid.Row="1">
-                                                        <TextBlock>
-                                                            <Run  Text="Orientation:&#10;"/><Run>
-                                                                <Run.Style>
-                                                                    <Style TargetType="{x:Type Run}">
+                                                        <StackPanel>
+                                                            <TextBlock Text="Orientation:"/>
+                                                            <TextBlock>
+                                                                <TextBlock.Style>
+                                                                    <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource menuSubSectionLabel}">
                                                                         <Setter Property="Text" Value="Vertical"/>
                                                                         <Style.Triggers>
-                                                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=ApplicationOrientation, Mode=OneWay}" Value="true">
-                                                                            <Setter Property="Text" Value="Horizontal"/>
-                                                                        </DataTrigger>
+                                                                            <DataTrigger 
+                                                                                Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=ApplicationOrientation, Mode=OneWay}" Value="true">
+                                                                                <Setter Property="Text" Value="Horizontal"/>
+                                                                            </DataTrigger>
                                                                         </Style.Triggers>
                                                                     </Style>
-                                                                </Run.Style>
-                                                            </Run>
-                                                        </TextBlock>
+                                                                </TextBlock.Style>
+                                                            </TextBlock>
+                                                        </StackPanel>
+                                                        
                                                         <ToggleButton ToolTip="Toggle vertical (default) or horizontal interface layout (checked)" x:Name="PART_appOrientationToggleButton">
                                                             <ToggleButton.Style>
                                                                 <Style TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource MenuSettingToggleButton}">
