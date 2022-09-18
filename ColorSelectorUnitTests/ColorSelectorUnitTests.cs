@@ -50,7 +50,7 @@ namespace ColorSelectorUnitTests
             string str = TestContext.CurrentContext.Random.GetString(length, FuzzingChars);
             TestContext.WriteLine(str);
             ValidationResult result = argbRule.Validate(str, CultureInfo.CurrentCulture);
-            if (double.TryParse(str, NumberStyles.AllowDecimalPoint, CultureInfo.CurrentCulture, out double parsed))
+            if (double.TryParse(str, NumberStyles.Integer|NumberStyles.Float, CultureInfo.CurrentCulture, out double parsed))
             {
                 if ((MinRGBA <= parsed && parsed <= MaxRGBA))
                     Assert.That(result.IsValid, Is.True, str);
@@ -65,7 +65,7 @@ namespace ColorSelectorUnitTests
             string str = TestContext.CurrentContext.Random.GetString(length, FuzzingChars);
             TestContext.WriteLine(str);
             ValidationResult result = hueRule.Validate(str, CultureInfo.CurrentCulture);
-            if (double.TryParse(str, NumberStyles.AllowDecimalPoint, CultureInfo.CurrentCulture, out double parsed))
+            if (double.TryParse(str, NumberStyles.Integer | NumberStyles.Float, CultureInfo.CurrentCulture, out double parsed))
             {
                 if ((MinHue <= parsed && parsed <= MaxHue))
                     Assert.That(result.IsValid, Is.True, str);
@@ -80,7 +80,7 @@ namespace ColorSelectorUnitTests
             string str = TestContext.CurrentContext.Random.GetString(length, FuzzingChars);
             TestContext.WriteLine(str);
             ValidationResult result = saturationRule.Validate(str, CultureInfo.CurrentCulture);
-            if (double.TryParse(str, NumberStyles.AllowDecimalPoint, CultureInfo.CurrentCulture, out double parsed))
+            if (double.TryParse(str, NumberStyles.Integer | NumberStyles.Float, CultureInfo.CurrentCulture, out double parsed))
             {
                 if ((MinSLV <= parsed && parsed <= MaxSLV))
                     Assert.That(result.IsValid, Is.True, str);
@@ -95,7 +95,7 @@ namespace ColorSelectorUnitTests
             string str = TestContext.CurrentContext.Random.GetString(length, FuzzingChars);
             TestContext.WriteLine(str);
             ValidationResult result = valueRule.Validate(str, CultureInfo.CurrentCulture);
-            if (double.TryParse(str, NumberStyles.AllowDecimalPoint, CultureInfo.CurrentCulture, out double parsed))
+            if (double.TryParse(str, NumberStyles.Integer | NumberStyles.Float, CultureInfo.CurrentCulture, out double parsed))
             {
                 if ((MinSLV <= parsed && parsed <= MaxSLV))
                     Assert.That(result.IsValid, Is.True, str);

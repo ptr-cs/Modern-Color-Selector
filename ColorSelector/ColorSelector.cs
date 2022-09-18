@@ -3722,7 +3722,7 @@ namespace ColorSelector
         /// <param name="s"></param>
         /// <param name="l"></param>
         /// <returns></returns>
-        public static List<double> HslToRgb(double h, double s, double l)
+        public static double[] HslToRgb(double h, double s, double l)
         {
             var chroma = (1 - Math.Abs(2 * l - 1)) * s;
             var hueSector = h / 60;
@@ -3734,19 +3734,19 @@ namespace ColorSelector
             var v3 = (0 + m) * 255;
 
             if (0 <= hueSector && hueSector <= 1)
-                return new List<double>() { v1, v2, v3 };
+                return new double[3] { v1, v2, v3 };
             else if (1 <= hueSector && hueSector <= 2)
-                return new List<double>() { v2, v1, v3 };
+                return new double[3] { v2, v1, v3 };
             else if (2 <= hueSector && hueSector <= 3)
-                return new List<double>() { v3, v1, v2 };
+                return new double[3] { v3, v1, v2 };
             else if (3 <= hueSector && hueSector <= 4)
-                return new List<double>() { v3, v2, v1 };
+                return new double[3] { v3, v2, v1 };
             else if (4 <= hueSector && hueSector <= 5)
-                return new List<double>() { v2, v3, v1 };
+                return new double[3] { v2, v3, v1 };
             else if (5 <= hueSector && hueSector <= 6)
-                return new List<double>() { v1, v3, v2 };
+                return new double[3] { v1, v3, v2 };
 
-            return new List<double>() { 0, 0, 0 };
+            return new double[3] { 0, 0, 0 };
         }
 
         /// <summary>
@@ -3759,7 +3759,7 @@ namespace ColorSelector
         /// <param name="g"></param>
         /// <param name="b"></param>
         /// <returns></returns>
-        public static List<double> RgbToHsl(double r, double g, double b)
+        public static double[] RgbToHsl(double r, double g, double b)
         {
             r /= Byte.MaxValue;
             g /= Byte.MaxValue;
@@ -3802,7 +3802,7 @@ namespace ColorSelector
 
             var finalHue = hue * 60;
 
-            return new List<double>(3) { finalHue, saturation, lightness };
+            return new double[3] { finalHue, saturation, lightness };
         }
 
         /// <summary>
@@ -4068,7 +4068,7 @@ namespace ColorSelector
         /// <param name="g"></param>
         /// <param name="b"></param>
         /// <returns></returns>
-        public static List<double> RgbToHsv(double r, double g, double b)
+        public static double[] RgbToHsv(double r, double g, double b)
         {
             double max = Math.Max(r, Math.Max(g, b));
             double min = Math.Min(r, Math.Min(g, b));
@@ -4077,7 +4077,7 @@ namespace ColorSelector
             double saturation = GetHsvSaturationFromRgbByteRange(min, max);
             double value = GetHsvValueFromRgbByteRange(max);
 
-            return new List<double>(3) { hue, saturation, value };
+            return new double[3] { hue, saturation, value };
         }
 
         /// <summary>
@@ -4087,7 +4087,7 @@ namespace ColorSelector
         /// <param name="saturation"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static List<double> HsvToRgb(double hue, double saturation, double value)
+        public static double[] HsvToRgb(double hue, double saturation, double value)
         {
             int hi = Convert.ToInt32(Math.Floor(hue / 60)) % 6;
             double f = hue / 60 - Math.Floor(hue / 60);
@@ -4099,17 +4099,17 @@ namespace ColorSelector
             var t = value * (1 - (1 - f) * saturation);
 
             if (hi == 0)
-                return new List<double>(3) { v, t, p };
+                return new double[3] { v, t, p };
             else if (hi == 1)
-                return new List<double>(3) { q, v, p };
+                return new double[3] { q, v, p };
             else if (hi == 2)
-                return new List<double>(3) { p, v, t };
+                return new double[3] { p, v, t };
             else if (hi == 3)
-                return new List<double>(3) { p, q, v };
+                return new double[3] { p, q, v };
             else if (hi == 4)
-                return new List<double>(3) { t, p, v };
+                return new double[3] { t, p, v };
             else
-                return new List<double>(3) { v, p, q };
+                return new double[3] { v, p, q };
         }
 
         /// <summary>
@@ -4162,7 +4162,7 @@ namespace ColorSelector
         /// <param name="d2"></param>
         /// <param name="d3"></param>
         /// <returns></returns>
-        public List<double> ModelToRgb(double d1, double d2, double d3)
+        public double[] ModelToRgb(double d1, double d2, double d3)
         {
             switch (ColorModel)
             {
@@ -4173,7 +4173,7 @@ namespace ColorSelector
                 default:
                     break;
             }
-            return new List<double>(3) { 0, 0, 0 };
+            return new double[3] { 0, 0, 0 };
         }
 
         /// <summary>
@@ -4183,7 +4183,7 @@ namespace ColorSelector
         /// <param name="d2"></param>
         /// <param name="d3"></param>
         /// <returns></returns>
-        public List<double> RgbToModel(double d1, double d2, double d3)
+        public double[] RgbToModel(double d1, double d2, double d3)
         {
             switch (ColorModel)
             {
@@ -4194,7 +4194,7 @@ namespace ColorSelector
                 default:
                     break;
             }
-            return new List<double>(3) { 0, 0, 0 };
+            return new double[3] { 0, 0, 0 };
         }
 
         /// <summary>
@@ -4616,7 +4616,7 @@ namespace ColorSelector
         }
 
         public static readonly DependencyProperty ColorModelProperty =
-            DependencyProperty.Register(nameof(ColorModel), typeof(ColorModel), typeof(ColorSelector), new PropertyMetadata(ColorModel.HSV, new PropertyChangedCallback(ColorModelChangedCallback)));
+            DependencyProperty.Register(nameof(ColorModel), typeof(ColorModel), typeof(ColorSelector), new PropertyMetadata(ColorModel.HSL, new PropertyChangedCallback(ColorModelChangedCallback)));
 
         public ColorModel ColorModel
         {
@@ -4678,7 +4678,7 @@ namespace ColorSelector
 
         public static readonly DependencyProperty ColorModelListProperty =
             DependencyProperty.Register(nameof(ColorModelList), typeof(List<ColorModel>), typeof(ColorSelector), 
-                new PropertyMetadata(new List<ColorModel>((ColorModel[])Enum.GetValues(typeof(ColorModel)))));
+                new PropertyMetadata(new List<ColorModel>() {  }));
 
         public List<ColorModel> ColorModelList
         {
