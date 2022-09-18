@@ -43,8 +43,6 @@ namespace ColorSelector
         HSV = 1
     };
 
-
-
     public class DelegateCommand : ICommand
     {
         private readonly Action<object?>? _executeAction;
@@ -72,6 +70,9 @@ namespace ColorSelector
         public void InvokeCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
     }
 
+    /// <summary>
+    /// Class for storing raw, unconverted color values. 
+    /// </summary>
     public class RawColor : IFormattable
     {
         public double A { get; set; } = 0;
@@ -93,6 +94,10 @@ namespace ColorSelector
         }
     }
 
+    /// <summary>
+    /// Useful enum for specifying all named Parts in the ColorSelector. 
+    /// Reduces "string-wrangling" if the name of a part changes.
+    /// </summary>
     public enum TemplatePart
     {
         PART_hexTextBox,
@@ -259,6 +264,11 @@ namespace ColorSelector
         public ICommand SIncrementCommand { get; set; }
         public ICommand VIncrementCommand { get; set; }
 
+        /// <summary>
+        /// Define Commands for all ICommands.
+        /// This enables the ICommands to be called from both the 
+        /// default XAML ControlTemplate as well as custom ControlTemplates.
+        /// </summary>
         public ColorSelector()
         {
             ToggleMenuCommand = new DelegateCommand(ToggleMenu, null);
@@ -304,6 +314,11 @@ namespace ColorSelector
             DefaultStyleKeyProperty.OverrideMetadata(typeof(ColorSelector), new FrameworkPropertyMetadata(typeof(ColorSelector)));
         }
 
+        /// <summary>
+        /// Applies the control template to the control. Searches for named control parts and processes
+        /// them if found. Perform setup tasks like establishing keyboard shortcuts and generating
+        /// brushes for certain named parts.
+        /// </summary>
         public override void OnApplyTemplate()
         {
             SelectCustomColorButtonBase = GetTemplateChild(nameof(TemplatePart.PART_selectCustomColorButtonBase)) as ButtonBase;
@@ -434,6 +449,11 @@ namespace ColorSelector
             CustomColors.Clear();
         }
 
+        /// <summary>
+        /// Saves custom colors up to a certain limit; once limit is reached,
+        /// colors are replaced in FILO (First In, Last Out) order;
+        /// </summary>
+        /// <param name="obj"></param>
         private void SaveCustomColor(object? obj)
         {
             if (CustomColors.Count >= 10)
@@ -565,7 +585,13 @@ namespace ColorSelector
             element.ToolTip ??= editTarget;
         }
 
-
+        /// <summary>
+        /// Interpolate two Colors based on a given fraction
+        /// </summary>
+        /// <param name="color1"></param>
+        /// <param name="color2"></param>
+        /// <param name="fraction"></param>
+        /// <returns></returns>
         public static Color InterpolateColor(Color color1, Color color2, double fraction)
         {
             double byteToDouble = 1.0 / 255.0;
@@ -595,6 +621,17 @@ namespace ColorSelector
             return Color.FromArgb((byte)(alpha * 255), (byte)(red * 255), (byte)(green * 255), (byte)(blue * 255));
         }
 
+        /// <summary>
+        /// Interpolate four colors, such that the resulting color originates from
+        /// interpolation fractions specified as x and y coordinates.
+        /// </summary>
+        /// <param name="color1"></param>
+        /// <param name="color2"></param>
+        /// <param name="color3"></param>
+        /// <param name="color4"></param>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
         public static Color BilinearInterpolateColor(Color color1, Color color2, Color color3, Color color4, double x, double y)
         {
             Color interpolatedColor1 = InterpolateColor(color1, color2, x);
@@ -610,6 +647,16 @@ namespace ColorSelector
         [System.Runtime.InteropServices.DllImport("gdi32.dll")]
         private static extern bool DeleteObject(IntPtr hObject);
 
+        /// <summary>
+        /// Creates an ImageBrush with one color in each corner of the resulting rectuangular image, bilinearly interpolated.
+        /// </summary>
+        /// <param name="w"></param>
+        /// <param name="h"></param>
+        /// <param name="upperLeft"></param>
+        /// <param name="upperRight"></param>
+        /// <param name="lowerLeft"></param>
+        /// <param name="lowerRight"></param>
+        /// <returns></returns>
         public static ImageBrush CreateBilinearGradient(int w, int h, Color upperLeft, Color upperRight, Color lowerLeft, Color lowerRight)
         {
             BitmapSource? source;
