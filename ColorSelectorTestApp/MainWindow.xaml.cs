@@ -58,10 +58,10 @@ namespace ColorSelectorTestApp
             {
                 case false:
                     this.Width = 300;
-                    this.Height = 860;
+                    this.Height = 800;
                     break;
                 case true:
-                    this.Width = 1620;
+                    this.Width = 1500;
                     this.Height = 230;
                     break;
             }

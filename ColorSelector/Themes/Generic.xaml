@@ -1595,10 +1595,10 @@
 
     <Style x:Key="TabItemStyle1"
            TargetType="{x:Type TabItem}">
-        <Style.Resources>
+        <!--<Style.Resources>
             <Style TargetType="{x:Type TextBlock}"
                    BasedOn="{StaticResource monospacedBoldText}" />
-        </Style.Resources>
+        </Style.Resources>-->
         <Setter Property="Cursor"
                 Value="Hand" />
         <Setter Property="FocusVisualStyle"
@@ -2174,7 +2174,18 @@
                                         </Slider>
                                         <Grid Grid.Column="2"
                                   SnapsToDevicePixels="True"
-                                  x:Name="PART_hslComponentAreaPanel" />
+                                  x:Name="PART_hslComponentAreaPanel">
+                                            <Grid.Style>
+                                                <Style TargetType="{x:Type Grid}">
+                                                    <Setter Property="Width" Value="Auto"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=ApplicationOrientation, Mode=OneWay}" Value="true">
+                                                            <Setter Property="Width" Value="200"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Grid.Style>
+                                        </Grid>
                                     </Grid>
 
                                     <Grid Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=Display3dVisible, Mode=OneWay, Converter={StaticResource b2v}}" >
@@ -2583,10 +2594,6 @@
                                                 </Style.Triggers>
                                             </Style>
                                         </WrapPanel.Style>
-                                        <!--<Grid.ColumnDefinitions>
-                                            <ColumnDefinition />
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>-->
 
                                         <Border BorderThickness="0"
                                                 Height="32"
@@ -2763,6 +2770,7 @@
                             <Grid HorizontalAlignment="Left" x:Name="menuPanel">
                                 <Grid.Style>
                                     <Style TargetType="{x:Type Grid}">
+                                        <Setter Property="Width" Value="240"/>
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=IsMenuOpen, Mode=OneWay}" Value="true">
                                                 <DataTrigger.EnterActions>
@@ -2787,6 +2795,9 @@
                                                         </Storyboard>
                                                     </BeginStoryboard>
                                                 </DataTrigger.ExitActions>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=ApplicationOrientation, Mode=OneWay}" Value="true">
+                                                <Setter Property="Width" Value="Auto"/>
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
@@ -2821,8 +2832,8 @@
                                             <TextBlock Style="{StaticResource buttonText}" Text="≡" Foreground="White" FontSize="24" FontWeight="Normal" LineHeight="24" LineStackingStrategy="BlockLineHeight"/>
                                         </Button>
                                         <TextBlock 
-                                                Grid.Column="1"
-                                                Text="Menu"
+                                            Grid.Column="1"
+                                            Text="Menu"
                                            HorizontalAlignment="Center"
                                            Margin="8,4"
                                            Style="{StaticResource MenuSectionHeader}"
@@ -2832,362 +2843,368 @@
                                             <TextBlock Text="?" FontWeight="Bold" FontSize="18" Style="{StaticResource buttonText}"/>
                                         </Button>
                                     </Grid>
-                                    <ScrollViewer Grid.Row="1">
-                                        <ScrollViewer.Style>
-                                            <Style TargetType="{x:Type ScrollViewer}">
-                                                <Setter Property="HorizontalScrollBarVisibility" Value="Disabled"/>
-                                                <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
-                                                <!--<Style.Triggers>
+                                    <TabControl Grid.Row="1" Background="Transparent" BorderThickness="0" Panel.ZIndex="-1" Margin="0,0,0,0">
+                                        <TabControl.ItemContainerStyle>
+                                            <Style TargetType="{x:Type TabItem}" BasedOn="{StaticResource TabItemStyle1}">
+                                                <Setter Property="Padding" Value="0"/>
+                                                <Setter Property="Height" Value="32"/>
+                                                <Style.Triggers>
                                                     <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=ApplicationOrientation, Mode=OneWay}" Value="true">
-                                                        <Setter Property="HorizontalScrollBarVisibility" Value="Auto"/>
-                                                        <Setter Property="VerticalScrollBarVisibility" Value="Disabled"/>
+                                                        <Setter Property="Height" Value="Auto"/>
                                                     </DataTrigger>
-                                                </Style.Triggers>-->
+                                                </Style.Triggers>
                                             </Style>
-                                        </ScrollViewer.Style>
-                                        <StackPanel>
-                                            <StackPanel.Style>
-                                                <Style TargetType="{x:Type StackPanel}">
-                                                    <Setter Property="Orientation" Value="Vertical"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=ApplicationOrientation, Mode=OneWay}" Value="true">
-                                                            <Setter Property="Orientation" Value="Horizontal"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </StackPanel.Style>
-                                            <StackPanel.Resources>
-                                                <Style TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource MenuSettingToggleButton}">
-                                                    <Setter Property="Grid.Column" Value="1"/>
-                                                    <Setter Property="Margin" Value="8,4,8,4"/>
-                                                    <!--<Setter Property="Height" Value="24"/>-->
-                                                </Style>
-                                                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SettingLabelText}" x:Key="menuSubSectionLabel">
-                                                    <Setter Property="Margin" Value="8,0,0,0"/>
-                                                    <Setter Property="TextWrapping" Value="Wrap"/>
-                                                    <Setter Property="FontSize" Value="14"/>
-                                                    <Setter Property="Width" Value="104"/>
-                                                </Style>
-                                                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource menuSubSectionLabel}"/>
-
-                                                <Style TargetType="{x:Type Border}" BasedOn="{StaticResource gridItemContrast}" />
-                                                <Style TargetType="{x:Type WrapPanel}">
-                                                    <Setter Property="Margin" Value="0,4,0,4" />
-                                                </Style>
-                                            </StackPanel.Resources>
-                                            <Expander Style="{StaticResource ExpanderStyle1}" IsExpanded="False">
-                                                <Expander.Header>
-                                                    <Grid Style="{StaticResource menuItemGrid}">
-                                                        <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition />
-                                                            <ColumnDefinition Width="Auto"/>
-                                                        </Grid.ColumnDefinitions>
-                                                        <TextBlock Style="{StaticResource MenuSectionHeader}">
-                                                            <Run Text="🎛️ " FontWeight="Normal" FontSize="16" BaselineAlignment="Center"/><Run Text="Appearance"/>
-                                                        </TextBlock>
-                                                        <TextBlock Grid.Column="1">
-                                                            <TextBlock.Style>
-                                                                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MenuSectionHeaderExpanderText}">
-                                                                    <Setter Property="Text"
-                                                                                Value=" +" />
-                                                                    <Style.Triggers>
-                                                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Expander}}, Path=IsExpanded, Mode=OneWay}" Value="True">
-                                                                            <Setter Property="Text"
-                                                                                        Value=" −" />
-                                                                        </DataTrigger>
-                                                                    </Style.Triggers>
-                                                                </Style>
-                                                            </TextBlock.Style>
-                                                        </TextBlock>
-                                                    </Grid>
-                                                </Expander.Header>
-                                                <Grid>
+                                        </TabControl.ItemContainerStyle>
+                                        <TabControl.Style>
+                                            <Style TargetType="{x:Type TabControl}">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=ApplicationOrientation, Mode=OneWay}" Value="true">
+                                                        <Setter Property="TabStripPlacement" Value="Left"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TabControl.Style>
+                                        <TabControl.Resources>
+                                            <Style TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource MenuSettingToggleButton}">
+                                                <Setter Property="Grid.Column" Value="1"/>
+                                                <Setter Property="Margin" Value="8,4,8,4"/>
+                                                <Setter Property="Height" Value="24"/>
+                                            </Style>
+                                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SettingLabelText}" x:Key="menuSubSectionLabel">
+                                                <Setter Property="Margin" Value="8,0,0,0"/>
+                                                <Setter Property="TextWrapping" Value="Wrap"/>
+                                                <Setter Property="FontSize" Value="14"/>
+                                                <Setter Property="Width" Value="104"/>
+                                            </Style>
+                                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource menuSubSectionLabel}"/>
+                                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MenuSectionHeader}" x:Key="tabItemHeader">
+                                                <Setter Property="Margin" Value="8,0"/>
+                                            </Style>
+                                            <Style TargetType="{x:Type Border}" BasedOn="{StaticResource gridItemContrast}" />
+                                            <Style TargetType="{x:Type WrapPanel}">
+                                                <Setter Property="Margin" Value="0,4,0,4" />
+                                            </Style>
+                                        </TabControl.Resources>
+                                        <TabControl.Template>
+                                            <ControlTemplate TargetType="{x:Type TabControl}">
+                                                <Grid x:Name="templateRoot"
+                                                      ClipToBounds="true"
+                                                      SnapsToDevicePixels="true"
+                                                      KeyboardNavigation.TabNavigation="Local">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition x:Name="ColumnDefinition0" />
+                                                        <ColumnDefinition x:Name="ColumnDefinition1"
+                                              Width="0" />
+                                                    </Grid.ColumnDefinitions>
                                                     <Grid.RowDefinitions>
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                        <RowDefinition />
+                                                        <RowDefinition x:Name="RowDefinition0"
+                                           Height="Auto" />
+                                                        <RowDefinition x:Name="RowDefinition1"
+                                           Height="*" />
                                                     </Grid.RowDefinitions>
-                                                    <Border Grid.Row="1" />
-                                                    <Grid>
-                                                        <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition Width="Auto"/>
-                                                            <ColumnDefinition />
-                                                        </Grid.ColumnDefinitions>
-                                                        <TextBlock Text="Scale" Grid.Column="0" Width="Auto" />
-                                                        <WrapPanel Grid.Column="1" Margin="8">
-                                                            <Button Style="{StaticResource MenuButtonStyle1}" Margin="0,0,8,0" ToolTip="Reset Scale (Ctrl+R)" 
-                                                                    x:Name="PART_resetAppScaleButtonBase">
-                                                                <TextBlock Text="Reset" Style="{StaticResource buttonText}" Padding="8,0"/>
-                                                            </Button>
-                                                            <WrapPanel>
-
-                                                                <Button Style="{StaticResource MenuButtonStyle1}" Grid.Column="1" ToolTip="Decrease Interface Scale (Ctrl+ -)" Background="{StaticResource redColorBrush}" MinWidth="32"
-                                                                    x:Name="PART_decreaseAppScaleButtonBase">
-                                                                    <TextBlock Text="-" Style="{StaticResource buttonTextIcon}" TextBlock.LineHeight="24" TextBlock.LineStackingStrategy="BlockLineHeight"/>
-                                                                    <Button.Tag>
-                                                                        <CornerRadius>4,0,0,4</CornerRadius>
-                                                                    </Button.Tag>
-                                                                </Button>
-                                                                <Button Style="{StaticResource ButtonStyle1}" Grid.Column="2" ToolTip="Increase Interface Scale (Ctrl+ +)" Background="{StaticResource greenColorBrush}" MinWidth="32"
-                                                                    x:Name="PART_increaseAppScaleButtonBase">
-                                                                    <TextBlock Text="+" Style="{StaticResource buttonTextIcon}" TextBlock.LineHeight="24"  TextBlock.LineStackingStrategy="BlockLineHeight"/>
-                                                                    <Button.Tag>
-                                                                        <CornerRadius>0,4,4,0</CornerRadius>
-                                                                    </Button.Tag>
-                                                                </Button>
-                                                            </WrapPanel>
-                                                        </WrapPanel>
-                                                    </Grid>
-                                                    <WrapPanel Grid.Row="1">
-                                                        <StackPanel>
-                                                            <TextBlock Text="Orientation:"/>
-                                                            <TextBlock>
-                                                                <TextBlock.Style>
-                                                                    <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource menuSubSectionLabel}">
-                                                                        <Setter Property="Text" Value="Vertical"/>
-                                                                        <Style.Triggers>
-                                                                            <DataTrigger 
+                                                    <UniformGrid x:Name="headerPanel"
+                                                         Background="Transparent"
+                                                         Grid.Column="0"
+                                                         IsItemsHost="true"
+                                                         Margin="0"
+                                                         Grid.Row="0"
+                                                         VerticalAlignment="Stretch"
+                                                         Columns="1"
+                                                         Rows="{Binding RelativeSource={RelativeSource Self}, Path=Children.Count, Mode=OneWay}"
+                                                         KeyboardNavigation.TabIndex="1"
+                                                         Panel.ZIndex="1">
+                                                    </UniformGrid>
+                                                    <Border x:Name="contentPanel"
+                                                        Background="{TemplateBinding Background}"
+                                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                                        Grid.Column="0"
+                                                        CornerRadius="0,0,4,4"
+                                                        KeyboardNavigation.DirectionalNavigation="Contained"
+                                                        Grid.Row="1"
+                                                        Visibility="Visible"
+                                                        KeyboardNavigation.TabIndex="2"
+                                                        KeyboardNavigation.TabNavigation="Local">
+                                                        <ScrollViewer>
+                                                            <ScrollViewer.Style>
+                                                                <Style TargetType="{x:Type ScrollViewer}">
+                                                                    <Setter Property="HorizontalScrollBarVisibility" Value="Disabled"/>
+                                                                    <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger 
                                                                                 Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=ApplicationOrientation, Mode=OneWay}" Value="true">
-                                                                                <Setter Property="Text" Value="Horizontal"/>
-                                                                            </DataTrigger>
-                                                                        </Style.Triggers>
-                                                                    </Style>
-                                                                </TextBlock.Style>
-                                                            </TextBlock>
-                                                        </StackPanel>
-                                                        
-                                                        <ToggleButton ToolTip="Toggle vertical (default) or horizontal interface layout (checked)" x:Name="PART_appOrientationToggleButton">
-                                                            <ToggleButton.Style>
-                                                                <Style TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource MenuSettingToggleButton}">
-                                                                    <Setter Property="IsChecked" Value="False"/>
-                                                                    <Style.Triggers>
-                                                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=ApplicationOrientation, Mode=OneWay}" Value="true">
-                                                                            <Setter Property="IsChecked" Value="True"/>
+                                                                            <Setter Property="HorizontalScrollBarVisibility" Value="Auto"/>
+                                                                            <Setter Property="VerticalScrollBarVisibility" Value="Disabled"/>
                                                                         </DataTrigger>
                                                                     </Style.Triggers>
                                                                 </Style>
-                                                            </ToggleButton.Style>
-                                                        </ToggleButton>
+                                                            </ScrollViewer.Style>
+                                                            <ContentPresenter x:Name="PART_SelectedContentHost"
+                                                              ContentSource="SelectedContent"
+                                                              Margin="{TemplateBinding Padding}"
+                                                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                                                        </ScrollViewer>
+                                                    </Border>
+                                                </Grid>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="TabStripPlacement"
+                                                        Value="Bottom">
+                                                        <Setter Property="Grid.Row"
+                                                            TargetName="headerPanel"
+                                                            Value="1" />
+                                                        <Setter Property="Grid.Row"
+                                                            TargetName="contentPanel"
+                                                            Value="0" />
+                                                        <Setter Property="Height"
+                                                            TargetName="RowDefinition0"
+                                                            Value="*" />
+                                                        <Setter Property="Height"
+                                                            TargetName="RowDefinition1"
+                                                            Value="Auto" />
+                                                        <Setter Property="Margin"
+                                                            TargetName="headerPanel"
+                                                            Value="2,0,2,2" />
+                                                    </Trigger>
+                                                    <Trigger Property="TabStripPlacement"
+                                                        Value="Left">
+                                                        <Setter Property="Grid.Row"
+                                                            TargetName="headerPanel"
+                                                            Value="0" />
+                                                        <Setter Property="Rows"
+                                                            TargetName="headerPanel"
+                                                            Value="{Binding RelativeSource={RelativeSource Self}, Path=Children.Count, Mode=OneWay}" />
+                                                        <Setter Property="Columns"
+                                                            TargetName="headerPanel"
+                                                            Value="1" />
+                                                        <Setter Property="Grid.Row"
+                                                            TargetName="contentPanel"
+                                                            Value="0" />
+                                                        <Setter Property="Grid.Column"
+                                                            TargetName="headerPanel"
+                                                            Value="0" />
+                                                        <Setter Property="Grid.Column"
+                                                            TargetName="contentPanel"
+                                                            Value="1" />
+                                                        <Setter Property="Width"
+                                                            TargetName="ColumnDefinition0"
+                                                            Value="Auto" />
+                                                        <Setter Property="Width"
+                                                            TargetName="ColumnDefinition1"
+                                                            Value="*" />
+                                                        <Setter Property="Height"
+                                                            TargetName="RowDefinition0"
+                                                            Value="*" />
+                                                        <Setter Property="Height"
+                                                            TargetName="RowDefinition1"
+                                                            Value="0" />
+                                                        <Setter Property="Margin"
+                                                            TargetName="headerPanel"
+                                                            Value="0" />
+                                                    </Trigger>
+                                                    <Trigger Property="TabStripPlacement" Value="Right">
+                                                        <Setter Property="Grid.Row"
+                                                            TargetName="headerPanel"
+                                                            Value="0" />
+                                                        <Setter Property="Rows"
+                                                            TargetName="headerPanel"
+                                                            Value="{Binding RelativeSource={RelativeSource Self}, Path=Children.Count, Mode=OneWay}" />
+                                                        <Setter Property="Columns"
+                                                            TargetName="headerPanel"
+                                                            Value="1" />
+                                                        <Setter Property="Grid.Row"
+                                                            TargetName="contentPanel"
+                                                            Value="0" />
+                                                        <Setter Property="Grid.Column"
+                                                            TargetName="headerPanel"
+                                                            Value="1" />
+                                                        <Setter Property="Grid.Column"
+                                                            TargetName="contentPanel"
+                                                            Value="0" />
+                                                        <Setter Property="Width"
+                                                            TargetName="ColumnDefinition0"
+                                                            Value="*" />
+                                                        <Setter Property="Width"
+                                                            TargetName="ColumnDefinition1"
+                                                            Value="Auto" />
+                                                        <Setter Property="Height"
+                                                            TargetName="RowDefinition0"
+                                                            Value="*" />
+                                                        <Setter Property="Height"
+                                                            TargetName="RowDefinition1"
+                                                            Value="0" />
+                                                        <Setter Property="Margin"
+                                                            TargetName="headerPanel"
+                                                            Value="0,2,2,2" />
+                                                    </Trigger>
+                                                    <Trigger Property="IsEnabled" Value="false">
+                                                        <Setter Property="TextElement.Foreground"
+                                                            TargetName="templateRoot"
+                                                            Value="{StaticResource {x:Static SystemColors.GrayTextBrushKey}}" />
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </TabControl.Template>
+                                        <TabItem>
+                                            <TabItem.Header>
+                                                <TextBlock Style="{StaticResource tabItemHeader}" Margin="8,0">
+                                                            <Run Text="🎛️ " FontWeight="Normal" FontSize="16" BaselineAlignment="Center"/><Run Text="Appearance"/>
+                                                </TextBlock>
+                                            </TabItem.Header>
+                                            <WrapPanel Orientation="Vertical">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                        <ColumnDefinition />
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBlock Text="Scale" Grid.Column="0" Width="Auto" />
+                                                    <WrapPanel Grid.Column="1" Margin="8,0">
+                                                        <Button Style="{StaticResource MenuButtonStyle1}" Margin="0,0,8,0" ToolTip="Reset Scale (Ctrl+R)" 
+                                                                    x:Name="PART_resetAppScaleButtonBase">
+                                                            <TextBlock Text="Reset" Style="{StaticResource buttonText}" Padding="8,0"/>
+                                                        </Button>
+                                                        <WrapPanel>
+
+                                                            <Button Style="{StaticResource MenuButtonStyle1}" Grid.Column="1" ToolTip="Decrease Interface Scale (Ctrl+ -)" Background="{StaticResource redColorBrush}" MinWidth="32"
+                                                                    x:Name="PART_decreaseAppScaleButtonBase">
+                                                                <TextBlock Text="-" Style="{StaticResource buttonTextIcon}" TextBlock.LineHeight="24" TextBlock.LineStackingStrategy="BlockLineHeight"/>
+                                                                <Button.Tag>
+                                                                    <CornerRadius>4,0,0,4</CornerRadius>
+                                                                </Button.Tag>
+                                                            </Button>
+                                                            <Button Style="{StaticResource ButtonStyle1}" Grid.Column="2" ToolTip="Increase Interface Scale (Ctrl+ +)" Background="{StaticResource greenColorBrush}" MinWidth="32"
+                                                                    x:Name="PART_increaseAppScaleButtonBase">
+                                                                <TextBlock Text="+" Style="{StaticResource buttonTextIcon}" TextBlock.LineHeight="24"  TextBlock.LineStackingStrategy="BlockLineHeight"/>
+                                                                <Button.Tag>
+                                                                    <CornerRadius>0,4,4,0</CornerRadius>
+                                                                </Button.Tag>
+                                                            </Button>
+                                                        </WrapPanel>
                                                     </WrapPanel>
                                                 </Grid>
-                                            </Expander>
-                                            <Expander Style="{StaticResource ExpanderStyle1}" IsExpanded="False" >
-                                                <Expander.Header>
-                                                    <Grid Style="{StaticResource menuItemGrid}">
-                                                        <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition />
-                                                            <ColumnDefinition Width="Auto"/>
-                                                        </Grid.ColumnDefinitions>
-                                                        <TextBlock Style="{StaticResource MenuSectionHeader}">
-                                                            <Run Text="👁 " FontWeight="Normal"/><Run Text="Visible Controls"/> 
-                                                        </TextBlock>
-                                                        <TextBlock Grid.Column="1">
+                                                <WrapPanel Grid.Row="1">
+                                                    <StackPanel>
+                                                        <TextBlock Text="Orientation:"/>
+                                                        <TextBlock Opacity=".8">
                                                             <TextBlock.Style>
-                                                                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MenuSectionHeaderExpanderText}">
-                                                                    <Setter Property="Text"
-                                                                                Value=" +" />
+                                                                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource menuSubSectionLabel}">
+                                                                    <Setter Property="Text" Value="Vertical"/>
                                                                     <Style.Triggers>
-                                                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Expander}}, Path=IsExpanded, Mode=OneWay}" Value="True">
-                                                                            <Setter Property="Text"
-                                                                                        Value=" −" />
+                                                                        <DataTrigger 
+                                                                                Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=ApplicationOrientation, Mode=OneWay}" Value="true">
+                                                                            <Setter Property="Text" Value="Horizontal"/>
                                                                         </DataTrigger>
                                                                     </Style.Triggers>
                                                                 </Style>
                                                             </TextBlock.Style>
                                                         </TextBlock>
-                                                    </Grid>
-                                                </Expander.Header>
-                                                <Grid>
-                                                    <Grid.RowDefinitions>
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                    </Grid.RowDefinitions>
-                                                    <Border Grid.Row="1" />
-                                                    <Border Grid.Row="3" />
-                                                    <Border Grid.Row="5" />
-                                                    <WrapPanel>
-                                                        <TextBlock Text="Color Models" />
-                                                        <ToggleButton IsChecked="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=ColorModelsVisible, Mode=OneWay}" x:Name="PART_colorModelsVisibilityToggleButton"/>
-                                                    </WrapPanel>
-                                                    <WrapPanel Grid.Row="1">
-                                                        <TextBlock Text="Preset Colors"/>
-                                                        <ToggleButton IsChecked="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=PresetColorsVisible, Mode=OneWay}" x:Name="PART_presetColorsVisibilityToggleButton"/>
-                                                    </WrapPanel>
-                                                    <WrapPanel Grid.Row="2">
-                                                        <TextBlock Text="2D Display"/>
-                                                        <ToggleButton IsChecked="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=Display2dVisible, Mode=OneWay}" x:Name="PART_display2dVisibilityToggleButton" />
-                                                    </WrapPanel>
-                                                    <WrapPanel Grid.Row="3">
-                                                        <TextBlock Text="3D Display"/>
-                                                        <ToggleButton IsChecked="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=Display3dVisible, Mode=OneWay}" x:Name="PART_display3dVisibilityToggleButton"/>
-                                                    </WrapPanel>
-                                                    <WrapPanel Grid.Row="4">
-                                                        <TextBlock Text="Components"/>
-                                                        <ToggleButton IsChecked="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=ComponentsVisible, Mode=OneWay}" x:Name="PART_componentsVisibilityToggleButton"/>
-                                                    </WrapPanel>
-                                                    <WrapPanel Grid.Row="5">
-                                                        <TextBlock Text="Color Preview"/>
-                                                        <ToggleButton IsChecked="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=ColorPreviewVisible, Mode=OneWay}" x:Name="PART_colorPreviewVisibilityToggleButton"/>
-                                                    </WrapPanel>
-                                                    <WrapPanel Grid.Row="6">
-                                                        <TextBlock Text="Custom Colors"/>
-                                                        <ToggleButton IsChecked="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=CustomColorsVisible, Mode=OneWay}" x:Name="PART_customColorsVisibilityToggleButton"/>
-                                                    </WrapPanel>
-                                                </Grid>
-                                            </Expander>
+                                                    </StackPanel>
 
-                                            <Expander Style="{StaticResource ExpanderStyle1}" IsExpanded="False">
-                                                <Expander.Header>
-                                                    <Grid Style="{StaticResource menuItemGrid}">
-                                                        <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition />
-                                                            <ColumnDefinition Width="Auto"/>
-                                                        </Grid.ColumnDefinitions>
-                                                        <TextBlock Style="{StaticResource MenuSectionHeader}">
-                                                            <Run Text="🎚 " FontWeight="Normal"/><Run Text="Component Editors"/> 
-                                                        </TextBlock>
-                                                        <TextBlock Grid.Column="1">
-                                                            <TextBlock.Style>
-                                                                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MenuSectionHeaderExpanderText}">
-                                                                    <Setter Property="Text"
-                                                                                Value=" +" />
-                                                                    <Style.Triggers>
-                                                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Expander}}, Path=IsExpanded, Mode=OneWay}" Value="True">
-                                                                            <Setter Property="Text"
-                                                                                        Value=" −" />
-                                                                        </DataTrigger>
-                                                                    </Style.Triggers>
-                                                                </Style>
-                                                            </TextBlock.Style>
-                                                        </TextBlock>
-                                                    </Grid>
-                                                </Expander.Header>
-                                                <Grid>
-                                                    <Grid.RowDefinitions>
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                    </Grid.RowDefinitions>
-                                                    <Border Grid.Row="1" />
-                                                    <Border Grid.Row="3" />
-                                                    <WrapPanel>
-                                                        <TextBlock Text="Hexadecimal" />
-                                                        <ToggleButton x:Name="PART_hexadecimalComponentVisibilityToggleButton" IsChecked="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=HexadecimalComponentVisible, Mode=OneWay}"/>
-                                                    </WrapPanel>
-                                                    <WrapPanel Grid.Row="1">
-                                                        <TextBlock Text="Alpha Channel"/>
-                                                        <ToggleButton x:Name="PART_alphaComponentVisibilityToggleButton" IsChecked="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=AlphaComponentVisible, Mode=OneWay}"/>
-                                                    </WrapPanel>
-                                                    <WrapPanel Grid.Row="2">
-                                                        <TextBlock Text="RGB  Channels"/>
-                                                        <ToggleButton x:Name="PART_rgbComponentVisibilityToggleButton" IsChecked="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=RgbComponentVisible, Mode=OneWay}"/>
-                                                    </WrapPanel>
-                                                    <WrapPanel Grid.Row="3">
-                                                        <TextBlock Text="HSLV Channels"/>
-                                                        <ToggleButton x:Name="PART_hslvComponentVisibilityToggleButton" IsChecked="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=HslvComponentVisible, Mode=OneWay}"/>
-                                                    </WrapPanel>
-                                                </Grid>
-                                            </Expander>
-
-                                            <Expander Style="{StaticResource ExpanderStyle1}" IsExpanded="False">
-                                                <Expander.Header>
-                                                    <Grid Style="{StaticResource menuItemGrid}">
-                                                        <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition />
-                                                            <ColumnDefinition Width="Auto"/>
-                                                        </Grid.ColumnDefinitions>
-                                                        <TextBlock Style="{StaticResource MenuSectionHeader}">
+                                                    <ToggleButton ToolTip="Toggle vertical (default) or horizontal interface layout (checked)" x:Name="PART_appOrientationToggleButton">
+                                                        <ToggleButton.Style>
+                                                            <Style TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource MenuSettingToggleButton}">
+                                                                <Setter Property="IsChecked" Value="False"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=ApplicationOrientation, Mode=OneWay}" Value="true">
+                                                                        <Setter Property="IsChecked" Value="True"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </ToggleButton.Style>
+                                                    </ToggleButton>
+                                                </WrapPanel>
+                                            </WrapPanel>
+                                        </TabItem>
+                                        <TabItem>
+                                            <TabItem.Header>
+                                                <TextBlock Style="{StaticResource tabItemHeader}">
+                                                            <Run Text="👁 " FontWeight="Normal"/><Run Text="Visible Controls"/>
+                                                </TextBlock>
+                                            </TabItem.Header>
+                                            <WrapPanel Orientation="Vertical">
+                                                <WrapPanel>
+                                                    <TextBlock Text="Color Models" />
+                                                    <ToggleButton IsChecked="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=ColorModelsVisible, Mode=OneWay}" x:Name="PART_colorModelsVisibilityToggleButton"/>
+                                                </WrapPanel>
+                                                <WrapPanel Grid.Row="1">
+                                                    <TextBlock Text="Preset Colors"/>
+                                                    <ToggleButton IsChecked="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=PresetColorsVisible, Mode=OneWay}" x:Name="PART_presetColorsVisibilityToggleButton"/>
+                                                </WrapPanel>
+                                                <WrapPanel Grid.Row="2">
+                                                    <TextBlock Text="2D Display"/>
+                                                    <ToggleButton IsChecked="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=Display2dVisible, Mode=OneWay}" x:Name="PART_display2dVisibilityToggleButton" />
+                                                </WrapPanel>
+                                                <WrapPanel Grid.Row="3">
+                                                    <TextBlock Text="3D Display"/>
+                                                    <ToggleButton IsChecked="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=Display3dVisible, Mode=OneWay}" x:Name="PART_display3dVisibilityToggleButton"/>
+                                                </WrapPanel>
+                                                <WrapPanel Grid.Row="4">
+                                                    <TextBlock Text="Components"/>
+                                                    <ToggleButton IsChecked="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=ComponentsVisible, Mode=OneWay}" x:Name="PART_componentsVisibilityToggleButton"/>
+                                                </WrapPanel>
+                                                <WrapPanel Grid.Row="5">
+                                                    <TextBlock Text="Color Preview"/>
+                                                    <ToggleButton IsChecked="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=ColorPreviewVisible, Mode=OneWay}" x:Name="PART_colorPreviewVisibilityToggleButton"/>
+                                                </WrapPanel>
+                                                <WrapPanel Grid.Row="6">
+                                                    <TextBlock Text="Custom Colors"/>
+                                                    <ToggleButton IsChecked="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=CustomColorsVisible, Mode=OneWay}" x:Name="PART_customColorsVisibilityToggleButton"/>
+                                                </WrapPanel>
+                                            </WrapPanel>
+                                        </TabItem>
+                                        <TabItem>
+                                            <TabItem.Header>
+                                                <TextBlock Style="{StaticResource tabItemHeader}">
+                                                            <Run Text="🎚 " FontWeight="Normal"/><Run Text="Component Editors"/>
+                                                </TextBlock>
+                                            </TabItem.Header>
+                                            <WrapPanel Orientation="Vertical">
+                                                <WrapPanel>
+                                                    <TextBlock Text="Hexadecimal" />
+                                                    <ToggleButton x:Name="PART_hexadecimalComponentVisibilityToggleButton" IsChecked="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=HexadecimalComponentVisible, Mode=OneWay}"/>
+                                                </WrapPanel>
+                                                <WrapPanel Grid.Row="1">
+                                                    <TextBlock Text="Alpha Channel"/>
+                                                    <ToggleButton x:Name="PART_alphaComponentVisibilityToggleButton" IsChecked="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=AlphaComponentVisible, Mode=OneWay}"/>
+                                                </WrapPanel>
+                                                <WrapPanel Grid.Row="2">
+                                                    <TextBlock Text="RGB  Channels"/>
+                                                    <ToggleButton x:Name="PART_rgbComponentVisibilityToggleButton" IsChecked="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=RgbComponentVisible, Mode=OneWay}"/>
+                                                </WrapPanel>
+                                                <WrapPanel Grid.Row="3">
+                                                    <TextBlock Text="HSLV Channels"/>
+                                                    <ToggleButton x:Name="PART_hslvComponentVisibilityToggleButton" IsChecked="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=HslvComponentVisible, Mode=OneWay}"/>
+                                                </WrapPanel>
+                                            </WrapPanel>
+                                        </TabItem>
+                                        <TabItem>
+                                            <TabItem.Header>
+                                                <TextBlock Style="{StaticResource tabItemHeader}">
                                                             <Run Text="🖳 " FontWeight="Normal" FontSize="24" BaselineAlignment="Center"/><Run Text="Import Options"/>
-                                                        </TextBlock>
-                                                        <TextBlock Grid.Column="1">
-                                                            <TextBlock.Style>
-                                                                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MenuSectionHeaderExpanderText}">
-                                                                    <Setter Property="Text"
-                                                                                Value=" +" />
-                                                                    <Style.Triggers>
-                                                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Expander}}, Path=IsExpanded, Mode=OneWay}" Value="True">
-                                                                            <Setter Property="Text"
-                                                                                        Value=" −" />
-                                                                        </DataTrigger>
-                                                                    </Style.Triggers>
-                                                                </Style>
-                                                            </TextBlock.Style>
-                                                        </TextBlock>
-                                                    </Grid>
-                                                </Expander.Header>
-                                                <Grid>
-                                                    <Grid.RowDefinitions>
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                    </Grid.RowDefinitions>
-                                                    <Border Grid.Row="1" />
-
-                                                    <Button Style="{StaticResource MenuButtonStyle1}" Margin="8,8,8,0" Padding="8" Height="Auto" x:Name="PART_importPresetColorsButtonBase" ToolTip="Import color presets from a .JSON file">
-                                                        <TextBlock Text="Presets from .JSON ..." Style="{StaticResource buttonText}" TextWrapping="Wrap"/>
-                                                    </Button>
-                                                    <Button Style="{StaticResource MenuButtonStyle1}" Margin="8" Padding="8" Height="Auto" Grid.Row="1" x:Name="PART_importCustomColorsButtonBase" ToolTip="Import custom colors from a .JSON file (Ctrl+I)">
-                                                        <TextBlock Text="Custom from .JSON ..." Style="{StaticResource buttonText}" TextWrapping="Wrap"/>
-                                                    </Button>
-                                                </Grid>
-                                            </Expander>
-                                            <Expander Style="{StaticResource ExpanderStyle1}" IsExpanded="False">
-                                                <Expander.Header>
-                                                    <Grid Style="{StaticResource menuItemGrid}">
-                                                        <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition />
-                                                            <ColumnDefinition Width="Auto"/>
-                                                        </Grid.ColumnDefinitions>
-                                                        <TextBlock Style="{StaticResource MenuSectionHeader}">
+                                                </TextBlock>
+                                            </TabItem.Header>
+                                            <WrapPanel Orientation="Vertical">
+                                                <Button Style="{StaticResource MenuButtonStyle1}" Margin="8" Padding="8" Height="Auto" x:Name="PART_importPresetColorsButtonBase" ToolTip="Import color presets from a .JSON file" Width="180">
+                                                    <TextBlock Text="Presets from .JSON ..." Style="{StaticResource buttonText}" TextWrapping="Wrap"/>
+                                                </Button>
+                                                <Button Style="{StaticResource MenuButtonStyle1}" Margin="8" Padding="8" Height="Auto" Grid.Row="1" x:Name="PART_importCustomColorsButtonBase" ToolTip="Import custom colors from a .JSON file (Ctrl+I)" Width="180">
+                                                    <TextBlock Text="Custom from .JSON ..." Style="{StaticResource buttonText}" TextWrapping="Wrap"/>
+                                                </Button>
+                                            </WrapPanel>
+                                        </TabItem>
+                                        <TabItem>
+                                            <TabItem.Header>
+                                                <TextBlock Style="{StaticResource tabItemHeader}">
                                                             <Run Text="🖫 " FontWeight="Normal" FontSize="24" BaselineAlignment="Center"/><Run Text="Export Options"/>
-                                                        </TextBlock>
-                                                        <TextBlock Grid.Column="1">
-                                                            <TextBlock.Style>
-                                                                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MenuSectionHeaderExpanderText}">
-                                                                    <Setter Property="Text"
-                                                                                Value=" +" />
-                                                                    <Style.Triggers>
-                                                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Expander}}, Path=IsExpanded, Mode=OneWay}" Value="True">
-                                                                            <Setter Property="Text"
-                                                                                        Value=" −" />
-                                                                        </DataTrigger>
-                                                                    </Style.Triggers>
-                                                                </Style>
-                                                            </TextBlock.Style>
-                                                        </TextBlock>
-                                                    </Grid>
-                                                </Expander.Header>
-                                                <Grid>
-                                                    <Button x:Name="PART_exportCustomColorsButtonBase" Style="{StaticResource MenuButtonStyle1}" Margin="8" Padding="8" Height="Auto" Grid.Row="1" ToolTip="Export custom colors to a .JSON file (Ctrl+E)" VerticalAlignment="Top">
-                                                        <TextBlock Text="Custom to .JSON ..." Style="{StaticResource buttonText}" TextWrapping="Wrap"/>
-                                                    </Button>
-                                                </Grid>
-                                            </Expander>
-                                        </StackPanel>
-                                    </ScrollViewer>
+                                                </TextBlock>
+                                            </TabItem.Header>
+                                            <WrapPanel>
+                                                <Button x:Name="PART_exportCustomColorsButtonBase" Style="{StaticResource MenuButtonStyle1}" Margin="8" Padding="8" Height="Auto" Grid.Row="1" ToolTip="Export custom colors to a .JSON file (Ctrl+E)" VerticalAlignment="Top" Width="180">
+                                                    <TextBlock Text="Custom to .JSON ..." Style="{StaticResource buttonText}" TextWrapping="Wrap"/>
+                                                </Button>
+                                            </WrapPanel>
+                                        </TabItem>
+                                    </TabControl>
                                 </Grid>
-
 
                                 <Border Grid.RowSpan="2" Grid.Column="1" Width="32" IsHitTestVisible="False" IsEnabled="False" HorizontalAlignment="Left">
                                     <Border.Background>
