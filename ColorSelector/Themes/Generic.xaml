@@ -2129,7 +2129,7 @@
                                         Style="{StaticResource TabControlStyle1}"
                                         ItemContainerStyle="{StaticResource TabItemStyle1}">
                                             <TabControl.ItemTemplate>
-                                                <DataTemplate DataType="{x:Type local:HslComponent}">
+                                                <DataTemplate DataType="{x:Type local:ColorComponent}">
                                                     <TextBlock Style="{StaticResource monospacedBoldText}" Text="{Binding Converter={StaticResource hslComponentToAbbreviatedStringConverter}, Mode=OneWay}" />
                                                 </DataTemplate>
                                             </TabControl.ItemTemplate>
@@ -2149,22 +2149,22 @@
                                            BasedOn="{StaticResource {x:Type Slider}}">
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=HslComponentSelection}"
-                                                         Value="{x:Static local:HslComponent.Hue}">
+                                                         Value="{x:Static local:ColorComponent.Hue}">
                                                             <Setter Property="TickFrequency"
                                                         Value="1" />
                                                         </DataTrigger>
                                                         <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=HslComponentSelection}"
-                                                         Value="{x:Static local:HslComponent.Saturation}">
+                                                         Value="{x:Static local:ColorComponent.Saturation}">
                                                             <Setter Property="TickFrequency"
                                                         Value=".01" />
                                                         </DataTrigger>
                                                         <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=HslComponentSelection}"
-                                                         Value="{x:Static local:HslComponent.Lightness}">
+                                                         Value="{x:Static local:ColorComponent.Lightness}">
                                                             <Setter Property="TickFrequency"
                                                         Value=".01" />
                                                         </DataTrigger>
                                                         <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=HslComponentSelection}"
-                                                         Value="{x:Static local:HslComponent.Value}">
+                                                         Value="{x:Static local:ColorComponent.Value}">
                                                             <Setter Property="TickFrequency"
                                                         Value=".01" />
                                                         </DataTrigger>
@@ -2541,11 +2541,11 @@
                                                         <Style TargetType="{x:Type TextBlock}"
                                                BasedOn="{StaticResource monospacedBoldText}">
                                                             <Setter Property="Text"
-                                                    Value="{Binding Source={x:Static local:HslComponent.Lightness}, Converter={StaticResource hslComponentToAbbreviatedStringConverter} }" />
+                                                    Value="{Binding Source={x:Static local:ColorComponent.Lightness}, Converter={StaticResource hslComponentToAbbreviatedStringConverter} }" />
                                                             <Style.Triggers>
                                                                 <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=ColorModel, Mode=OneWay}" Value="{x:Static local:ColorModel.HSV}">
                                                                     <Setter Property="Text"
-                                                            Value="{Binding Source={x:Static local:HslComponent.Value}, Converter={StaticResource hslComponentToAbbreviatedStringConverter} }" />
+                                                            Value="{Binding Source={x:Static local:ColorComponent.Value}, Converter={StaticResource hslComponentToAbbreviatedStringConverter} }" />
                                                                 </DataTrigger>
                                                             </Style.Triggers>
                                                         </Style>
@@ -2618,6 +2618,7 @@
                                         <Button Style="{StaticResource ButtonStyle1}"
                                                 x:Name="PART_saveCustomColorButtonBase"
                                                 Margin="8,4"
+                                                ToolTip="Save Current Color"
                                                 IsTabStop="True"
                                                 Height="32"
                                                 Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=CustomColorsVisible, Mode=OneWay, Converter={StaticResource b2v}}">

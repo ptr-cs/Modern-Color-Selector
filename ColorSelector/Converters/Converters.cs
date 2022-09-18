@@ -222,36 +222,36 @@ public class DoubleToHslGuideLeftMarginHue : IValueConverter
     }
 }
 
-[ValueConversion(typeof(HslComponent), typeof(bool))]
+[ValueConversion(typeof(ColorComponent), typeof(bool))]
 public class HslComponentComparisonConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        HslComponent valueToConvert = (HslComponent)value;
-        HslComponent compareValue = (HslComponent)parameter;
+        ColorComponent valueToConvert = (ColorComponent)value;
+        ColorComponent compareValue = (ColorComponent)parameter;
 
         return valueToConvert == compareValue;
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        return HslComponent.Hue; // Conversions back (not necessary) should default to Hue
+        return ColorComponent.Hue; // Conversions back (not necessary) should default to Hue
     }
 }
 
-[ValueConversion(typeof(HslComponent), typeof(string))]
+[ValueConversion(typeof(ColorComponent), typeof(string))]
 public class HslComponentToAbbreviatedStringConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        HslComponent valueToConvert = (HslComponent)value;
+        ColorComponent valueToConvert = (ColorComponent)value;
         return valueToConvert.ToString()[..1];
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
     {
         string valueToConvert = (string)value;
-        var match = ((HslComponent[])Enum.GetValues(typeof(HslComponent))).Where(s => s.ToString()[..1] == valueToConvert).FirstOrDefault();
+        var match = ((ColorComponent[])Enum.GetValues(typeof(ColorComponent))).Where(s => s.ToString()[..1] == valueToConvert).FirstOrDefault();
         return match;
     }
 }

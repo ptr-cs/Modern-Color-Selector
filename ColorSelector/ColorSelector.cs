@@ -25,19 +25,16 @@ using ColorSelector.Validators;
 
 namespace ColorSelector
 {
-    public enum HslComponent
+    public enum ColorComponent
     {
         Hue = 0,
         Saturation = 1,
         Lightness = 2,
-        Value = 3
-    };
-
-    public enum HsvComponent
-    {
-        Hue = 0,
-        Saturation = 1,
-        Value = 2,
+        Value = 3,
+        Alpha = 4,
+        Red = 5,
+        Green = 6,
+        Blue = 7
     };
 
     public enum ColorModel
@@ -45,6 +42,8 @@ namespace ColorSelector
         HSL = 0,
         HSV = 1
     };
+
+
 
     public class DelegateCommand : ICommand
     {
@@ -381,7 +380,6 @@ namespace ColorSelector
             HslvComponentVisibilityToggleButton = GetTemplateChild(nameof(TemplatePart.PART_hslvComponentVisibilityToggleButton)) as ToggleButton;
             AppOrientationToggleButton = GetTemplateChild(nameof(TemplatePart.PART_appOrientationToggleButton)) as ToggleButton;
 
-            HslComponentList = new ObservableCollection<HslComponent>((HslComponent[])Enum.GetValues(typeof(HslComponent)));
             RebuildColorModelList();
             RefreshRangeBaseVisuals();
             ProcessHslComponentSelection(HslComponentSelection);
@@ -552,6 +550,22 @@ namespace ColorSelector
             V = Math.Clamp(Math.Round(V + SL_ROC, 2), HSL_MIN, SL_MAX);
         }
 
+        /// <summary>
+        /// Helper function for generating tooltips on Controls.
+        /// </summary>
+        /// <param name="editTarget"></param>
+        /// <returns></returns>
+        public void CreateToolTip(FrameworkElement element, ColorComponent editTarget)
+        {
+            element.ToolTip ??= $"Edit {editTarget} component";
+        }
+
+        public void CreateToolTip(FrameworkElement element, string editTarget)
+        {
+            element.ToolTip ??= editTarget;
+        }
+
+
         public static Color InterpolateColor(Color color1, Color color2, double fraction)
         {
             double byteToDouble = 1.0 / 255.0;
@@ -630,27 +644,28 @@ namespace ColorSelector
             return new ImageBrush() { ImageSource = source };
         }
 
-        private TextBox? hextTextBox;
+        private TextBox? hexTextBox;
         private TextBox? HexTextBox
         {
-            get => hextTextBox;
+            get => hexTextBox;
 
             set
             {
-                if (hextTextBox != null)
+                if (hexTextBox != null)
                 {
-                    hextTextBox.PreviewKeyDown -= new KeyEventHandler(TextBox_PreviewKeyDown);
-                    BindingOperations.ClearBinding(hextTextBox, TextBox.TextProperty);
+                    hexTextBox.PreviewKeyDown -= new KeyEventHandler(TextBox_PreviewKeyDown);
+                    BindingOperations.ClearBinding(hexTextBox, TextBox.TextProperty);
                 }
-                hextTextBox = value;
+                hexTextBox = value;
 
-                if (hextTextBox != null)
+                if (hexTextBox != null)
                 {
-                    hextTextBox.MaxLength = 9; // Enforce Text length for ARGB values
+                    hexTextBox.MaxLength = 9; // Enforce Text length for ARGB values
                     Binding binding = new(nameof(HexValueString)) { Mode = BindingMode.TwoWay, Source = this, UpdateSourceTrigger = UpdateSourceTrigger.Default };
                     binding.ValidationRules.Add(new ArgbHexadecimalColorStringValidationRule());
-                    hextTextBox.SetBinding(TextBox.TextProperty, binding);
-                    hextTextBox.PreviewKeyDown += new KeyEventHandler(TextBox_PreviewKeyDown);
+                    hexTextBox.SetBinding(TextBox.TextProperty, binding);
+                    hexTextBox.PreviewKeyDown += new KeyEventHandler(TextBox_PreviewKeyDown);
+                    CreateToolTip(hexTextBox, "Edit Hexadecimal value");
                 }
             }
         }
@@ -678,6 +693,7 @@ namespace ColorSelector
                     aTextBox.SetBinding(TextBox.TextProperty, binding);
                     aTextBox.GotKeyboardFocus += TextBox_GotKeyboardFocus;
                     aTextBox.PreviewKeyDown += TextBox_PreviewKeyDown;
+                    CreateToolTip(aTextBox, ColorComponent.Alpha);
                 }
             }
         }
@@ -705,6 +721,7 @@ namespace ColorSelector
                     rTextBox.SetBinding(TextBox.TextProperty, binding);
                     rTextBox.GotKeyboardFocus += TextBox_GotKeyboardFocus;
                     rTextBox.PreviewKeyDown += TextBox_PreviewKeyDown;
+                    CreateToolTip(rTextBox, ColorComponent.Red);
                 }
             }
         }
@@ -732,6 +749,7 @@ namespace ColorSelector
                     gTextBox.SetBinding(TextBox.TextProperty, binding);
                     gTextBox.GotKeyboardFocus += TextBox_GotKeyboardFocus;
                     gTextBox.PreviewKeyDown += TextBox_PreviewKeyDown;
+                    CreateToolTip(gTextBox, ColorComponent.Green);
                 }
             }
         }
@@ -759,6 +777,7 @@ namespace ColorSelector
                     bTextBox.SetBinding(TextBox.TextProperty, binding);
                     bTextBox.GotKeyboardFocus += TextBox_GotKeyboardFocus;
                     bTextBox.PreviewKeyDown += TextBox_PreviewKeyDown;
+                    CreateToolTip(bTextBox, ColorComponent.Blue);
                 }
             }
         }
@@ -798,7 +817,7 @@ namespace ColorSelector
                     hTextBox.SetBinding(TextBox.TextProperty, binding);
                     hTextBox.GotKeyboardFocus += TextBox_GotKeyboardFocus;
                     hTextBox.PreviewKeyDown += TextBox_PreviewKeyDown;
-
+                    CreateToolTip(hTextBox, ColorComponent.Hue);
                 }
             }
         }
@@ -827,6 +846,7 @@ namespace ColorSelector
                     sTextBox.SetBinding(TextBox.TextProperty, binding);
                     sTextBox.GotKeyboardFocus += TextBox_GotKeyboardFocus;
                     sTextBox.PreviewKeyDown += TextBox_PreviewKeyDown;
+                    CreateToolTip(sTextBox, ColorComponent.Saturation);
                 }
             }
         }
@@ -855,6 +875,7 @@ namespace ColorSelector
                     vTextBox.SetBinding(TextBox.TextProperty, binding);
                     vTextBox.GotKeyboardFocus += TextBox_GotKeyboardFocus;
                     vTextBox.PreviewKeyDown += TextBox_PreviewKeyDown;
+                    CreateToolTip(vTextBox, ColorComponent.Value);
                 }
             }
         }
@@ -885,6 +906,7 @@ namespace ColorSelector
                     Color transparent = new() { A = 0, R = 0, G = 0, B = 0 };
                     LinearGradientBrush background = new() { GradientStops = new GradientStopCollection() { new GradientStop(transparent, 0), new GradientStop(Colors.Black, 1) }, EndPoint = new Point(1, 0) };
                     aRangeBase.Background = background;
+                    CreateToolTip(aRangeBase, ColorComponent.Alpha);
                 }
             }
         }
@@ -922,6 +944,7 @@ namespace ColorSelector
                     BindingOperations.SetBinding(rHighBoundGradientStop, GradientStop.ColorProperty, highBoundBinding);
                     LinearGradientBrush background = new() { GradientStops = new GradientStopCollection() { rLowBoundGraientStop, rHighBoundGradientStop }, EndPoint = new Point(1, 0) };
                     rRangeBase.Background = background;
+                    CreateToolTip(rRangeBase, ColorComponent.Red);
                 }
             }
         }
@@ -959,6 +982,7 @@ namespace ColorSelector
                     BindingOperations.SetBinding(gHighBoundGradientStop, GradientStop.ColorProperty, highBoundBinding);
                     LinearGradientBrush background = new() { GradientStops = new GradientStopCollection() { gLowBoundGraientStop, gHighBoundGradientStop }, EndPoint = new Point(1, 0) };
                     gRangeBase.Background = background;
+                    CreateToolTip(gRangeBase, ColorComponent.Green);
                 }
             }
         }
@@ -996,6 +1020,7 @@ namespace ColorSelector
                     BindingOperations.SetBinding(bHighBoundGradientStop, GradientStop.ColorProperty, highBoundBinding);
                     LinearGradientBrush background = new() { GradientStops = new GradientStopCollection() { bLowBoundGraientStop, bHighBoundGradientStop }, EndPoint = new Point(1, 0) };
                     bRangeBase.Background = background;
+                    CreateToolTip(bRangeBase, ColorComponent.Blue);
                 }
             }
         }
@@ -1054,6 +1079,7 @@ namespace ColorSelector
 
                     LinearGradientBrush background = new() { GradientStops = new GradientStopCollection() { hSector0GradientStop, hSector1GradientStop, hSector2GradientStop, hSector3GradientStop, hSector4GradientStop, hSector5GradientStop, hSector6GradientStop }, EndPoint = new Point(1, 0) };
                     hRangeBase.Background = background;
+                    CreateToolTip(hRangeBase, ColorComponent.Hue);
                 }
             }
         }
@@ -1091,6 +1117,7 @@ namespace ColorSelector
                     BindingOperations.SetBinding(sHighBoundGradientStop, GradientStop.ColorProperty, highBoundBinding);
                     LinearGradientBrush background = new() { GradientStops = new GradientStopCollection() { sLowBoundGraientStop, sHighBoundGradientStop }, EndPoint = new Point(1, 0) };
                     sRangeBase.Background = background;
+                    CreateToolTip(sRangeBase, ColorComponent.Saturation);
                 }
             }
         }
@@ -1128,6 +1155,7 @@ namespace ColorSelector
                     BindingOperations.SetBinding(vHighBoundGradientStop, GradientStop.ColorProperty, highBoundBinding);
                     LinearGradientBrush background = new() { GradientStops = new GradientStopCollection() { vLowBoundGraientStop, vHighBoundGradientStop }, EndPoint = new Point(1, 0) };
                     vRangeBase.Background = background;
+                    CreateToolTip(vRangeBase, ColorComponent.Value);
                 }
             }
         }
@@ -1152,6 +1180,7 @@ namespace ColorSelector
 
                     Binding binding = new(nameof(HRangeBaseValue)) { Mode = BindingMode.TwoWay, Source = this };
                     hslRangeBase.SetBinding(RangeBase.ValueProperty, binding);
+                    CreateToolTip(hslRangeBase, "Edit selected component");
                 }
             }
         }
@@ -1582,6 +1611,7 @@ namespace ColorSelector
                 if (aIncrementButtonBase != null)
                 {
                     BindingOperations.SetBinding(aIncrementButtonBase, ButtonBase.CommandProperty, new Binding(nameof(AIncrementCommand)) { Mode = BindingMode.OneWay, Source = this });
+                    CreateToolTip(aIncrementButtonBase, ColorComponent.Alpha);
                 }
             }
         }
@@ -1602,6 +1632,7 @@ namespace ColorSelector
                 if (rIncrementButtonBase != null)
                 {
                     BindingOperations.SetBinding(rIncrementButtonBase, ButtonBase.CommandProperty, new Binding(nameof(RIncrementCommand)) { Mode = BindingMode.OneWay, Source = this });
+                    CreateToolTip(rIncrementButtonBase, ColorComponent.Red);
                 }
             }
         }
@@ -1622,6 +1653,7 @@ namespace ColorSelector
                 if (gIncrementButtonBase != null)
                 {
                     BindingOperations.SetBinding(gIncrementButtonBase, ButtonBase.CommandProperty, new Binding(nameof(GIncrementCommand)) { Mode = BindingMode.OneWay, Source = this });
+                    CreateToolTip(gIncrementButtonBase, ColorComponent.Green);
                 }
             }
         }
@@ -1642,6 +1674,7 @@ namespace ColorSelector
                 if (bIncrementButtonBase != null)
                 {
                     BindingOperations.SetBinding(bIncrementButtonBase, ButtonBase.CommandProperty, new Binding(nameof(BIncrementCommand)) { Mode = BindingMode.OneWay, Source = this });
+                    CreateToolTip(bIncrementButtonBase, ColorComponent.Blue);
                 }
             }
         }
@@ -1662,6 +1695,7 @@ namespace ColorSelector
                 if (hIncrementButtonBase != null)
                 {
                     BindingOperations.SetBinding(hIncrementButtonBase, ButtonBase.CommandProperty, new Binding(nameof(HIncrementCommand)) { Mode = BindingMode.OneWay, Source = this });
+                    CreateToolTip(hIncrementButtonBase, ColorComponent.Hue);
                 }
             }
         }
@@ -1682,6 +1716,7 @@ namespace ColorSelector
                 if (sIncrementButtonBase != null)
                 {
                     BindingOperations.SetBinding(sIncrementButtonBase, ButtonBase.CommandProperty, new Binding(nameof(SIncrementCommand)) { Mode = BindingMode.OneWay, Source = this });
+                    CreateToolTip(sIncrementButtonBase, ColorComponent.Saturation);
                 }
             }
         }
@@ -1702,6 +1737,7 @@ namespace ColorSelector
                 if (vIncrementButtonBase != null)
                 {
                     BindingOperations.SetBinding(vIncrementButtonBase, ButtonBase.CommandProperty, new Binding(nameof(VIncrementCommand)) { Mode = BindingMode.OneWay, Source = this });
+                    CreateToolTip(vIncrementButtonBase, ColorComponent.Value);
                 }
             }
         }
@@ -1722,6 +1758,7 @@ namespace ColorSelector
                 if (aDecrementButtonBase != null)
                 {
                     BindingOperations.SetBinding(aDecrementButtonBase, ButtonBase.CommandProperty, new Binding(nameof(ADecrementCommand)) { Mode = BindingMode.OneWay, Source = this });
+                    CreateToolTip(aDecrementButtonBase, ColorComponent.Alpha);
                 }
             }
         }
@@ -1742,6 +1779,7 @@ namespace ColorSelector
                 if (rDecrementButtonBase != null)
                 {
                     BindingOperations.SetBinding(rDecrementButtonBase, ButtonBase.CommandProperty, new Binding(nameof(RDecrementCommand)) { Mode = BindingMode.OneWay, Source = this });
+                    CreateToolTip(rDecrementButtonBase, ColorComponent.Red);
                 }
             }
         }
@@ -1762,6 +1800,7 @@ namespace ColorSelector
                 if (gDecrementButtonBase != null)
                 {
                     BindingOperations.SetBinding(gDecrementButtonBase, ButtonBase.CommandProperty, new Binding(nameof(GDecrementCommand)) { Mode = BindingMode.OneWay, Source = this });
+                    CreateToolTip(gDecrementButtonBase, ColorComponent.Green);
                 }
             }
         }
@@ -1782,6 +1821,7 @@ namespace ColorSelector
                 if (bDecrementButtonBase != null)
                 {
                     BindingOperations.SetBinding(bDecrementButtonBase, ButtonBase.CommandProperty, new Binding(nameof(BDecrementCommand)) { Mode = BindingMode.OneWay, Source = this });
+                    CreateToolTip(bDecrementButtonBase, ColorComponent.Blue);
                 }
             }
         }
@@ -1802,6 +1842,7 @@ namespace ColorSelector
                 if (hDecrementButtonBase != null)
                 {
                     BindingOperations.SetBinding(hDecrementButtonBase, ButtonBase.CommandProperty, new Binding(nameof(HDecrementCommand)) { Mode = BindingMode.OneWay, Source = this });
+                    CreateToolTip(hDecrementButtonBase, ColorComponent.Hue);
                 }
             }
         }
@@ -1822,6 +1863,7 @@ namespace ColorSelector
                 if (sDecrementButtonBase != null)
                 {
                     BindingOperations.SetBinding(sDecrementButtonBase, ButtonBase.CommandProperty, new Binding(nameof(SDecrementCommand)) { Mode = BindingMode.OneWay, Source = this });
+                    CreateToolTip(sDecrementButtonBase, ColorComponent.Saturation);
                 }
             }
         }
@@ -1842,6 +1884,7 @@ namespace ColorSelector
                 if (vDecrementButtonBase != null)
                 {
                     BindingOperations.SetBinding(vDecrementButtonBase, ButtonBase.CommandProperty, new Binding(nameof(VDecrementCommand)) { Mode = BindingMode.OneWay, Source = this });
+                    CreateToolTip(vDecrementButtonBase, ColorComponent.Value);
                 }
             }
         }
@@ -2818,6 +2861,7 @@ namespace ColorSelector
                     Binding binding = new(nameof(HslComponentList)) { Mode = BindingMode.OneWay, Source = this };
                     hslComponentSelector.SetBinding(ItemsControl.ItemsSourceProperty, binding);
                     hslComponentSelector.SelectionChanged += new SelectionChangedEventHandler(HslComponentSelector_SelectionChanged);
+                    CreateToolTip(hslComponentSelector, "Select active component");
                 }
             }
         }
@@ -2841,6 +2885,7 @@ namespace ColorSelector
                     Binding binding = new(nameof(ColorModelList)) { Mode = BindingMode.OneWay, Source = this };
                     colorModelSelector.SetBinding(ItemsControl.ItemsSourceProperty, binding);
                     colorModelSelector.SelectionChanged += new SelectionChangedEventHandler(ColorModelSelector_SelectionChanged);
+                    CreateToolTip(colorModelSelector, "Select active color model");
                 }
             }
         }
@@ -2868,7 +2913,7 @@ namespace ColorSelector
             if (e.AddedItems.Count == 0)
                 return;
 
-            var selected = e.AddedItems[0] as HslComponent?;
+            var selected = e.AddedItems[0] as ColorComponent?;
             if (selected is not null)
             {
                 HslComponentSelection = selected.Value;
@@ -3074,6 +3119,7 @@ namespace ColorSelector
                     BindingOperations.SetBinding(hslComponentAreaLightnessWhiteBackground, SolidColorBrush.OpacityProperty, lightnessOpacityBindinig3);
 
                     GenerateHslComponentAreaContainer(HslComponentSelection);
+                    CreateToolTip(hslComponentArea, "Click or drag to edit color values");
                 }
             }
         }
@@ -3085,7 +3131,14 @@ namespace ColorSelector
             GenerateHslComponentAreaContainer(HslComponentSelection);
         }
 
-        public void SetGuideBindings(HslComponent hslComponentSelection)
+        /// <summary>
+        /// The guides are the x-axis and y-axis lines that appear in the 2D Component editor display.
+        /// The lines move according to the values of individual components, so any time an individual
+        /// component is selected (ex. Hue or Saturation), refresh the bindings so that the appropriate 
+        /// values influence the guide movement.
+        /// </summary>
+        /// <param name="hslComponentSelection"></param>
+        public void SetGuideBindings(ColorComponent hslComponentSelection)
         {
             BindingOperations.ClearBinding(hslComponentAreaXaxisBoundGuide, Border.HeightProperty);
             BindingOperations.ClearBinding(hslComponentAreaYaxisBoundGuide, Border.WidthProperty);
@@ -3094,7 +3147,7 @@ namespace ColorSelector
 
             switch (hslComponentSelection)
             {
-                case HslComponent.Hue:
+                case ColorComponent.Hue:
                     Binding xAxisValueBinding = new(nameof(S)) { Mode = BindingMode.OneWay, Source = this, Converter = new DoubleToLengthMultipliedDouble(), ConverterParameter = HslComponentArea?.ActualWidth };
                     BindingOperations.SetBinding(hslComponentAreaYaxisBoundGuide, Border.WidthProperty, xAxisValueBinding);
 
@@ -3107,7 +3160,7 @@ namespace ColorSelector
                     Binding yAxisMarginBinding = new(nameof(V)) { Mode = BindingMode.OneWay, Source = this, Converter = new DoubleToHslGuideTopMargin(), ConverterParameter = HslComponentArea?.ActualHeight };
                     BindingOperations.SetBinding(hslComponentAreaYaxisValueGrid, Panel.MarginProperty, yAxisMarginBinding);
                     break;
-                case HslComponent.Saturation:
+                case ColorComponent.Saturation:
                     xAxisValueBinding = new(nameof(H)) { Mode = BindingMode.OneWay, Source = this, Converter = new DoubleToLengthMultipliedDoubleHue(), ConverterParameter = HslComponentArea?.ActualWidth };
                     BindingOperations.SetBinding(hslComponentAreaYaxisBoundGuide, Border.WidthProperty, xAxisValueBinding);
 
@@ -3120,8 +3173,8 @@ namespace ColorSelector
                     yAxisMarginBinding = new(nameof(V)) { Mode = BindingMode.OneWay, Source = this, Converter = new DoubleToHslGuideTopMargin(), ConverterParameter = HslComponentArea?.ActualHeight };
                     BindingOperations.SetBinding(hslComponentAreaYaxisValueGrid, Panel.MarginProperty, yAxisMarginBinding);
                     break;
-                case HslComponent.Lightness:
-                case HslComponent.Value:
+                case ColorComponent.Lightness:
+                case ColorComponent.Value:
                     xAxisValueBinding = new(nameof(H)) { Mode = BindingMode.OneWay, Source = this, Converter = new DoubleToLengthMultipliedDoubleHue(), ConverterParameter = HslComponentArea?.ActualWidth };
                     BindingOperations.SetBinding(hslComponentAreaYaxisBoundGuide, Border.WidthProperty, xAxisValueBinding);
 
@@ -3139,6 +3192,10 @@ namespace ColorSelector
             }
         }
 
+        /// <summary>
+        /// Generates the mid-point of the 2D Component editor display.
+        /// </summary>
+        /// <returns></returns>
         public static Border MakeHslComponentGridMidPointGuide()
         {
             return new Border()
@@ -3149,6 +3206,10 @@ namespace ColorSelector
             };
         }
 
+        /// <summary>
+        /// Generates the x-axis guide of the 2D Component editor display.
+        /// </summary>
+        /// <returns></returns>
         public static Border MakeHslComponentGridXaxisGuide()
         {
             return new Border()
@@ -3160,6 +3221,10 @@ namespace ColorSelector
             };
         }
 
+        /// <summary>
+        /// Generates the y-axis guide of the 2D Component editor display.
+        /// </summary>
+        /// <returns></returns>
         public static Border MakeHslComponentGridYaxisGuide()
         {
             return new Border()
@@ -3171,6 +3236,11 @@ namespace ColorSelector
             };
         }
 
+        /// <summary>
+        /// Generates the elements necessary for the 2D Component editor display.
+        /// Since there is an x-axis and a y-axis guide, the setup is Grid-based
+        /// in order to facilitate fluid X and Y based movements via rows and columns.
+        /// </summary>
         public void GenerateHslComponentAreaContainerGuides()
         {
             hslComponentAreaXaxisValueGrid = new Grid() { HorizontalAlignment = HorizontalAlignment.Left };
@@ -3213,6 +3283,11 @@ namespace ColorSelector
             SetGuideBindings(HslComponentSelection);
         }
 
+        /// <summary>
+        /// Generates the background elements to display when Hue is
+        /// the active component in the 2D Component editor display and
+        /// the active color model is HSL.
+        /// </summary>
         public void GenerateHslComponentAreaHslHue()
         {
             if (HslComponentArea is null)
@@ -3245,6 +3320,11 @@ namespace ColorSelector
             });
         }
 
+        /// <summary>
+        /// Generates the background elements to display when Saturation is
+        /// the active component in the 2D Component editor display and
+        /// the active color model is HSL.
+        /// </summary>
         public void GenerateHslComponentAreaHslSaturation()
         {
             if (HslComponentArea is null)
@@ -3283,6 +3363,11 @@ namespace ColorSelector
             HslComponentArea.Children.Add(child1);
         }
 
+        /// <summary>
+        /// Generates the background elements to display when Lightness is
+        /// the active component in the 2D Component editor display and
+        /// the active color model is HSL.
+        /// </summary>
         public void GenerateHslComponentAreaHslLightness()
         {
             if (HslComponentArea is null)
@@ -3305,6 +3390,11 @@ namespace ColorSelector
             HslComponentArea.Children.Add(child3);
         }
 
+        /// <summary>
+        /// Generates the background elements to display when Hue is
+        /// the active component in the 2D Component editor display and
+        /// the active color model is HSV.
+        /// </summary>
         public void GenerateHslComponentAreaHsvHue()
         {
             if (HslComponentArea is null)
@@ -3336,6 +3426,11 @@ namespace ColorSelector
             });
         }
 
+        /// <summary>
+        /// Generates the background elements to display when Saturation is
+        /// the active component in the 2D Component editor display and
+        /// the active color model is HSV.
+        /// </summary>
         public void GenerateHslComponentAreaHsvSaturation()
         {
             if (HslComponentArea is null)
@@ -3365,6 +3460,11 @@ namespace ColorSelector
             HslComponentArea.Children.Add(child1);
         }
 
+        /// <summary>
+        /// Generates the background elements to display when Value is
+        /// the active component in the 2D Component editor display and
+        /// the active color model is HSV.
+        /// </summary>
         public void GenerateHslComponentAreaHsvValue()
         {
             if (HslComponentArea is null)
@@ -3378,18 +3478,12 @@ namespace ColorSelector
                 Child = new Border() { Background = hslComponentAreaLightnessRelativeValueOverlay }
             };
 
-            //Border child3 = new()
-            //{
-            //    Background = hslComponentAreaLightnessWhiteBackground,
-            //    Child = child4
-            //};
-
             HslComponentArea.Children.Add(child4);
         }
 
         /// <summary>
-        /// The HSL component area is an interactive display that visualizes the relationship between
-        /// the color components of Hue, Saturation, and Lightness. Three modes of operation, one dedicated
+        /// The 2D Component editor is an interactive display that visualizes the relationship between
+        /// the color components of Hue, Saturation, and Lightness/Value. Three modes of operation, one dedicated
         /// to each color mode, govern changes in the component area display and interaction. Depending on the
         /// mode of operation, two of the color components are treated as dependant variables and the remaining
         /// component as an independent variable; the X-axis and Y-axis of the display depict the dependant
@@ -3415,7 +3509,7 @@ namespace ColorSelector
         /// </summary>
         /// <param name="selection">The HslComponentSelection to govern the state of the component area display.</param>
         /// <seealso cref="ProcessHslComponentAreaMouseInput"/>
-        public void GenerateHslComponentAreaContainer(HslComponent selection)
+        public void GenerateHslComponentAreaContainer(ColorComponent selection)
         {
             if (HslComponentArea is null)
                 return;
@@ -3427,13 +3521,13 @@ namespace ColorSelector
                 case ColorModel.HSL:
                     switch (selection)
                     {
-                        case HslComponent.Hue:
+                        case ColorComponent.Hue:
                             GenerateHslComponentAreaHslHue();
                             break;
-                        case HslComponent.Saturation:
+                        case ColorComponent.Saturation:
                             GenerateHslComponentAreaHslSaturation();
                             break;
-                        case HslComponent.Lightness:
+                        case ColorComponent.Lightness:
                             GenerateHslComponentAreaHslLightness();
                             break;
                         default:
@@ -3443,13 +3537,13 @@ namespace ColorSelector
                 case ColorModel.HSV:
                     switch (selection)
                     {
-                        case HslComponent.Hue:
+                        case ColorComponent.Hue:
                             GenerateHslComponentAreaHsvHue();
                             break;
-                        case HslComponent.Saturation:
+                        case ColorComponent.Saturation:
                             GenerateHslComponentAreaHsvSaturation();
                             break;
-                        case HslComponent.Value:
+                        case ColorComponent.Value:
                             GenerateHslComponentAreaHsvValue();
                             break;
                         default:
@@ -3463,6 +3557,11 @@ namespace ColorSelector
 
         bool hslComponentAreaInteraction = false;
 
+        /// <summary>
+        /// Reset the interaction flag if the mouse is released over the 2D Component editor display.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void HslComponentArea_PreviewMouseUp(object sender, MouseButtonEventArgs e)
         {
             if (e.ButtonState != MouseButtonState.Released)
@@ -3516,16 +3615,16 @@ namespace ColorSelector
 
             switch (HslComponentSelection)
             {
-                case HslComponent.Hue:
+                case ColorComponent.Hue:
                     S = Math.Clamp((point.X) / HslComponentArea.ActualWidth, HSL_MIN, SL_MAX);
                     V = Math.Clamp(1.0 - (point.Y) / HslComponentArea.ActualHeight, HSL_MIN, SL_MAX);
                     break;
-                case HslComponent.Saturation:
+                case ColorComponent.Saturation:
                     H = Math.Clamp(((point.X) / HslComponentArea.ActualWidth) * 360.0, HSL_MIN, H_MAX);
                     V = Math.Clamp(1.0 - (point.Y) / HslComponentArea.ActualHeight, HSL_MIN, SL_MAX);
                     break;
-                case HslComponent.Lightness:
-                case HslComponent.Value:
+                case ColorComponent.Lightness:
+                case ColorComponent.Value:
                     H = Math.Clamp(((point.X) / HslComponentArea.ActualWidth) * 360.0, HSL_MIN, H_MAX);
                     S = Math.Clamp(1.0 - (point.Y) / HslComponentArea.ActualHeight, HSL_MIN, SL_MAX);
                     break;
@@ -3614,7 +3713,7 @@ namespace ColorSelector
         }
 
         /// <summary>
-        /// Converts HSL color components to corresponding RGB values.
+        /// Converts given HSL color component values to corresponding RGB values.
         /// 
         /// Algorithms: https://www.niwa.nu/2013/05/math-behind-colorspace-conversions-rgb-hsl/
         /// https://www.baeldung.com/cs/convert-color-hsl-rgb
@@ -3651,7 +3750,7 @@ namespace ColorSelector
         }
 
         /// <summary>
-        /// Converts RGB color components to corresponding HSL values.
+        /// Converts given RGB color component byte ranges (0 - 255) to corresponding HSL values.
         /// 
         /// Algorithms: https://www.niwa.nu/2013/05/math-behind-colorspace-conversions-rgb-hsl/
         /// https://stackoverflow.com/a/39147465
@@ -3706,6 +3805,13 @@ namespace ColorSelector
             return new List<double>(3) { finalHue, saturation, lightness };
         }
 
+        /// <summary>
+        /// Get the hue from given RGB byte ranges (0 - 255)
+        /// </summary>
+        /// <param name="r"></param>
+        /// <param name="g"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         public static double GetHueFromRgbByteRange(double r, double g, double b)
         {
             r /= Byte.MaxValue;
@@ -3715,6 +3821,13 @@ namespace ColorSelector
             return GetHueFromRgbPercent(r, g, b);
         }
 
+        /// <summary>
+        /// Get the hue from given RGB percentages (0.0 - 1.0)
+        /// </summary>
+        /// <param name="r"></param>
+        /// <param name="g"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         public static double GetHueFromRgbPercent(double r, double g, double b)
         {
             var min = Math.Min(Math.Min(r, g), b);
@@ -3753,6 +3866,16 @@ namespace ColorSelector
             return hue * 60;
         }
 
+        /// <summary>
+        /// Get the hue from given RGB percentages (0.0 - 1.0).
+        /// Specify precalculated minimum and maximum values (to avoid recalculation in repetitive scenarios).
+        /// </summary>
+        /// <param name="r"></param>
+        /// <param name="g"></param>
+        /// <param name="b"></param>
+        /// <param name="min"></param>
+        /// <param name="max"></param>
+        /// <returns></returns>
         public static double GetHueFromRgbPercent(double r, double g, double b, double min, double max)
         {
             var chroma = max - min;
@@ -3788,6 +3911,13 @@ namespace ColorSelector
             return hue * 60;
         }
 
+        /// <summary>
+        /// Get the HSL saturation from given RGB byte ranges (0 - 255)
+        /// </summary>
+        /// <param name="r"></param>
+        /// <param name="g"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         public static double GetHslSaturationFromRgbByteRange(double r, double g, double b)
         {
             r /= Byte.MaxValue;
@@ -3797,6 +3927,13 @@ namespace ColorSelector
             return GetHslSaturationFromRgbPercent(r, g, b);
         }
 
+        /// <summary>
+        /// Get the HSL saturation from given RGB percentages (0.0 - 1.0)
+        /// </summary>
+        /// <param name="r"></param>
+        /// <param name="g"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         public static double GetHslSaturationFromRgbPercent(double r, double g, double b)
         {
             var min = Math.Min(Math.Min(r, g), b);
@@ -3812,6 +3949,13 @@ namespace ColorSelector
             return (lightness <= 0.5) ? chroma / (max + min) : chroma / (2 - max - min);
         }
 
+        /// <summary>
+        /// Get the HSL saturation from given minimum and maximum values derived from
+        /// the comparison of RGB percentages.
+        /// </summary>
+        /// <param name="min"></param>
+        /// <param name="max"></param>
+        /// <returns></returns>
         public static double GetHslSaturationFromRgbPercent(double min, double max)
         {
             var lightness = (max + min) / 2;
@@ -3824,6 +3968,13 @@ namespace ColorSelector
             return (lightness <= 0.5) ? chroma / (max + min) : chroma / (2 - max - min);
         }
 
+        /// <summary>
+        /// Get the HSL lightness from given RGB byte ranges (0 - 255)
+        /// </summary>
+        /// <param name="r"></param>
+        /// <param name="g"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         public static double GetLightnessFromRgbByteRange(double r, double g, double b)
         {
             r /= Byte.MaxValue;
@@ -3833,6 +3984,13 @@ namespace ColorSelector
             return GetLightnessFromRgbPercent(r, g, b);
         }
 
+        /// <summary>
+        /// Get the HSL lightness from given RGB percentages (0.0 - 1.0)
+        /// </summary>
+        /// <param name="r"></param>
+        /// <param name="g"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         public static double GetLightnessFromRgbPercent(double r, double g, double b)
         {
             var min = Math.Min(Math.Min(r, g), b);
@@ -3841,22 +3999,49 @@ namespace ColorSelector
             return (max + min) / 2;
         }
 
+        /// <summary>
+        /// Get the HSL lightness from given minimum and maximum values derived from
+        /// the comparison of RGB percentages.
+        /// </summary>
+        /// <param name="min"></param>
+        /// <param name="max"></param>
+        /// <returns></returns>
         public static double GetLightnessFromRgbPercent(double min, double max)
         {
             return (max + min) / 2;
         }
 
+        /// <summary>
+        /// Get the HSV value from given RGB byte ranges (0 - 255)
+        /// </summary>
+        /// <param name="r"></param>
+        /// <param name="g"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         public static double GetHsvValueFromRgbByteRange(double r, double g, double b)
         {
             var max = Math.Max(Math.Max(r, g), b);
             return max / Byte.MaxValue;
         }
 
+        /// <summary>
+        /// Get the HSV value from a given maximum derived from a comparison of
+        /// RGB byte ranges (0 - 255)
+        /// </summary>
+        /// <param name="max"></param>
+        /// <returns></returns>
         public static double GetHsvValueFromRgbByteRange(double max)
         {
             return max / Byte.MaxValue;
         }
 
+        /// <summary>
+        /// Get the HSV saturation from given RGB byte ranges (0 - 255)
+        /// </summary>
+        /// <param name="r"></param>
+        /// <param name="g"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         public static double GetHsvSaturationFromRgbByteRange(double r, double g, double b)
         {
             var max = Math.Max(r, Math.Max(g, b));
@@ -3864,11 +4049,25 @@ namespace ColorSelector
             return (max == 0) ? 0 : 1.0 - (1.0 * min / max);
         }
 
+        /// <summary>
+        /// Get the HSV value from given minimum and maximum values derived from
+        /// a comparison of RGB byte ranges.
+        /// </summary>
+        /// <param name="min"></param>
+        /// <param name="max"></param>
+        /// <returns></returns>
         public static double GetHsvSaturationFromRgbByteRange(double min, double max)
         {
             return (max == 0) ? 0 : 1.0 - (1.0 * min / max);
         }
 
+        /// <summary>
+        /// Converts given RGB byte ranges (0 - 255) into HSV components.
+        /// </summary>
+        /// <param name="r"></param>
+        /// <param name="g"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         public static List<double> RgbToHsv(double r, double g, double b)
         {
             double max = Math.Max(r, Math.Max(g, b));
@@ -3881,6 +4080,13 @@ namespace ColorSelector
             return new List<double>(3) { hue, saturation, value };
         }
 
+        /// <summary>
+        /// Converts given HSV values into RGB values.
+        /// </summary>
+        /// <param name="hue"></param>
+        /// <param name="saturation"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public static List<double> HsvToRgb(double hue, double saturation, double value)
         {
             int hi = Convert.ToInt32(Math.Floor(hue / 60)) % 6;
@@ -3906,27 +4112,56 @@ namespace ColorSelector
                 return new List<double>(3) { v, p, q };
         }
 
+        /// <summary>
+        /// Returns the RGB byte values of given current color model values.
+        /// </summary>
+        /// <param name="d1"></param>
+        /// <param name="d2"></param>
+        /// <param name="d3"></param>
+        /// <returns></returns>
         public Color GetRgbColorFromModel(double d1, double d2, double d3)
         {
             var temp = ModelToRgb(d1, d2, d3);
             return Color.FromArgb(Byte.MaxValue, ToByte(temp[0]), ToByte(temp[1]), ToByte(temp[2]));
         }
 
+        /// <summary>
+        /// Returns the RGB byte values based on the current color and a given hue value.
+        /// </summary>
+        /// <param name="hue"></param>
+        /// <returns></returns>
         public Color GetRgbColorFromModelSpecifyHue(double hue)
         {
             return GetRgbColorFromModel(hue, S, V);
         }
 
+        /// <summary>
+        /// Returns the RGB byte values based on the current color and a given saturation value.
+        /// </summary>
+        /// <param name="saturation"></param>
+        /// <returns></returns>
         public Color GetRgbColorFromModelSpecifySaturation(double saturation)
         {
             return GetRgbColorFromModel(H, saturation, V);
         }
 
+        /// <summary>
+        /// Returns the RGB byte values based on the current color and a given lightness value.
+        /// </summary>
+        /// <param name="lightness"></param>
+        /// <returns></returns>
         public Color GetRgbColorFromModelSpecifyLightness(double lightness)
         {
             return GetRgbColorFromModel(H, S, lightness);
         }
 
+        /// <summary>
+        /// Converts raw current color model values into raw RGB values.
+        /// </summary>
+        /// <param name="d1"></param>
+        /// <param name="d2"></param>
+        /// <param name="d3"></param>
+        /// <returns></returns>
         public List<double> ModelToRgb(double d1, double d2, double d3)
         {
             switch (ColorModel)
@@ -3941,6 +4176,13 @@ namespace ColorSelector
             return new List<double>(3) { 0, 0, 0 };
         }
 
+        /// <summary>
+        /// Converts raw RGB values into values based on the current color model.
+        /// </summary>
+        /// <param name="d1"></param>
+        /// <param name="d2"></param>
+        /// <param name="d3"></param>
+        /// <returns></returns>
         public List<double> RgbToModel(double d1, double d2, double d3)
         {
             switch (ColorModel)
@@ -3956,7 +4198,8 @@ namespace ColorSelector
         }
 
         /// <summary>
-        /// Refreshes the GradientStop Colors in the LinearGradientBrush objects of the RangeBase Controls.
+        /// Refreshes the GradientStop Colors in the LinearGradientBrush objects set as
+        /// the Backgrounds of the RangeBase Controls.
         /// </summary>
         public void RefreshRangeBaseVisuals()
         {
@@ -4011,6 +4254,11 @@ namespace ColorSelector
             RefreshRangeBaseVisuals();
         }
 
+        /// <summary>
+        /// Commits the current state of the ARGB color components to the CurrentColor Property.
+        /// Specify the originatingPropertyName when color change originates from a color component
+        /// property (ex. H).
+        /// </summary>
         public void RefreshCurrentColor(RawColor rawColor, string originatingPropertyName)
         {
             if (rawColor is null)
@@ -4021,12 +4269,20 @@ namespace ColorSelector
             RefreshRangeBaseVisuals();
         }
 
+        /// <summary>
+        /// Processes a color change by comparing the raw color values of the current color
+        /// to changes in the individual color components. 
+        /// </summary>
+        /// <param name="originatingPropertyName"></param>
         public void ProcessColorChange(string originatingPropertyName = "")
         {
             RawColor c = CurrentColor;
             if (c is null)
                 return;
 
+            // The IgnoreChange flag prevents "double" processing from occurring 
+            // on individual components. If we are processing a color, finish processing
+            // all of the components prior to reinitiating another processing iteration.
             IgnoreChange = true;
 
             Byte[] colorBytes = { ToByte(c.A), ToByte(c.R), ToByte(c.G), ToByte(c.B) };
@@ -4053,6 +4309,12 @@ namespace ColorSelector
 
             double hue = GetHueFromRgbPercent(rPercent, gPercent, bPercent, min, max);
 
+            // The following conditionals are intended to prevent technically correct but annoying
+            // changes to certain components when minimum and maximum values are reached.
+            // Work in progress.
+            // For example, maxing out lightness/value causes the current color to "reset"
+            // to the RGB minimum / maximum -> black / white. BUT, I would like to preserve the hue
+            // component instead of resetting its value to 0. 
             if (H != hue && V > HSL_MIN && S > HSL_MIN && V < SL_MAX && nameof(H) != originatingPropertyName)
                 H = hue;
             else if (H != hue && H == HSL_MIN && V > HSL_MIN && nameof(H) != originatingPropertyName)
@@ -4076,6 +4338,7 @@ namespace ColorSelector
                     break;
             }
 
+            // See above H property conditional comments for explanation.
             if (S != saturation && V < SL_MAX && V > HSL_MIN &&  nameof(S) != originatingPropertyName)
                 S = saturation;
 
@@ -4096,6 +4359,7 @@ namespace ColorSelector
                 if (Validation.GetHasError(BTextBox))
                     BTextBox.Text = B.ToString();
 
+            // done processing; unset the IgnoreChange flag and raise color changed event:
             IgnoreChange = false;
             RaiseCurrentColorChangedEvent();
         }
@@ -4163,10 +4427,6 @@ namespace ColorSelector
             RaiseEvent(routedEventArgs);
         }
 
-
-
-
-
         public static readonly RoutedEvent OrientationChangedEvent = EventManager.RegisterRoutedEvent(
         name: nameof(OrientationChanged),
         routingStrategy: RoutingStrategy.Direct,
@@ -4185,17 +4445,12 @@ namespace ColorSelector
             RaiseEvent(routedEventArgs);
         }
 
-
-
-
-
-
         public static readonly DependencyProperty HslComponentSelectionProperty =
-            DependencyProperty.Register(nameof(HslComponentSelection), typeof(HslComponent), typeof(ColorSelector), new PropertyMetadata(HslComponent.Hue, new PropertyChangedCallback(HslComponentSelectionChangedCallback)));
+            DependencyProperty.Register(nameof(HslComponentSelection), typeof(ColorComponent), typeof(ColorSelector), new PropertyMetadata(ColorComponent.Hue, new PropertyChangedCallback(HslComponentSelectionChangedCallback)));
 
-        public HslComponent HslComponentSelection
+        public ColorComponent HslComponentSelection
         {
-            get => (HslComponent)GetValue(HslComponentSelectionProperty);
+            get => (ColorComponent)GetValue(HslComponentSelectionProperty);
             set => SetValue(HslComponentSelectionProperty, value);
         }
 
@@ -4203,10 +4458,15 @@ namespace ColorSelector
         {
             ColorSelector selector = (ColorSelector)d;
 
-            selector.ProcessHslComponentSelection((HslComponent)e.NewValue);
+            selector.ProcessHslComponentSelection((ColorComponent)e.NewValue);
         }
 
-        public void ProcessHslComponentSelection(HslComponent selection)
+        /// <summary>
+        /// Generates the background elements to display and their bindings in the 2D Component
+        /// editor display depending on the active component.
+        /// </summary>
+        /// <param name="selection"></param>
+        public void ProcessHslComponentSelection(ColorComponent selection)
         {
             if (HslRangeBase is null)
                 return;
@@ -4214,7 +4474,7 @@ namespace ColorSelector
             Binding binding;
             switch (selection)
             {
-                case HslComponent.Hue:
+                case ColorComponent.Hue:
                     BindingOperations.ClearBinding(HslRangeBase, RangeBase.ValueProperty);
                     HslRangeBase.Minimum = HSL_MIN;
                     HslRangeBase.Maximum = H_MAX;
@@ -4251,7 +4511,7 @@ namespace ColorSelector
                         EndPoint = new Point(0, 0)
                     };
                     break;
-                case HslComponent.Saturation:
+                case ColorComponent.Saturation:
                     BindingOperations.ClearBinding(HslRangeBase, RangeBase.ValueProperty);
                     HslRangeBase.Minimum = HSL_MIN;
                     HslRangeBase.Maximum = SL_MAX;
@@ -4271,8 +4531,8 @@ namespace ColorSelector
                         EndPoint = new Point(0, 0)
                     };
                     break;
-                case HslComponent.Lightness:
-                case HslComponent.Value:
+                case ColorComponent.Lightness:
+                case ColorComponent.Value:
                     BindingOperations.ClearBinding(HslRangeBase, RangeBase.ValueProperty);
                     HslRangeBase.Minimum = HSL_MIN;
                     HslRangeBase.Maximum = SL_MAX;
@@ -4329,7 +4589,7 @@ namespace ColorSelector
         static Color DefaultColor = (Color)ColorConverter.ConvertFromString("#FFF20D0D");//Colors.Black;
 
         public static readonly DependencyProperty CurrentColorProperty =
-            DependencyProperty.Register(nameof(CurrentColor), typeof(RawColor), typeof(ColorSelector), new PropertyMetadata(new RawColor(DefaultColor.A, DefaultColor.R, DefaultColor.G, DefaultColor.B), new PropertyChangedCallback(CurrentColorChangedCallback)));
+            DependencyProperty.Register(nameof(CurrentColor), typeof(RawColor), typeof(ColorSelector), new PropertyMetadata(new RawColor(DefaultColor.A, DefaultColor.R, DefaultColor.G, DefaultColor.B)));
 
         public RawColor CurrentColor
         {
@@ -4364,23 +4624,33 @@ namespace ColorSelector
             set => SetValue(ColorModelProperty, value);
         }
 
+        /// <summary>
+        /// When the active color model is changed, rebuild the list
+        /// of color components to select from in the 2D component editor display.
+        /// </summary>
         public void RebuildColorModelList()
         {
             switch (ColorModel)
             {
                 case ColorModel.HSL:
-                    HslComponentList.Remove(HslComponent.Value);
-                    if (!HslComponentList.Contains(HslComponent.Lightness))
-                        HslComponentList.Add(HslComponent.Lightness);
+                    HslComponentList.Clear();
+                    HslComponentList.Add(ColorComponent.Hue);
+                    HslComponentList.Add(ColorComponent.Saturation);
+                    HslComponentList.Add(ColorComponent.Lightness);
                     break;
                 case ColorModel.HSV:
-                    HslComponentList.Remove(HslComponent.Lightness);
-                    if (!HslComponentList.Contains(HslComponent.Value))
-                        HslComponentList.Add(HslComponent.Value);
+                    HslComponentList.Clear();
+                    HslComponentList.Add(ColorComponent.Hue);
+                    HslComponentList.Add(ColorComponent.Saturation);
+                    HslComponentList.Add(ColorComponent.Value);
                     break;
             }
         }
 
+        /// <summary>
+        /// Update the currently displayed 3D color model that corresponds to
+        /// the currently selected color model.
+        /// </summary>
         public void RefreshHsl3dDisplay()
         {
             switch (ColorModel)
@@ -4417,19 +4687,13 @@ namespace ColorSelector
         }
 
         public static readonly DependencyProperty HslComponentListProperty =
-            DependencyProperty.Register(nameof(HslComponentList), typeof(ObservableCollection<HslComponent>), typeof(ColorSelector), 
-                new PropertyMetadata(new ObservableCollection<HslComponent>()));
+            DependencyProperty.Register(nameof(HslComponentList), typeof(ObservableCollection<ColorComponent>), typeof(ColorSelector), 
+                new PropertyMetadata(new ObservableCollection<ColorComponent>()));
 
-        public ObservableCollection<HslComponent> HslComponentList
+        public ObservableCollection<ColorComponent> HslComponentList
         {
-            get => (ObservableCollection<HslComponent>)GetValue(HslComponentListProperty);
+            get => (ObservableCollection<ColorComponent>)GetValue(HslComponentListProperty);
             set => SetValue(HslComponentListProperty, value);
-        }
-
-        private static void CurrentColorChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            //ColorSelector cs = (ColorSelector)d;
-            //cs.ProcessColorChange();
         }
 
         public static readonly DependencyProperty RColorLowBoundProperty =
@@ -4594,10 +4858,6 @@ namespace ColorSelector
             set => SetValue(FaceBrush6Property, value);
         }
 
-
-
-
-
         public static readonly DependencyProperty SColorLowBoundProperty =
             DependencyProperty.Register(nameof(SColorLowBound), typeof(Color), typeof(ColorSelector), new PropertyMetadata());
 
@@ -4649,7 +4909,7 @@ namespace ColorSelector
                 cs.HexValueString = "#" + cs.HexValueString;
             var hexColor = (Color)ColorConverter.ConvertFromString(cs.HexValueString);
             if (cs.HexValueString != currentColor)
-                cs.RefreshCurrentColor(new RawColor(hexColor.A, hexColor.R, hexColor.G, hexColor.B));//(Color)ColorConverter.ConvertFromString(selector.HexValueString));
+                cs.RefreshCurrentColor(new RawColor(hexColor.A, hexColor.R, hexColor.G, hexColor.B));
         }
 
         protected bool IgnoreChange { get; set; } = false;
@@ -4669,7 +4929,7 @@ namespace ColorSelector
             set
             {
                 SetValue(AProperty, value);
-                //Byte byteVal = ToByte(A);
+
                 if (ARangeBaseValue != A)
                 {
                     ARangeBaseValue = A;
@@ -4732,7 +4992,7 @@ namespace ColorSelector
             set
             {
                 SetValue(RProperty, value);
-                // Byte byteVal = ToByte(R);
+
                 if (RRangeBaseValue != R)
                 {
                     RRangeBaseValue = R;
@@ -4795,7 +5055,7 @@ namespace ColorSelector
             set
             {
                 SetValue(GProperty, value);
-                //Byte byteVal = ToByte(G);
+
                 if (GRangeBaseValue != G)
                 {
                     GRangeBaseValue = G;
@@ -4858,7 +5118,7 @@ namespace ColorSelector
             set
             {
                 SetValue(BProperty, value);
-                //Byte byteVal = ToByte(B);
+
                 if (BRangeBaseValue != B)
                 {
                     BRangeBaseValue = B;
@@ -4921,6 +5181,7 @@ namespace ColorSelector
             set
             {
                 SetValue(HProperty, value);
+
                 if (HRangeBaseValue != H)
                 {
                     HRangeBaseValue = H;
@@ -4987,6 +5248,7 @@ namespace ColorSelector
             set
             {
                 SetValue(SProperty, value);
+
                 if (SRangeBaseValue != S)
                 {
                     SRangeBaseValue = S;
@@ -5053,6 +5315,7 @@ namespace ColorSelector
             set
             {
                 SetValue(VProperty, value);
+
                 if (VRangeBaseValue != V)
                 {
                     VRangeBaseValue = V;
