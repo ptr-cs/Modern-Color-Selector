@@ -2471,7 +2471,8 @@
                                         x:Name="PART_bRangeBase" />
                                                 <TextBox Grid.Column="2"
                                          MaxLength="3"
-                                         x:Name="PART_bTextBox" />
+                                         x:Name="PART_bTextBox">
+                                                </TextBox>
                                                 <UniformGrid Style="{StaticResource chevronButtonsGrid}">
                                                     <RepeatButton Style="{StaticResource upChevronButton}"
                                                   x:Name="PART_bIncrementButtonBase">

@@ -2394,8 +2394,10 @@ namespace ColorSelector
             // depicting its fractional proportion of the RGB spectrum
             for (int i = 0; i < faces; ++i)
             {
-
-                DiffuseMaterial material = new(new SolidColorBrush(GetRgbColorFromModel((double)(H_MAX * i) / faces, 1, 1)));
+                double lightnessValue = (ColorModel == ColorModel.HSL) ? .5 : 1.0;
+                var brush = new SolidColorBrush(GetRgbColorFromModel((360.0 * i) / faces, 1, lightnessValue));
+                DiffuseMaterial material = new(brush);
+                Debug.WriteLine($"material: {(360.0 * i) / faces}, brush: {brush.Color.ToString()}");
                 Binding brushOpacity = new(nameof(S)) { Mode = BindingMode.OneWay, Source = this };
                 BindingOperations.SetBinding(material.Brush, Brush.OpacityProperty, brushOpacity);
 
@@ -4725,7 +4727,7 @@ namespace ColorSelector
 
         public static readonly DependencyProperty ColorModelListProperty =
             DependencyProperty.Register(nameof(ColorModelList), typeof(List<ColorModel>), typeof(ColorSelector), 
-                new PropertyMetadata(new List<ColorModel>() {  }));
+                new PropertyMetadata(new List<ColorModel>((IEnumerable<ColorModel>)Enum.GetValues(typeof(ColorModel)))));
 
         public List<ColorModel> ColorModelList
         {

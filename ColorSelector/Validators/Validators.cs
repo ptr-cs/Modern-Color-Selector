@@ -20,9 +20,11 @@ public class ArgbHexadecimalColorStringValidationRule : ValidationRule
 
 public class ColorByteStringValidationRule : ValidationRule
 {
+    double val = -1;
     public override ValidationResult Validate(object value, System.Globalization.CultureInfo cultureInfo)
     {
-        return new ValidationResult(Double.TryParse((string)value, out _),
+        val = -1;
+        return new ValidationResult(Double.TryParse((string)value, out val) && Byte.MinValue <= val && val <= Byte.MaxValue,
             String.Format("Value must be a number with an optional decimal space within the range [{0}, {1}]", Byte.MinValue, Byte.MaxValue));
     }
 }
