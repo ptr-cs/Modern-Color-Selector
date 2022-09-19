@@ -18,7 +18,7 @@
 - Ability to define a custom set of preset colors and save custom colors at runtime
 - Supports RGB, HSL, and HSV color modes, with hexadecimal RGBA string support
 - Error-checking for input fields with validation feedback
-- Minimal code footprint (two main files - ColorSelector.cs and Themes/Generic.xaml)
+- Minimal code footprint (two main files - ColorSelector.cs and Themes/Generic.xaml, with organized supporting files)
 - Easy to import as a control library into other WPF projects
 - Completely customizable, based on ControlTemplates
 - Functions well in nearly any window size, from narrow-wdith window to full-screen
@@ -29,7 +29,7 @@ For a more detailed explanation of the code, [a blog post about the project is a
 &nbsp;&nbsp;&nbsp;&nbsp;The repository consists of three Visual Studio projects - the ColorSelector project, a companion standalone application project, and an NUnit unit testing project. Opening the ColorSelector/ColorSelector.sln file in Visual Studio should allow all projects to be built and run. To use the ColorSelector as a Control in another WPF application, add the ColorSelector project to the parent solution in Visual Studio, then add a project reference to the ColorSelector project for any projects that will use the ColorSelector.
 
 # In-Progress
-- Color gamut support for machine learning analysis and comparison of environmental lighting
+- Menu settings for number of presets and custom colors
 - Configuration settings support
 
 # Screenshots
