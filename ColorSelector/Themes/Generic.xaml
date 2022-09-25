@@ -54,6 +54,30 @@
                      Color="Black"
                      PresentationOptions:Freeze="true" />
 
+    <DrawingBrush x:Key="selectionIndicatorBrush" Stretch="Uniform" AlignmentX="Left" AlignmentY="Top">
+        <DrawingBrush.Drawing>
+            <GeometryDrawing>
+                <GeometryDrawing.Pen>
+                    <Pen Brush="Black" Thickness=".5"/>
+                </GeometryDrawing.Pen>
+                <GeometryDrawing.Brush>
+                    <SolidColorBrush Color="White"/>
+                </GeometryDrawing.Brush>
+                <GeometryDrawing.Geometry>
+                    <PathGeometry FillRule="Nonzero" >
+                        <PathFigure StartPoint="0,0"
+                                    IsClosed="True"
+                                    IsFilled="True">
+                            <LineSegment Point="0,0" IsStroked="True"/>
+                            <LineSegment Point="5,0" IsStroked="True" />
+                            <LineSegment Point="0,10" IsStroked="True"/>
+                        </PathFigure>
+                    </PathGeometry>
+                </GeometryDrawing.Geometry>
+            </GeometryDrawing>
+        </DrawingBrush.Drawing>
+    </DrawingBrush>
+
     <DrawingBrush x:Key="warningBrush"
                   Stretch="UniformToFill"
                   PresentationOptions:Freeze="True"
@@ -1034,7 +1058,7 @@
                     BorderBrush="{StaticResource blackColorBrush}"
                     BorderThickness="2" >
                 <TextBlock Margin="0,-1,0,0" 
-                           FontSize="20" 
+                           FontSize="18" 
                            FontWeight="Normal" 
                            VerticalAlignment="Center"
                            HorizontalAlignment="Center">
@@ -1473,13 +1497,8 @@
                             <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                               SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
                                               VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
-                            <Polygon Visibility="Collapsed" x:Name="activeSelectionIndicator" StrokeThickness="1" Stroke="Black" Fill="White">
-                                <Polygon.Points>
-                                    <Point>0,0</Point>
-                                    <Point>8,0</Point>
-                                    <Point>0,8</Point>
-                                </Polygon.Points>
-                            </Polygon>
+                            <Border x:Name="activeSelectionIndicator" Visibility="Collapsed" Background="{StaticResource selectionIndicatorBrush}" />
+
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
@@ -1590,7 +1609,7 @@
     </DataTemplate>
 
     <ItemsPanelTemplate x:Key="ColorListItemPanelTemplate">
-        <UniformGrid Columns="5" />
+        <UniformGrid Columns="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=ColorColumns, Mode=OneWay}" />
     </ItemsPanelTemplate>
 
     <Style x:Key="TabItemStyle1"
@@ -1986,6 +2005,61 @@
 
 
 
+    <Style TargetType="{x:Type RepeatButton}"
+        BasedOn="{StaticResource BaseButtonStyle}"
+        x:Key="upChevronButton">
+        <Setter Property="Interval" Value="1" />
+        <Style.Resources>
+            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MenuText}">
+                <Setter Property="Margin" Value="0,0,0,16" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+            </Style>
+        </Style.Resources>
+    </Style>
+
+    <Style TargetType="{x:Type RepeatButton}"
+           BasedOn="{StaticResource BaseButtonStyle}"
+           x:Key="downChevronButton"> 
+        <Setter Property="Interval"  Value="1" />
+        <Style.Resources>
+            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MenuText}">
+                <Setter Property="Margin" Value="0,-24,0,0" />
+                <Setter Property="VerticalAlignment"  Value="Center" /> 
+            </Style>
+        </Style.Resources>
+    </Style>
+
+    <system:String x:Key="upChevron">🞁</system:String>
+    <system:String x:Key="downChevron">🞃</system:String>
+
+    <Style TargetType="{x:Type UniformGrid}" x:Key="chevronButtonsGrid">
+        <Setter Property="Grid.Column" Value="3" />
+        <Setter Property="UniformGrid.Rows" Value="2" />
+        <Setter Property="Columns" Value="1" />
+        <Setter Property="Width" Value="24" />
+        <Setter Property="Height" Value="24" />
+        <Setter Property="Margin" Value="0,0,8,0" />
+    </Style>
+
+    <Style TargetType="{x:Type TextBox}" x:Key="textBoxStyle">
+        <Setter Property="Width" Value="48" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="FontFamily" Value="Consolas" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="FontWeight" Value="DemiBold" />
+        <Setter Property="Foreground" Value="#333" />
+        <Setter Property="BorderBrush" Value="Black"/>
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Margin" Value="0,4,8,4" />
+        <Setter Property="Validation.ErrorTemplate" Value="{StaticResource textBoxErrorTemplateAdornLeft}" />
+        <Style.Triggers>
+            <Trigger Property="Validation.HasError"
+        Value="True">
+                <Setter Property="Margin"
+        Value="32,4,8,4" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
 
 
 
@@ -2259,91 +2333,7 @@
                                             </Style>
                                         </StackPanel.Style>
                                         <StackPanel.Resources>
-                                            <Style TargetType="{x:Type TextBox}">
-                                                <Setter Property="Width"
-                                            Value="48" />
-                                                <Setter Property="BorderThickness"
-                                            Value="1" />
-                                                <Setter Property="FontFamily"
-                                            Value="Consolas" />
-                                                <Setter Property="FontSize"
-                                            Value="15" />
-                                                <Setter Property="FontWeight"
-                                            Value="DemiBold" />
-                                                <Setter Property="Foreground"
-                                            Value="#333" />
-                                                <Setter Property="BorderBrush" Value="Black"/>
-                                                <Setter Property="VerticalContentAlignment"
-                                            Value="Center" />
-                                                <Setter Property="Margin"
-                                            Value="0,4,8,4" />
-                                                <Setter Property="Validation.ErrorTemplate"
-                                            Value="{StaticResource textBoxErrorTemplateAdornLeft}" />
-                                                <Style.Triggers>
-                                                    <Trigger Property="Validation.HasError"
-                                                 Value="True">
-                                                        <Setter Property="Margin"
-                                                    Value="32,4,8,4" />
-                                                    </Trigger>
-                                                </Style.Triggers>
-                                            </Style>
-
-                                            <Style TargetType="{x:Type RepeatButton}"
-                                       BasedOn="{StaticResource BaseButtonStyle}"
-                                       x:Key="upChevronButton">
-                                                <!--<Setter Property="Delay"
-                                            Value="0" />-->
-                                                <Setter Property="Interval"
-                                            Value="1" />
-                                                <Style.Resources>
-                                                    <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MenuText}">
-                                                        <Setter Property="Margin"
-                                                    Value="0,0,0,16" />
-                                                        <Setter Property="VerticalAlignment"
-                                                    Value="Center" />
-                                                    </Style>
-                                                </Style.Resources>
-                                            </Style>
-
-                                            <Style TargetType="{x:Type RepeatButton}"
-                                       BasedOn="{StaticResource BaseButtonStyle}"
-                                       x:Key="downChevronButton">
-                                                <!--<Setter Property="Delay"
-                                            Value="0" />-->
-                                                <Setter Property="Interval"
-                                            Value="1" />
-                                                <Style.Resources>
-                                                    <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MenuText}">
-                                                        <Setter Property="Margin"
-                                                    Value="0,-24,0,0" />
-                                                        <Setter Property="VerticalAlignment"
-                                                    Value="Center" />
-                                                        <!--<Setter Property="Foreground"
-                                                    Value="{StaticResource whiteColorBrush}" />-->
-                                                    </Style>
-                                                </Style.Resources>
-                                            </Style>
-
-                                            <system:String x:Key="upChevron">🞁</system:String>
-                                            <system:String x:Key="downChevron">🞃</system:String>
-
-                                            <Style TargetType="{x:Type UniformGrid}"
-                                       x:Key="chevronButtonsGrid">
-                                                <!-- Grid.Column="2" Rows="2" Columns="1" Width="24" Height="24" Margin="0,0,8,0"-->
-                                                <Setter Property="Grid.Column"
-                                            Value="3" />
-                                                <Setter Property="UniformGrid.Rows"
-                                            Value="2" />
-                                                <Setter Property="Columns"
-                                            Value="1" />
-                                                <Setter Property="Width"
-                                            Value="24" />
-                                                <Setter Property="Height"
-                                            Value="24" />
-                                                <Setter Property="Margin"
-                                            Value="0,0,8,0" />
-                                            </Style>
-
+                                            <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource textBoxStyle}"/>
                                         </StackPanel.Resources>
                                         <StackPanel>
                                             <DockPanel Margin="0,0,0,4" Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=HexadecimalComponentVisible, Mode=OneWay, Converter={StaticResource b2v}}">
@@ -2844,7 +2834,7 @@
                                             <TextBlock Text="?" FontWeight="Bold" FontSize="18" Style="{StaticResource buttonText}"/>
                                         </Button>
                                     </Grid>
-                                    <TabControl Grid.Row="1" Background="Transparent" BorderThickness="0" Panel.ZIndex="-1" Margin="0,0,0,0">
+                                    <TabControl Grid.Row="1" Background="Transparent" BorderThickness="0" Panel.ZIndex="-1" Margin="0,0,0,0" Padding="0">
                                         <TabControl.ItemContainerStyle>
                                             <Style TargetType="{x:Type TabItem}" BasedOn="{StaticResource TabItemStyle1}">
                                                 <Setter Property="Padding" Value="0"/>
@@ -3057,30 +3047,29 @@
                                                         <ColumnDefinition Width="Auto"/>
                                                         <ColumnDefinition />
                                                     </Grid.ColumnDefinitions>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition />
+                                                    </Grid.RowDefinitions>
                                                     <TextBlock Text="Scale" Grid.Column="0" Width="Auto" />
                                                     <WrapPanel Grid.Column="1" Margin="8,0">
-                                                        <Button Style="{StaticResource MenuButtonStyle1}" Margin="0,0,8,0" ToolTip="Reset Scale (Ctrl+R)" 
+                                                        <Button Style="{StaticResource MenuButtonStyle1}" Margin="8" ToolTip="Reset Scale (Ctrl+R)" 
                                                                     x:Name="PART_resetAppScaleButtonBase">
                                                             <TextBlock Text="Reset" Style="{StaticResource buttonText}" Padding="8,0"/>
                                                         </Button>
-                                                        <WrapPanel>
-
-                                                            <Button Style="{StaticResource MenuButtonStyle1}" Grid.Column="1" ToolTip="Decrease Interface Scale (Ctrl+ -)" Background="{StaticResource redColorBrush}" MinWidth="32"
-                                                                    x:Name="PART_decreaseAppScaleButtonBase">
-                                                                <TextBlock Text="-" Style="{StaticResource buttonTextIcon}" TextBlock.LineHeight="24" TextBlock.LineStackingStrategy="BlockLineHeight"/>
-                                                                <Button.Tag>
-                                                                    <CornerRadius>4,0,0,4</CornerRadius>
-                                                                </Button.Tag>
-                                                            </Button>
-                                                            <Button Style="{StaticResource ButtonStyle1}" Grid.Column="2" ToolTip="Increase Interface Scale (Ctrl+ +)" Background="{StaticResource greenColorBrush}" MinWidth="32"
-                                                                    x:Name="PART_increaseAppScaleButtonBase">
-                                                                <TextBlock Text="+" Style="{StaticResource buttonTextIcon}" TextBlock.LineHeight="24"  TextBlock.LineStackingStrategy="BlockLineHeight"/>
-                                                                <Button.Tag>
-                                                                    <CornerRadius>0,4,4,0</CornerRadius>
-                                                                </Button.Tag>
-                                                            </Button>
-                                                        </WrapPanel>
+                                                        
                                                     </WrapPanel>
+                                                    <UniformGrid Grid.Row="1" Rows="1" Columns="2" Grid.ColumnSpan="2">
+
+                                                        <Button Style="{StaticResource ButtonStyle1}" ToolTip="Decrease Interface Scale (Ctrl+ -)" Background="{StaticResource redColorBrush}" MinWidth="32"
+                                                                    x:Name="PART_decreaseAppScaleButtonBase">
+                                                            <TextBlock Text="-" Style="{StaticResource buttonTextIcon}" TextBlock.LineHeight="24" TextBlock.LineStackingStrategy="BlockLineHeight"/>
+                                                        </Button>
+                                                        <Button Style="{StaticResource ButtonStyle1}"  ToolTip="Increase Interface Scale (Ctrl+ +)" Background="{StaticResource greenColorBrush}" MinWidth="32"
+                                                                    x:Name="PART_increaseAppScaleButtonBase">
+                                                            <TextBlock Text="+" Style="{StaticResource buttonTextIcon}" TextBlock.LineHeight="24"  TextBlock.LineStackingStrategy="BlockLineHeight"/>
+                                                        </Button>
+                                                    </UniformGrid>
                                                 </Grid>
                                                 <WrapPanel Grid.Row="1">
                                                     <StackPanel>
@@ -3112,6 +3101,66 @@
                                                             </Style>
                                                         </ToggleButton.Style>
                                                     </ToggleButton>
+                                                </WrapPanel>
+
+                                                <WrapPanel Grid.ColumnSpan="2">
+                                                    <StackPanel>
+                                                        <TextBlock Text="Custom Colors Limit:"/>
+                                                        <TextBlock Opacity=".8" Style="{StaticResource menuSubSectionLabel}" Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=CustomColorsLimitReadout, Mode=OneWay}"/>
+                                                    </StackPanel>
+                                                    <StackPanel>
+                                                        
+                                                        <ToggleButton ToolTip="Toggle limit on number of custom colors able to be saved" Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=ToggleCustomColorsLimitCommand, Mode=OneWay}">
+                                                            <ToggleButton.Style>
+                                                                <Style TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource MenuSettingToggleButton}">
+                                                                    <Setter Property="IsChecked" Value="False"/>
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=CustomColorsLimited, Mode=OneWay}" Value="true">
+                                                                            <Setter Property="IsChecked" Value="True"/>
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </ToggleButton.Style>
+                                                        </ToggleButton>
+                                                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                                                            <StackPanel.Style>
+                                                                <Style TargetType="{x:Type StackPanel}">
+                                                                    <Setter Property="IsEnabled" Value="False"/>
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=CustomColorsLimited, Mode=OneWay}" Value="true">
+                                                                            <Setter Property="IsEnabled" Value="True"/>
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </StackPanel.Style>
+                                                            <TextBox  Style="{StaticResource textBoxStyle}" Margin="0,0,8,0" Grid.Column="2" MaxLength="3" Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=CustomColorsLimit, Mode=OneWay}" Width="40" FontSize="16" Height="Auto" x:Name="PART_customColorsLimitTextBox"/>
+                                                            <UniformGrid Style="{StaticResource chevronButtonsGrid}">
+                                                                <RepeatButton Style="{StaticResource upChevronButton}" x:Name="PART_customColorsLimitIncrementButtonBase">
+                                                                    <TextBlock Text="{StaticResource upChevron}" />
+                                                                </RepeatButton>
+                                                                <RepeatButton Style="{StaticResource downChevronButton}" x:Name="PART_customColorsLimitDecrementButtonBase">
+                                                                    <TextBlock Text="{StaticResource downChevron}" />
+                                                                </RepeatButton>
+                                                            </UniformGrid>
+                                                        </StackPanel>
+                                                    </StackPanel>
+                                                    
+                                                </WrapPanel>
+
+                                                <WrapPanel Grid.Row="1" Grid.ColumnSpan="2">
+
+                                                    <TextBlock Text="Color Columns:" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                                                    <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                                                        <TextBox  Style="{StaticResource textBoxStyle}" Margin="0,0,8,0" Grid.Column="2" MaxLength="3" Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=ColorColumns, Mode=OneWay}" Width="40" FontSize="16" Height="Auto" x:Name="PART_colorColumnsTextBox"/>
+                                                        <UniformGrid Style="{StaticResource chevronButtonsGrid}">
+                                                            <RepeatButton Style="{StaticResource upChevronButton}" x:Name="PART_colorColumnsIncrementButtonBase">
+                                                                <TextBlock Text="{StaticResource upChevron}" />
+                                                            </RepeatButton>
+                                                            <RepeatButton Style="{StaticResource downChevronButton}" x:Name="PART_colorColumnsDecrementButtonBase">
+                                                                <TextBlock Text="{StaticResource downChevron}" />
+                                                            </RepeatButton>
+                                                        </UniformGrid>
+                                                    </StackPanel>
                                                 </WrapPanel>
                                             </WrapPanel>
                                         </TabItem>

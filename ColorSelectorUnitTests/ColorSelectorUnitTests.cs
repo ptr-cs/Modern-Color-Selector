@@ -50,7 +50,7 @@ namespace ColorSelectorUnitTests
             string str = TestContext.CurrentContext.Random.GetString(length, FuzzingChars);
             TestContext.WriteLine(str);
             ValidationResult result = argbRule.Validate(str, CultureInfo.CurrentCulture);
-            if (double.TryParse(str, NumberStyles.Integer|NumberStyles.Float, CultureInfo.CurrentCulture, out double parsed))
+            if (double.TryParse(str, NumberStyles.Integer|NumberStyles.Float|NumberStyles.AllowLeadingSign, CultureInfo.CurrentCulture, out double parsed))
             {
                 if ((MinRGBA <= parsed && parsed <= MaxRGBA))
                     Assert.That(result.IsValid, Is.True, str);

@@ -160,7 +160,13 @@ namespace ColorSelector
         PART_alphaComponentVisibilityToggleButton,
         PART_rgbComponentVisibilityToggleButton,
         PART_hslvComponentVisibilityToggleButton,
-        PART_appOrientationToggleButton
+        PART_appOrientationToggleButton,
+        PART_colorColumnsTextBox,
+        PART_colorColumnsIncrementButtonBase,
+        PART_colorColumnsDecrementButtonBase,
+        PART_customColorsLimitTextBox,
+        PART_customColorsLimitIncrementButtonBase,
+        PART_customColorsLimitDecrementButtonBase
     }
 
     [TemplatePart(Name = nameof(TemplatePart.PART_hexTextBox), Type = typeof(TextBox))]
@@ -171,6 +177,8 @@ namespace ColorSelector
     [TemplatePart(Name = nameof(TemplatePart.PART_hTextBox), Type = typeof(TextBox))]
     [TemplatePart(Name = nameof(TemplatePart.PART_sTextBox), Type = typeof(TextBox))]
     [TemplatePart(Name = nameof(TemplatePart.PART_vTextBox), Type = typeof(TextBox))]
+    [TemplatePart(Name = nameof(TemplatePart.PART_colorColumnsTextBox), Type = typeof(TextBox))]
+    [TemplatePart(Name = nameof(TemplatePart.PART_customColorsLimitTextBox), Type = typeof(TextBox))]
     [TemplatePart(Name = nameof(TemplatePart.PART_aRangeBase), Type = typeof(RangeBase))]
     [TemplatePart(Name = nameof(TemplatePart.PART_rRangeBase), Type = typeof(RangeBase))]
     [TemplatePart(Name = nameof(TemplatePart.PART_gRangeBase), Type = typeof(RangeBase))]
@@ -202,6 +210,10 @@ namespace ColorSelector
     [TemplatePart(Name = nameof(TemplatePart.PART_resetAppScaleButtonBase), Type = typeof(ButtonBase))]
     [TemplatePart(Name = nameof(TemplatePart.PART_decreaseAppScaleButtonBase), Type = typeof(ButtonBase))]
     [TemplatePart(Name = nameof(TemplatePart.PART_increaseAppScaleButtonBase), Type = typeof(ButtonBase))]
+    [TemplatePart(Name = nameof(TemplatePart.PART_colorColumnsIncrementButtonBase), Type = typeof(ButtonBase))]
+    [TemplatePart(Name = nameof(TemplatePart.PART_colorColumnsDecrementButtonBase), Type = typeof(ButtonBase))]
+    [TemplatePart(Name = nameof(TemplatePart.PART_customColorsLimitIncrementButtonBase), Type = typeof(ButtonBase))]
+    [TemplatePart(Name = nameof(TemplatePart.PART_customColorsLimitDecrementButtonBase), Type = typeof(ButtonBase))]
     [TemplatePart(Name = nameof(TemplatePart.PART_hslComponentAreaPanel), Type = typeof(Panel))]
     [TemplatePart(Name = nameof(TemplatePart.PART_hslComponentSelector), Type = typeof(Selector))]
     [TemplatePart(Name = nameof(TemplatePart.PART_colorModelSelector), Type = typeof(Selector))]
@@ -249,6 +261,7 @@ namespace ColorSelector
         public ICommand ResetAppScaleCommand { get; set; }
         public ICommand DecreaseAppScaleCommand { get; set; }
         public ICommand IncreaseAppScaleCommand { get; set; }
+        public ICommand ToggleCustomColorsLimitCommand { get; set; }
         public ICommand ADecrementCommand { get; set; }
         public ICommand RDecrementCommand { get; set; }
         public ICommand GDecrementCommand { get; set; }
@@ -263,6 +276,10 @@ namespace ColorSelector
         public ICommand HIncrementCommand { get; set; }
         public ICommand SIncrementCommand { get; set; }
         public ICommand VIncrementCommand { get; set; }
+        public ICommand ColorColumnsIncrementCommand { get; set; }
+        public ICommand ColorColumnsDecrementCommand { get; set; }
+        public ICommand CustomColorsLimitIncrementCommand { get; set; }
+        public ICommand CustomColorsLimitDecrementCommand { get; set; }
 
         /// <summary>
         /// Define Commands for all ICommands.
@@ -293,6 +310,7 @@ namespace ColorSelector
             ResetAppScaleCommand = new DelegateCommand(ResetAppScale, null);
             DecreaseAppScaleCommand = new DelegateCommand(DecreaseAppScale, null);
             IncreaseAppScaleCommand = new DelegateCommand(IncreaseAppScale, null);
+            ToggleCustomColorsLimitCommand = new DelegateCommand(ToggleCustomColorsLimit, null);
             ADecrementCommand = new DelegateCommand(ADecrement, null);
             RDecrementCommand = new DelegateCommand(RDecrement, null);
             GDecrementCommand = new DelegateCommand(GDecrement, null);
@@ -307,6 +325,35 @@ namespace ColorSelector
             HIncrementCommand = new DelegateCommand(HIncrement, null);
             SIncrementCommand = new DelegateCommand(SIncrement, null);
             VIncrementCommand = new DelegateCommand(VIncrement, null);
+            ColorColumnsIncrementCommand = new DelegateCommand(ColorColumnsIncrement, null);
+            ColorColumnsDecrementCommand = new DelegateCommand(ColorColumnsDecrement, null);
+            CustomColorsLimitIncrementCommand = new DelegateCommand(CustomColorsLimitIncrement, null);
+            CustomColorsLimitDecrementCommand = new DelegateCommand(CustomColorsLimitDecrement, null);
+        }
+
+        private void CustomColorsLimitDecrement(object? obj)
+        {
+            CustomColorsLimit = Math.Clamp(CustomColorsLimit - 1, 1, CustomColorsLimit_MAX);
+        }
+
+        private void CustomColorsLimitIncrement(object? obj)
+        {
+            CustomColorsLimit = Math.Clamp(CustomColorsLimit + 1, 1, CustomColorsLimit_MAX);
+        }
+
+        private void ColorColumnsDecrement(object? obj)
+        {
+            ColorColumns = Math.Clamp(ColorColumns - 1, 1, ColorColumns_MAX);
+        }
+
+        private void ColorColumnsIncrement(object? obj)
+        {
+            ColorColumns = Math.Clamp(ColorColumns + 1, 1, ColorColumns_MAX);
+        }
+
+        private void ToggleCustomColorsLimit(object? obj)
+        {
+            CustomColorsLimited = !CustomColorsLimited;
         }
 
         static ColorSelector()
@@ -340,6 +387,10 @@ namespace ColorSelector
             HDecrementButtonBase = GetTemplateChild(nameof(TemplatePart.PART_hDecrementButtonBase)) as ButtonBase;
             SDecrementButtonBase = GetTemplateChild(nameof(TemplatePart.PART_sDecrementButtonBase)) as ButtonBase;
             VDecrementButtonBase = GetTemplateChild(nameof(TemplatePart.PART_vDecrementButtonBase)) as ButtonBase;
+            ColorColumnsIncrementButtonBase = GetTemplateChild(nameof(TemplatePart.PART_colorColumnsIncrementButtonBase)) as ButtonBase;
+            ColorColumnsDecrementButtonBase = GetTemplateChild(nameof(TemplatePart.PART_colorColumnsDecrementButtonBase)) as ButtonBase;
+            CustomColorsLimitIncrementButtonBase = GetTemplateChild(nameof(TemplatePart.PART_customColorsLimitIncrementButtonBase)) as ButtonBase;
+            CustomColorsLimitDecrementButtonBase = GetTemplateChild(nameof(TemplatePart.PART_customColorsLimitDecrementButtonBase)) as ButtonBase;
 
             ImportPresetColorsButtonBase = GetTemplateChild(nameof(TemplatePart.PART_importPresetColorsButtonBase)) as ButtonBase;
             ImportCustomColorsButtonBase = GetTemplateChild(nameof(TemplatePart.PART_importCustomColorsButtonBase)) as ButtonBase;
@@ -357,6 +408,9 @@ namespace ColorSelector
             HTextBox = GetTemplateChild(nameof(TemplatePart.PART_hTextBox)) as TextBox;
             STextBox = GetTemplateChild(nameof(TemplatePart.PART_sTextBox)) as TextBox;
             VTextBox = GetTemplateChild(nameof(TemplatePart.PART_vTextBox)) as TextBox;
+
+            ColorColumnsTextBox = GetTemplateChild(nameof(TemplatePart.PART_colorColumnsTextBox)) as TextBox;
+            CustomColorsLimitTextBox = GetTemplateChild(nameof(TemplatePart.PART_customColorsLimitTextBox)) as TextBox;
 
             ARangeBase = GetTemplateChild(nameof(TemplatePart.PART_aRangeBase)) as RangeBase;
             RRangeBase = GetTemplateChild(nameof(TemplatePart.PART_rRangeBase)) as RangeBase;
@@ -420,9 +474,22 @@ namespace ColorSelector
         public const int HSL_MIN = 0;
         public const int H_MAX = 360;
         public const int SL_MAX = 1;
-        public const double Display3dHeight_MAX = 200.0;
+
+
         public const double Display3dHeight_DEFAULT = 80.0;
         public const double Display3dHeight_MIN = 60.0;
+        public const double Display3dHeight_MAX = 200.0;
+
+        public const double DisplayScale_ROC = 0.1;
+        public const double DisplayScale_DEFAULT = 1.0;
+        public const double DisplayScale_MIN = .5;
+        public const double DisplayScale_MAX = 2.0;
+
+        public const int CustomColorsLimit_DEFAULT = 10;
+        public const int CustomColorsLimit_MAX = 1000;
+
+        public const int ColorColumns_DEFAULT = 5;
+        public const int ColorColumns_MAX = 100;
 
         public void ToggleMenu(object? obj)
         {
@@ -456,7 +523,7 @@ namespace ColorSelector
         /// <param name="obj"></param>
         private void SaveCustomColor(object? obj)
         {
-            if (CustomColors.Count >= 10)
+            if (CustomColorsLimited && CustomColors.Count >= CustomColorsLimit)
                 CustomColors.RemoveAt(CustomColors.Count - 1);
 
             CustomColors.Insert(0, GetColorFromRawColor());
@@ -487,17 +554,17 @@ namespace ColorSelector
 
         private void ResetAppScale(object? obj)
         {
-            ApplicationScale = 1.0;
+            ApplicationScale = DisplayScale_DEFAULT;
         }
 
         private void DecreaseAppScale(object? obj)
         {
-            ApplicationScale = Math.Clamp(ApplicationScale -= 0.1, 1.0, 2.0);
+            ApplicationScale = Math.Clamp(ApplicationScale -= DisplayScale_ROC, DisplayScale_MIN, DisplayScale_MAX);
         }
 
         private void IncreaseAppScale(object? obj)
         {
-            ApplicationScale = Math.Clamp(ApplicationScale += 0.1, 1.0, 2.0);
+            ApplicationScale = Math.Clamp(ApplicationScale += DisplayScale_ROC, DisplayScale_MIN, DisplayScale_MAX);
         }
 
         private void ADecrement(object? obj)
@@ -923,6 +990,64 @@ namespace ColorSelector
                     vTextBox.GotKeyboardFocus += TextBox_GotKeyboardFocus;
                     vTextBox.PreviewKeyDown += TextBox_PreviewKeyDown;
                     CreateToolTip(vTextBox, ColorComponent.Value);
+                }
+            }
+        }
+
+        private TextBox? colorColumnsTextBox;
+        private TextBox? ColorColumnsTextBox
+        {
+            get => colorColumnsTextBox;
+
+            set
+            {
+                if (colorColumnsTextBox != null)
+                {
+                    colorColumnsTextBox.PreviewKeyDown -= new KeyEventHandler(TextBox_PreviewKeyDown);
+                    colorColumnsTextBox.GotKeyboardFocus -= new KeyboardFocusChangedEventHandler(TextBox_GotKeyboardFocus);
+                    BindingOperations.ClearBinding(colorColumnsTextBox, TextBox.TextProperty);
+                }
+                colorColumnsTextBox = value;
+
+                if (colorColumnsTextBox != null)
+                {
+                    colorColumnsTextBox.MaxLength = 3; // Enforce maximum string length
+
+                    Binding binding = new(nameof(ColorColumns)) { Mode = BindingMode.TwoWay, Source = this, UpdateSourceTrigger = UpdateSourceTrigger.Default };
+                    binding.ValidationRules.Add(new ColorColumnValidationRule());
+                    colorColumnsTextBox.SetBinding(TextBox.TextProperty, binding);
+                    colorColumnsTextBox.GotKeyboardFocus += TextBox_GotKeyboardFocus;
+                    colorColumnsTextBox.PreviewKeyDown += TextBox_PreviewKeyDown;
+                    CreateToolTip(colorColumnsTextBox, "Edit the number of columns to display lists of colors in");
+                }
+            }
+        }
+
+        private TextBox? customColorsLimitTextBox;
+        private TextBox? CustomColorsLimitTextBox
+        {
+            get => customColorsLimitTextBox;
+
+            set
+            {
+                if (customColorsLimitTextBox != null)
+                {
+                    customColorsLimitTextBox.PreviewKeyDown -= new KeyEventHandler(TextBox_PreviewKeyDown);
+                    customColorsLimitTextBox.GotKeyboardFocus -= new KeyboardFocusChangedEventHandler(TextBox_GotKeyboardFocus);
+                    BindingOperations.ClearBinding(customColorsLimitTextBox, TextBox.TextProperty);
+                }
+                customColorsLimitTextBox = value;
+
+                if (customColorsLimitTextBox != null)
+                {
+                    customColorsLimitTextBox.MaxLength = Int16.MaxValue.ToString().Length; // Enforce maximum string length
+
+                    Binding binding = new(nameof(CustomColorsLimit)) { Mode = BindingMode.TwoWay, Source = this, UpdateSourceTrigger = UpdateSourceTrigger.Default };
+                    binding.ValidationRules.Add(new CustomColorsLimitValidationRule());
+                    customColorsLimitTextBox.SetBinding(TextBox.TextProperty, binding);
+                    customColorsLimitTextBox.GotKeyboardFocus += TextBox_GotKeyboardFocus;
+                    customColorsLimitTextBox.PreviewKeyDown += TextBox_PreviewKeyDown;
+                    CreateToolTip(customColorsLimitTextBox, "Edit the limit of custom colors able to be saved");
                 }
             }
         }
@@ -1936,6 +2061,86 @@ namespace ColorSelector
             }
         }
 
+        private ButtonBase? colorColumnsIncrementButtonBase;
+        private ButtonBase? ColorColumnsIncrementButtonBase
+        {
+            get => colorColumnsIncrementButtonBase;
+
+            set
+            {
+                if (colorColumnsIncrementButtonBase != null)
+                {
+                    BindingOperations.ClearBinding(colorColumnsIncrementButtonBase, ButtonBase.CommandProperty);
+                }
+                colorColumnsIncrementButtonBase = value;
+
+                if (colorColumnsIncrementButtonBase != null)
+                {
+                    BindingOperations.SetBinding(colorColumnsIncrementButtonBase, ButtonBase.CommandProperty, new Binding(nameof(ColorColumnsIncrementCommand)) { Mode = BindingMode.OneWay, Source = this });
+                }
+            }
+        }
+
+        private ButtonBase? colorColumnsDecrementButtonBase;
+        private ButtonBase? ColorColumnsDecrementButtonBase
+        {
+            get => colorColumnsDecrementButtonBase;
+
+            set
+            {
+                if (colorColumnsDecrementButtonBase != null)
+                {
+                    BindingOperations.ClearBinding(colorColumnsDecrementButtonBase, ButtonBase.CommandProperty);
+                }
+                colorColumnsDecrementButtonBase = value;
+
+                if (colorColumnsDecrementButtonBase != null)
+                {
+                    BindingOperations.SetBinding(colorColumnsDecrementButtonBase, ButtonBase.CommandProperty, new Binding(nameof(ColorColumnsDecrementCommand)) { Mode = BindingMode.OneWay, Source = this });
+                }
+            }
+        }
+
+        private ButtonBase? customColorsLimitIncrementButtonBase;
+        private ButtonBase? CustomColorsLimitIncrementButtonBase
+        {
+            get => customColorsLimitIncrementButtonBase;
+
+            set
+            {
+                if (customColorsLimitIncrementButtonBase != null)
+                {
+                    BindingOperations.ClearBinding(customColorsLimitIncrementButtonBase, ButtonBase.CommandProperty);
+                }
+                customColorsLimitIncrementButtonBase = value;
+
+                if (customColorsLimitIncrementButtonBase != null)
+                {
+                    BindingOperations.SetBinding(customColorsLimitIncrementButtonBase, ButtonBase.CommandProperty, new Binding(nameof(CustomColorsLimitIncrementCommand)) { Mode = BindingMode.OneWay, Source = this });
+                }
+            }
+        }
+
+        private ButtonBase? customColorsLimitDecrementButtonBase;
+        private ButtonBase? CustomColorsLimitDecrementButtonBase
+        {
+            get => customColorsLimitDecrementButtonBase;
+
+            set
+            {
+                if (customColorsLimitDecrementButtonBase != null)
+                {
+                    BindingOperations.ClearBinding(customColorsLimitDecrementButtonBase, ButtonBase.CommandProperty);
+                }
+                customColorsLimitDecrementButtonBase = value;
+
+                if (customColorsLimitDecrementButtonBase != null)
+                {
+                    BindingOperations.SetBinding(customColorsLimitDecrementButtonBase, ButtonBase.CommandProperty, new Binding(nameof(CustomColorsLimitDecrementCommand)) { Mode = BindingMode.OneWay, Source = this });
+                }
+            }
+        }
+
         private ButtonBase? importPresetColorsButtonBase;
         private ButtonBase? ImportPresetColorsButtonBase
         {
@@ -2397,7 +2602,6 @@ namespace ColorSelector
                 double lightnessValue = (ColorModel == ColorModel.HSL) ? .5 : 1.0;
                 var brush = new SolidColorBrush(GetRgbColorFromModel((360.0 * i) / faces, 1, lightnessValue));
                 DiffuseMaterial material = new(brush);
-                Debug.WriteLine($"material: {(360.0 * i) / faces}, brush: {brush.Color.ToString()}");
                 Binding brushOpacity = new(nameof(S)) { Mode = BindingMode.OneWay, Source = this };
                 BindingOperations.SetBinding(material.Brush, Brush.OpacityProperty, brushOpacity);
 
@@ -5570,6 +5774,63 @@ namespace ColorSelector
         {
             get => (double)GetValue(Display3dHeightProperty);
             set => SetValue(Display3dHeightProperty, value);
+        }
+
+        public static readonly DependencyProperty CustomColorsLimitProperty =
+            DependencyProperty.Register(nameof(CustomColorsLimit), typeof(int), typeof(ColorSelector), new PropertyMetadata(CustomColorsLimit_DEFAULT, new PropertyChangedCallback(CustomColorsLimitChanged)));
+
+        private static void CustomColorsLimitChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ColorSelector selector = (ColorSelector)d;
+            UpdateCustomColors(selector);
+        }
+
+        public int CustomColorsLimit
+        {
+            get => (int)GetValue(CustomColorsLimitProperty);
+            set => SetValue(CustomColorsLimitProperty, value);
+        }
+
+        public static readonly DependencyProperty CustomColorsLimitReadoutProperty =
+            DependencyProperty.Register(nameof(CustomColorsLimitReadout), typeof(string), typeof(ColorSelector), new PropertyMetadata(CustomColorsLimit_DEFAULT.ToString()));
+
+        public string CustomColorsLimitReadout
+        {
+            get => (string)GetValue(CustomColorsLimitReadoutProperty);
+            set => SetValue(CustomColorsLimitReadoutProperty, value);
+        }
+
+        public static readonly DependencyProperty CustomColorsLimitedProperty =
+            DependencyProperty.Register(nameof(CustomColorsLimited), typeof(bool), typeof(ColorSelector), new PropertyMetadata(true, new PropertyChangedCallback(CustomColorsLimitedChanged)));
+
+        public bool CustomColorsLimited
+        {
+            get => (bool)GetValue(CustomColorsLimitedProperty);
+            set => SetValue(CustomColorsLimitedProperty, value);
+        }
+
+        private static void CustomColorsLimitedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ColorSelector selector = (ColorSelector)d;
+            UpdateCustomColors(selector);
+        }
+
+        private static void UpdateCustomColors(ColorSelector selector)
+        {
+            selector.CustomColorsLimitReadout = (selector.CustomColorsLimited) ? selector.CustomColorsLimit.ToString() : "Unlimited";
+            if (selector.CustomColorsLimited && selector.CustomColors.Count >= selector.CustomColorsLimit)
+            {
+                selector.CustomColors = new(selector.CustomColors.Take(selector.CustomColorsLimit));
+            }
+        }
+
+        public static readonly DependencyProperty ColorColumnsProperty =
+            DependencyProperty.Register(nameof(ColorColumns), typeof(int), typeof(ColorSelector), new PropertyMetadata(ColorColumns_DEFAULT));
+
+        public int ColorColumns
+        {
+            get => (int)GetValue(ColorColumnsProperty);
+            set => SetValue(ColorColumnsProperty, value);
         }
     }
 }

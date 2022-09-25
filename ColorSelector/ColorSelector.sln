@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ColorSelectorStandalone", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ColorSelectorUnitTests", "..\ColorSelectorUnitTests\ColorSelectorUnitTests.csproj", "{C4B960CE-E660-4527-9104-5EB18803E8AB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ColorSelectorXunitTests", "..\ColorSelectorXunitTests\ColorSelectorXunitTests.csproj", "{C97EBD41-7361-4135-A41D-ECF03E8C807B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{C4B960CE-E660-4527-9104-5EB18803E8AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C4B960CE-E660-4527-9104-5EB18803E8AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C4B960CE-E660-4527-9104-5EB18803E8AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C97EBD41-7361-4135-A41D-ECF03E8C807B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C97EBD41-7361-4135-A41D-ECF03E8C807B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C97EBD41-7361-4135-A41D-ECF03E8C807B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C97EBD41-7361-4135-A41D-ECF03E8C807B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
