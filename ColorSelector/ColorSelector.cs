@@ -333,12 +333,12 @@ namespace ColorSelector
 
         private void CustomColorsLimitDecrement(object? obj)
         {
-            CustomColorsLimit = Math.Clamp(CustomColorsLimit - 1, 1, CustomColorsLimit_MAX);
+            CustomColorsLimit = Math.Clamp(CustomColorsLimit - 1, 1, (CustomColorsLimited) ? CustomColorsLimit_MAX : CustomColorsLimit_SAFETY_MAX);
         }
 
         private void CustomColorsLimitIncrement(object? obj)
         {
-            CustomColorsLimit = Math.Clamp(CustomColorsLimit + 1, 1, CustomColorsLimit_MAX);
+            CustomColorsLimit = Math.Clamp(CustomColorsLimit + 1, 1, (CustomColorsLimited) ? CustomColorsLimit_MAX : CustomColorsLimit_SAFETY_MAX);
         }
 
         private void ColorColumnsDecrement(object? obj)
@@ -485,10 +485,11 @@ namespace ColorSelector
         public const double DisplayScale_MIN = .5;
         public const double DisplayScale_MAX = 2.0;
 
-        public const int CustomColorsLimit_DEFAULT = 10;
+        public const int CustomColorsLimit_DEFAULT = 20;
         public const int CustomColorsLimit_MAX = 1000;
+        public const int CustomColorsLimit_SAFETY_MAX = 16383; // Memory/performance safety hard-limit
 
-        public const int ColorColumns_DEFAULT = 5;
+        public const int ColorColumns_DEFAULT = 10;
         public const int ColorColumns_MAX = 100;
 
         public void ToggleMenu(object? obj)
@@ -517,13 +518,44 @@ namespace ColorSelector
         }
 
         /// <summary>
+        /// Returns the int.CompareTo() result for checking the count of a collection of colors. 
+        /// If CustomColorsLimited is set to true, CustomColorsLimit is the comparison value;
+        /// Else, CustomColorsLimit_SAFETY_MAX is the comparison value.
+        /// </summary>
+        /// <returns></returns>
+        private int CustomColorsLimitReached(IEnumerable<Color>? colorCollection = null)
+        {
+            var colleciton = (colorCollection == null) ? CustomColors : colorCollection;
+            if (CustomColorsLimited)
+                return colleciton.Count().CompareTo(CustomColorsLimit);
+            else
+                return colleciton.Count().CompareTo(CustomColorsLimit_SAFETY_MAX);
+        }
+
+        private int CustomColorsLimitReached()
+        {
+            if (CustomColorsLimited)
+                return CustomColors.Count.CompareTo(CustomColorsLimit);
+            else
+                return CustomColors.Count.CompareTo(CustomColorsLimit_SAFETY_MAX);
+        }
+
+        private int GetCustomColorsLimit()
+        {
+            if (CustomColorsLimited)
+                return CustomColorsLimit;
+            else
+                return CustomColorsLimit_SAFETY_MAX;
+        }
+
+        /// <summary>
         /// Saves custom colors up to a certain limit; once limit is reached,
         /// colors are replaced in FILO (First In, Last Out) order;
         /// </summary>
         /// <param name="obj"></param>
         private void SaveCustomColor(object? obj)
         {
-            if (CustomColorsLimited && CustomColors.Count >= CustomColorsLimit)
+            if (CustomColorsLimitReached() >= 0)
                 CustomColors.RemoveAt(CustomColors.Count - 1);
 
             CustomColors.Insert(0, GetColorFromRawColor());
@@ -2334,10 +2366,14 @@ namespace ColorSelector
                     switch (importType)
                     {
                         case ImportType.CustomColors:
-                            CustomColors = new ObservableCollection<Color>(collection);
+                            CustomColors.Clear();
+                            for (int i = 0; i < collection.Count() && i < GetCustomColorsLimit(); ++i)
+                                CustomColors.Add(collection.ElementAt(i));
                             break;
                         case ImportType.PresetColors:
-                            PresetColors = new ObservableCollection<Color>(collection);
+                            PresetColors.Clear();
+                            for (int i = 0; i < collection.Count() && i < CustomColorsLimit_SAFETY_MAX; ++i)
+                                PresetColors.Add(collection.ElementAt(i));
                             break;
                         default:
                             break;
@@ -5817,10 +5853,13 @@ namespace ColorSelector
 
         private static void UpdateCustomColors(ColorSelector selector)
         {
-            selector.CustomColorsLimitReadout = (selector.CustomColorsLimited) ? selector.CustomColorsLimit.ToString() : "Unlimited";
-            if (selector.CustomColorsLimited && selector.CustomColors.Count >= selector.CustomColorsLimit)
+            selector.CustomColorsLimitReadout = (selector.CustomColorsLimited) ? selector.CustomColorsLimit.ToString() : "Unlimited*";
+            if (selector.CustomColorsLimitReached() >= 1)
             {
-                selector.CustomColors = new(selector.CustomColors.Take(selector.CustomColorsLimit));
+                var items = new List<Color>(selector.CustomColors.Take(selector.CustomColorsLimit));
+                selector.CustomColors.Clear();
+                foreach (var item in items)
+                    selector.CustomColors.Add(item);
             }
         }
 
