@@ -2194,7 +2194,7 @@
                                                 </Style>
                                             </ListBox.Style>
                                         </ListBox>
-                                        <TextBlock Text="Drag and drop file" Foreground="#44ffffff" IsHitTestVisible="False" TextWrapping="Wrap" Margin="16">
+                                        <TextBlock Text="Drag and drop file" Foreground="#33ffffff" IsHitTestVisible="False" TextWrapping="Wrap" Margin="16">
                                             <TextBlock.Style>
                                                 <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource monospacedBoldText}">
                                                     <Setter Property="Visibility" Value="Collapsed"/>
@@ -2702,7 +2702,7 @@
                                                 </Style>
                                             </ListBox.Style>
                                         </ListBox>
-                                        <TextBlock Text="Drag and drop file" Foreground="#44ffffff" IsHitTestVisible="False" Margin="16" TextWrapping="Wrap">
+                                        <TextBlock Text="Drag and drop file" Foreground="#33ffffff" IsHitTestVisible="False" Margin="16" TextWrapping="Wrap">
                                             <TextBlock.Style>
                                                 <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource monospacedBoldText}">
                                                     <Setter Property="Visibility" Value="Collapsed"/>
