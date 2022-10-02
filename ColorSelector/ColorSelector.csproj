@@ -18,7 +18,7 @@ Works as both standalone (with test application) and as an imported Control.
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageTags>colors;color-selector;color-picker;rgb;hsv;model;3D;WPF;Control</PackageTags>
     <Title>Zeno Color Selector</Title>
-    <AssemblyVersion>1.0.2</AssemblyVersion>
+    <AssemblyVersion>1.0.3</AssemblyVersion>
 	<FileVersion>$(AssemblyVersion)</FileVersion>
 	<Version>$(AssemblyVersion)</Version>
   </PropertyGroup>

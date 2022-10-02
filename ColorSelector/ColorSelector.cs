@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -448,6 +449,9 @@ namespace ColorSelector
             RgbComponentVisibilityToggleButton = GetTemplateChild(nameof(TemplatePart.PART_rgbComponentVisibilityToggleButton)) as ToggleButton;
             HslvComponentVisibilityToggleButton = GetTemplateChild(nameof(TemplatePart.PART_hslvComponentVisibilityToggleButton)) as ToggleButton;
             AppOrientationToggleButton = GetTemplateChild(nameof(TemplatePart.PART_appOrientationToggleButton)) as ToggleButton;
+
+            var version = Assembly.GetExecutingAssembly().GetName().Version;
+            VersionString = (version != null) ? version.ToString() : "Version number not found.";
 
             RebuildColorModelList();
             RefreshRangeBaseVisuals();
@@ -5870,6 +5874,15 @@ namespace ColorSelector
         {
             get => (int)GetValue(ColorColumnsProperty);
             set => SetValue(ColorColumnsProperty, value);
+        }
+
+        public static readonly DependencyProperty VersionStringProperty =
+            DependencyProperty.Register(nameof(VersionString), typeof(string), typeof(ColorSelector), new PropertyMetadata(""));
+
+        public string VersionString
+        {
+            get => (string)GetValue(VersionStringProperty);
+            set => SetValue(VersionStringProperty, value);
         }
     }
 }
