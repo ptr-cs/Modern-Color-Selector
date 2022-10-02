@@ -5837,7 +5837,7 @@ namespace ColorSelector
         }
 
         public static readonly DependencyProperty CustomColorsLimitedProperty =
-            DependencyProperty.Register(nameof(CustomColorsLimited), typeof(bool), typeof(ColorSelector), new PropertyMetadata(true, new PropertyChangedCallback(CustomColorsLimitedChanged)));
+            DependencyProperty.Register(nameof(CustomColorsLimited), typeof(bool), typeof(ColorSelector), new PropertyMetadata(false, new PropertyChangedCallback(CustomColorsLimitedChanged)));
 
         public bool CustomColorsLimited
         {

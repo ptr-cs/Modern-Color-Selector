@@ -7,6 +7,10 @@
 
     <BooleanToVisibilityConverter x:Key="b2v" />
     <converters:HslComponentToAbbreviatedStringConverter x:Key="hslComponentToAbbreviatedStringConverter" />
+    <system:String x:Key="LoadColorsToListToolTip">Drag and Drop a JSON file to load colors.</system:String>
+    <system:String x:Key="AddColorsToListToolTip">Save colors using the "Add" button, or Drag and Drop a JSON file to load colors.</system:String>
+    <system:String x:Key="NoColorsListString">Color list empty.</system:String>
+    <system:String x:Key="NoColorsListVerticalString">Color&#10;list&#10;empty.</system:String>
 
     <SolidColorBrush x:Key="toggleButtonCheckedBrush"
                      Color="#0761A6"
@@ -2189,21 +2193,24 @@
                                                             <Setter Property="BorderBrush" Value="{StaticResource warningBrush}"/>
                                                             <Setter Property="BorderThickness" Value="4"/>
                                                             <Setter Property="Margin" Value="8,12,8,8"/>
+                                                            <Setter Property="ToolTip" Value="{StaticResource LoadColorsToListToolTip}"/>
+                                                            <Setter Property="Cursor" Value="Help"/>
                                                         </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>
                                             </ListBox.Style>
                                         </ListBox>
-                                        <TextBlock Text="Drag and drop file" Foreground="#33ffffff" IsHitTestVisible="False" TextWrapping="Wrap" Margin="16">
+                                        <TextBlock Foreground="#33ffffff" IsHitTestVisible="False" TextWrapping="Wrap" Margin="16">
                                             <TextBlock.Style>
                                                 <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource monospacedBoldText}">
                                                     <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Setter Property="Text" Value="{StaticResource NoColorsListString}"/>
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=PresetColors.Count, Mode=OneWay}" Value="0">
                                                             <Setter Property="Visibility" Value="Visible"/>
                                                         </DataTrigger>
                                                         <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=ApplicationOrientation, Mode=OneWay}" Value="true">
-                                                            <Setter Property="Width" Value="48"/>
+                                                            <Setter Property="Text" Value="{StaticResource NoColorsListVerticalString}"/>
                                                         </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>
@@ -2697,21 +2704,24 @@
                                                             <Setter Property="BorderBrush" Value="{StaticResource warningBrush}"/>
                                                             <Setter Property="BorderThickness" Value="4"/>
                                                             <Setter Property="Margin" Value="8,12,8,8"/>
+                                                            <Setter Property="ToolTip" Value="{StaticResource AddColorsToListToolTip}"/>
+                                                            <Setter Property="Cursor" Value="Help"/>
                                                         </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>
                                             </ListBox.Style>
                                         </ListBox>
-                                        <TextBlock Text="Drag and drop file" Foreground="#33ffffff" IsHitTestVisible="False" Margin="16" TextWrapping="Wrap">
+                                        <TextBlock Foreground="#33ffffff" IsHitTestVisible="False" Margin="16" TextWrapping="Wrap" Background="#00000000" Cursor="Help">
                                             <TextBlock.Style>
                                                 <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource monospacedBoldText}">
                                                     <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Setter Property="Text" Value="{StaticResource NoColorsListString}"/>
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=CustomColors.Count, Mode=OneWay}" Value="0">
                                                             <Setter Property="Visibility" Value="Visible"/>
                                                         </DataTrigger>
                                                         <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ColorSelector}}, Path=ApplicationOrientation, Mode=OneWay}" Value="true">
-                                                            <Setter Property="Width" Value="48"/>
+                                                            <Setter Property="Text" Value="{StaticResource NoColorsListVerticalString}"/>
                                                         </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>
